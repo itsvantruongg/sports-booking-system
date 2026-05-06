@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic - Update Password</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e1e1ef",
+                        "tertiary-fixed": "#9cf0ff",
+                        "on-secondary-fixed": "#002108",
+                        "on-primary-container": "#dfe3ff",
+                        "primary": "#003ec7",
+                        "on-secondary-fixed-variant": "#00531e",
+                        "on-surface-variant": "#434656",
+                        "inverse-surface": "#2e303a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001452",
+                        "surface-bright": "#fbf8ff",
+                        "surface-container-low": "#f3f2ff",
+                        "primary-container": "#0052ff",
+                        "on-secondary": "#ffffff",
+                        "outline": "#737688",
+                        "inverse-primary": "#b7c4ff",
+                        "surface-tint": "#004ced",
+                        "background": "#fbf8ff",
+                        "on-surface": "#191b25",
+                        "tertiary-container": "#00717e",
+                        "primary-fixed": "#dde1ff",
+                        "secondary": "#006e2a",
+                        "on-secondary-container": "#00732c",
+                        "surface-container": "#ededfb",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "on-background": "#191b25",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#a7f1ff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e7e7f5",
+                        "secondary-fixed": "#69ff87",
+                        "on-tertiary-fixed": "#001f24",
+                        "secondary-fixed-dim": "#3ce36a",
+                        "outline-variant": "#c3c5d9",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e1ef",
+                        "tertiary": "#005761",
+                        "surface": "#fbf8ff",
+                        "surface-dim": "#d9d9e7",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0effe",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#5cfd80",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#00daf3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans", "sans-serif"],
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen flex items-center justify-center font-body text-on-background p-4 relative overflow-hidden">
+<!-- Decorative Ambient Glows -->
+<div class="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[100px] pointer-events-none"></div>
+<main class="w-full max-w-md relative z-10">
+<!-- Logo Header -->
+<div class="text-center mb-8">
+<h1 class="font-display font-black text-4xl tracking-tighter text-primary">KINETIC</h1>
+<p class="font-body text-on-surface-variant text-sm mt-2">Partner Security Update</p>
+</div>
+<!-- Main Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_12px_40px_rgba(25,27,37,0.06)] p-8 sm:p-10 relative overflow-hidden">
+<!-- Context Icon -->
+<div class="absolute top-0 right-0 p-8 opacity-5">
+<span class="material-symbols-outlined text-[120px] text-primary" data-icon="lock" data-weight="fill">lock</span>
+</div>
+<!-- Header -->
+<div class="mb-8 relative z-10">
+<div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-surface-container-low text-primary mb-4">
+<span class="material-symbols-outlined" data-icon="shield_lock">shield_lock</span>
+</div>
+<h2 class="font-headline text-2xl font-bold tracking-tight text-on-surface mb-2">Update Required</h2>
+<p class="font-body text-on-surface-variant">For your security, please create a new password to access your Kinetic Partner Portal.</p>
+</div>
+<!-- Form -->
+<form action="#" class="space-y-6 relative z-10" method="POST">
+<!-- Current Password (Read-Only/Pre-filled) -->
+<div>
+<label class="block font-label text-sm font-medium text-on-surface mb-2" for="current-password">System Temporary Password</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant/50 text-xl" data-icon="key">key</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-3 bg-surface-container text-on-surface-variant font-body rounded-lg border-none focus:ring-0 cursor-not-allowed text-sm" disabled="" id="current-password" name="current-password" readonly="" type="password" value="temp-pass-12345"/>
+</div>
+</div>
+<!-- New Password -->
+<div>
+<label class="block font-label text-sm font-medium text-on-surface mb-2" for="new-password">New Password</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="lock_reset">lock_reset</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-3 bg-surface text-on-surface font-body rounded-lg border-2 border-transparent focus:border-outline-variant/30 focus:bg-surface-bright focus:ring-0 transition-all duration-200 text-sm shadow-sm placeholder:text-outline" id="new-password" name="new-password" placeholder="Enter new password" required="" type="password"/>
+</div>
+<!-- Password Requirements Hint -->
+<p class="mt-2 text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="info">info</span>
+                        Must be at least 8 characters.
+                    </p>
+</div>
+<!-- Confirm New Password -->
+<div>
+<label class="block font-label text-sm font-medium text-on-surface mb-2" for="confirm-password">Confirm New Password</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="lock_open">lock_open</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-3 bg-surface text-on-surface font-body rounded-lg border-2 border-transparent focus:border-outline-variant/30 focus:bg-surface-bright focus:ring-0 transition-all duration-200 text-sm shadow-sm placeholder:text-outline" id="confirm-password" name="confirm-password" placeholder="Re-enter new password" required="" type="password"/>
+</div>
+</div>
+<!-- Submit Action -->
+<div class="pt-4">
+<button class="w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-br from-primary to-primary-container text-on-primary font-headline font-bold rounded-full hover:shadow-[0_12px_40px_rgba(0,62,199,0.25)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300" type="submit">
+<span>Update &amp; Continue</span>
+<span class="material-symbols-outlined text-xl" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</form>
+<!-- Support Link -->
+<div class="mt-8 text-center relative z-10">
+<a class="inline-flex items-center gap-1 font-label text-sm text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="help">help</span>
+                    Need help accessing your account?
+                </a>
+</div>
+</div>
+</main>
+</body></html>

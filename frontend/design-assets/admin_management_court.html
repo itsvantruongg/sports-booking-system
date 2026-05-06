@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Global Court Management - Kinetic Partner Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e1e1ef",
+                        "tertiary-fixed": "#9cf0ff",
+                        "on-secondary-fixed": "#002108",
+                        "on-primary-container": "#dfe3ff",
+                        "primary": "#003ec7",
+                        "on-secondary-fixed-variant": "#00531e",
+                        "on-surface-variant": "#434656",
+                        "inverse-surface": "#2e303a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001452",
+                        "surface-bright": "#fbf8ff",
+                        "surface-container-low": "#f3f2ff",
+                        "primary-container": "#0052ff",
+                        "on-secondary": "#ffffff",
+                        "outline": "#737688",
+                        "inverse-primary": "#b7c4ff",
+                        "surface-tint": "#004ced",
+                        "background": "#fbf8ff",
+                        "on-surface": "#191b25",
+                        "tertiary-container": "#00717e",
+                        "primary-fixed": "#dde1ff",
+                        "secondary": "#006e2a",
+                        "on-secondary-container": "#00732c",
+                        "surface-container": "#ededfb",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "on-background": "#191b25",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#a7f1ff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e7e7f5",
+                        "secondary-fixed": "#69ff87",
+                        "on-tertiary-fixed": "#001f24",
+                        "secondary-fixed-dim": "#3ce36a",
+                        "outline-variant": "#c3c5d9",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e1ef",
+                        "tertiary": "#005761",
+                        "surface": "#fbf8ff",
+                        "surface-dim": "#d9d9e7",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0effe",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#5cfd80",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#00daf3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body antialiased min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-full p-6 fixed left-0 top-0 z-40 bg-[#fbf8ff] dark:bg-slate-950 h-screen w-72 rounded-r-[3rem] bg-surface-container-low shadow-[20px_0_60px_rgba(25,27,37,0.04)]">
+<div class="mb-8">
+<h1 class="text-xl font-black text-[#003ec7] mb-2 font-['Plus_Jakarta_Sans'] font-semibold">Kinetic HQ</h1>
+<p class="text-sm text-on-surface-variant font-label">Partner Dashboard</p>
+</div>
+<div class="flex-1 overflow-y-auto">
+<ul class="space-y-2">
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full font-['Plus_Jakarta_Sans'] font-semibold hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 bg-gradient-to-br from-[#003ec7] to-[#0052ff] text-white rounded-full shadow-lg font-['Plus_Jakarta_Sans'] font-semibold hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">stadium</span>
+<span>Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full font-['Plus_Jakarta_Sans'] font-semibold hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span>Calendar</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full font-['Plus_Jakarta_Sans'] font-semibold hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Revenue</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full font-['Plus_Jakarta_Sans'] font-semibold hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Users</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full font-['Plus_Jakarta_Sans'] font-semibold hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="mt-auto pt-6 border-t border-outline-variant/20">
+<button class="w-full mb-6 bg-gradient-to-br from-[#003ec7] to-[#0052ff] text-white py-3 rounded-full font-['Plus_Jakarta_Sans'] font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all">
+                Add New Court
+            </button>
+<ul class="space-y-2">
+<li>
+<a class="flex items-center gap-4 px-4 py-2 text-[#434656] hover:bg-slate-100 rounded-full font-['Plus_Jakarta_Sans'] font-semibold hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Support</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-2 text-[#434656] hover:bg-slate-100 rounded-full font-['Plus_Jakarta_Sans'] font-semibold hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Sign Out</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-72 p-6 md:p-12 min-h-screen">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+<div>
+<h2 class="text-4xl md:text-5xl font-display font-bold text-on-surface tracking-tight mb-2">Global Court Management</h2>
+<p class="text-lg text-on-surface-variant font-body">Manage global facility availability and visibility settings.</p>
+</div>
+<div class="flex gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-12 pr-4 py-3 rounded-full bg-surface-container-low border-0 focus:ring-2 focus:ring-primary focus:bg-surface-bright transition-colors font-body w-64 md:w-80" placeholder="Search facilities..." type="text"/>
+</div>
+</div>
+</header>
+<!-- Filters -->
+<section class="mb-10 flex flex-wrap gap-3 items-center">
+<span class="text-sm font-semibold text-on-surface-variant uppercase tracking-wider mr-2">Filter by Sport:</span>
+<button class="px-6 py-2 rounded-full bg-secondary-container text-on-secondary-container font-headline font-semibold shadow-sm transition-all">All Sports</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-headline font-semibold hover:bg-surface-container-highest transition-all">Tennis</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-headline font-semibold hover:bg-surface-container-highest transition-all">Padel</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-headline font-semibold hover:bg-surface-container-highest transition-all">Pickleball</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-headline font-semibold hover:bg-surface-container-highest transition-all">Squash</button>
+</section>
+<!-- Court Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+<!-- Court Card 1 -->
+<article class="bg-surface-container-low rounded-xl p-2 flex flex-col gap-4 relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_60px_rgba(25,27,37,0.06)] group">
+<div class="relative h-48 w-full rounded-lg overflow-hidden bg-surface-container-highest">
+<img alt="Professional outdoor tennis court with pristine blue surface under clear sunny sky" class="w-full h-full object-cover" data-alt="Professional outdoor tennis court with pristine blue surface under clear sunny sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBO3D2CdhXjBRagu9Q-4WgBnHqpw6jF-5SX3CB-4-lukYLZ5_-FlG7VsQ9jP7CFaaoqBxYfWjYWnFn_2bT3udNFeJAzF41XPq0lDnQTVd02C3fhSbAahAh_QmHl70vQwj4aMGJipPNbeCqkTnSIqfxKJwIMvLwpfh-MKvJRNrWuJdJyddBdVMOjWbEDwEZgGwgSeJCB4XicphsDFf09t1c_Jj08jN4IaXwG_qol5cuAATqWLs8e1PkhSYmBZ20rJjczAWoruYQr9hY"/>
+<div class="absolute top-4 left-4 bg-surface-container-lowest/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-primary flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">sports_tennis</span> Tennis
+                    </div>
+</div>
+<div class="px-4 pb-4 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-display font-bold text-xl text-on-surface leading-tight">Downtown Center Court 1</h3>
+</div>
+<div class="space-y-2 mb-6">
+<div class="flex items-center gap-2 text-sm text-on-surface-variant font-body">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>Urban Athletics Complex, NY</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-on-surface-variant font-body">
+<span class="material-symbols-outlined text-[18px]">badge</span>
+<span>Owner: Metro Sports Group</span>
+</div>
+</div>
+<div class="mt-auto flex items-center justify-between pt-4 border-t border-surface-variant">
+<div class="flex items-center gap-2">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-dim peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+<span class="ms-3 text-sm font-semibold text-secondary">Public</span>
+</label>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-primary" title="Edit Facility Details">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Court Card 2 -->
+<article class="bg-surface-container-low rounded-xl p-2 flex flex-col gap-4 relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_60px_rgba(25,27,37,0.06)] group">
+<div class="relative h-48 w-full rounded-lg overflow-hidden bg-surface-container-highest">
+<img alt="Modern indoor padel court enclosed in glass with bright dramatic overhead lighting" class="w-full h-full object-cover" data-alt="Modern indoor padel court enclosed in glass with bright dramatic overhead lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-xGK8ibdxBIR5VsX4pLWMu8wAA0oX5IxJU8TtmmhfHv2A3rPafNnT3AlKqpht9j7ODTOx8_8uc46BSbW-JmtbL4J9hWnghOvXogJywXoySCZ83Gb2qzrwzTdDKPxV5WAQ43dXyUK0exe3szI88-DYhyIQP_yu1OfOd68HKY1p_TWk86JUzlOZYmS3DMT15pdgDz7_J-ZBa2MoPRqEE0LICotG8whT6MR_i6rhJbfVLn4oSB09KfpWw1EkH2xqCGv6pSFIWOIlCLs"/>
+<div class="absolute top-4 left-4 bg-surface-container-lowest/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-primary flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">sports_tennis</span> Padel
+                    </div>
+</div>
+<div class="px-4 pb-4 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-display font-bold text-xl text-on-surface leading-tight">Glass Arena Alpha</h3>
+</div>
+<div class="space-y-2 mb-6">
+<div class="flex items-center gap-2 text-sm text-on-surface-variant font-body">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>The Padel Hub, Miami</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-on-surface-variant font-body">
+<span class="material-symbols-outlined text-[18px]">badge</span>
+<span>Owner: Racket Ventures</span>
+</div>
+</div>
+<div class="mt-auto flex items-center justify-between pt-4 border-t border-surface-variant">
+<div class="flex items-center gap-2">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-dim peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+<span class="ms-3 text-sm font-semibold text-on-surface-variant">Hidden</span>
+</label>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-primary" title="Edit Facility Details">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Court Card 3 -->
+<article class="bg-surface-container-low rounded-xl p-2 flex flex-col gap-4 relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_60px_rgba(25,27,37,0.06)] group">
+<div class="relative h-48 w-full rounded-lg overflow-hidden bg-surface-container-highest">
+<img alt="Green clay tennis court viewed from high angle showing distinct white lines" class="w-full h-full object-cover" data-alt="Green clay tennis court viewed from high angle showing distinct white lines" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-ZFD3IVE4mbpVwCk7-hZxUhcQZTavwFmauY4IVKiLw7PL2howYqbW8LwHI5f1kPFDc3oEVM1zAI5SnLXJ0J_2rKef42JrYtk-JZCr4Cax6pSPoVjITa0jn8wtHfgQqx3PlfyYQoHBdh9aqh_zkjF-jYH2kMlxXGg90dzO3mG-QYaRCmv3MMibAqKc6i69tOEPVm3SRf495aYm8g43OGiGKUhtCU93Au9tGSe9jgSkcFhFydM1x9nizqomuAMJnWBEIMnLDHD6ZUU"/>
+<div class="absolute top-4 left-4 bg-surface-container-lowest/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-primary flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">sports_tennis</span> Tennis
+                    </div>
+</div>
+<div class="px-4 pb-4 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-display font-bold text-xl text-on-surface leading-tight">Heritage Clay Court A</h3>
+</div>
+<div class="space-y-2 mb-6">
+<div class="flex items-center gap-2 text-sm text-on-surface-variant font-body">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>Westside Country Club, LA</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-on-surface-variant font-body">
+<span class="material-symbols-outlined text-[18px]">badge</span>
+<span>Owner: Westside Trust</span>
+</div>
+</div>
+<div class="mt-auto flex items-center justify-between pt-4 border-t border-surface-variant">
+<div class="flex items-center gap-2">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-dim peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+<span class="ms-3 text-sm font-semibold text-secondary">Public</span>
+</label>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-primary" title="Edit Facility Details">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+</main>
+</body></html>

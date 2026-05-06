@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Owner - Quản lý Danh mục Sân (Court Management) - Kinetic</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e1e1ef",
+                        "tertiary-fixed": "#9cf0ff",
+                        "on-secondary-fixed": "#002108",
+                        "on-primary-container": "#dfe3ff",
+                        "primary": "#003ec7",
+                        "on-secondary-fixed-variant": "#00531e",
+                        "on-surface-variant": "#434656",
+                        "inverse-surface": "#2e303a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001452",
+                        "surface-bright": "#fbf8ff",
+                        "surface-container-low": "#f3f2ff",
+                        "primary-container": "#0052ff",
+                        "on-secondary": "#ffffff",
+                        "outline": "#737688",
+                        "inverse-primary": "#b7c4ff",
+                        "surface-tint": "#004ced",
+                        "background": "#fbf8ff",
+                        "on-surface": "#191b25",
+                        "tertiary-container": "#00717e",
+                        "primary-fixed": "#dde1ff",
+                        "secondary": "#006e2a",
+                        "on-secondary-container": "#00732c",
+                        "surface-container": "#ededfb",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "on-background": "#191b25",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#a7f1ff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e7e7f5",
+                        "secondary-fixed": "#69ff87",
+                        "on-tertiary-fixed": "#001f24",
+                        "secondary-fixed-dim": "#3ce36a",
+                        "outline-variant": "#c3c5d9",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e1ef",
+                        "tertiary": "#005761",
+                        "surface": "#fbf8ff",
+                        "surface-dim": "#d9d9e7",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0effe",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#5cfd80",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#00daf3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #fbf8ff; color: #191b25; }
+        h1, h2, h3, h4, h5, h6, .font-headline, .font-display { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar (Shared Component) -->
+<nav class="hidden md:flex flex-col h-screen w-72 rounded-r-xl bg-surface-bright text-primary font-headline font-semibold bg-surface-container-low shadow-[20px_0_60px_rgba(25,27,37,0.04)] p-6 fixed left-0 top-0 z-40">
+<div class="text-xl font-black text-primary mb-8 tracking-tighter">Kinetic HQ</div>
+<div class="flex items-center gap-4 mb-8 p-4 rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="w-12 h-12 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold text-lg overflow-hidden">
+<img alt="Kinetic Partner Portal" class="w-full h-full object-cover" data-alt="headshot of confident professional facility manager smiling softly in bright modern office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk89mXtz0QlgybWHubAXWG6OvosveEQzYJXGlrebV_axi96RlBVtyMBFWdIPdC5ZbQRrhhnQ12dWAoZqEhdKI4yBqEDehsd76-nytHpcty-z9C76hnNn-hvso-AtwA4NbsKfpfxLqEZL6fVb_rHn2RC2J-HrmKpHA1QWrSHBfUbHnfpseHImCORTlITHpSjDBU3kIoeXtzfGFIiGkkKCTqKSS_ok4XBE2dW6dzGgLBtEzXzLe4WU9YR42UsemJnmisyeG3Gx9wkDw"/>
+</div>
+<div>
+<div class="text-sm font-bold text-on-surface">Kinetic HQ</div>
+<div class="text-xs text-on-surface-variant font-body">Partner Dashboard</div>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary rounded-full py-3 mb-8 font-bold hover:bg-gradient-to-br hover:from-primary hover:to-primary-container transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+            Add New Court
+        </button>
+<ul class="flex flex-col gap-2 flex-grow">
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-full hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full shadow-lg active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="stadium" style="font-variation-settings: 'FILL' 1;">stadium</span>
+                    Management
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-full hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+                    Calendar
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-full hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+                    Revenue
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-full hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                    Users
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-full hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+<ul class="flex flex-col gap-2 mt-auto pt-6 border-t border-surface-variant">
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-full hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                    Support
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-full hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                    Sign Out
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-72 min-h-screen relative p-6 lg:p-12 overflow-x-hidden">
+<!-- Header -->
+<header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+<div>
+<h1 class="text-4xl md:text-5xl font-display font-bold text-on-surface mb-2">Court Management</h1>
+<p class="text-lg text-on-surface-variant font-body">Manage your active venues, rates, and availability schedules.</p>
+</div>
+<div class="flex gap-4 w-full md:w-auto">
+<div class="relative flex-1 md:w-64">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-container-low border-none rounded-lg font-body focus:ring-2 focus:ring-primary focus:bg-surface-bright transition-colors" placeholder="Search courts..." type="text"/>
+</div>
+</div>
+</header>
+<!-- Quick Stats (Bento Layout) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<!-- Stat Card 1 -->
+<div class="bg-surface-container-low rounded-lg p-8 relative overflow-hidden group">
+<div class="absolute -right-8 -top-8 w-32 h-32 bg-primary/5 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+<div class="flex items-center justify-between mb-4 relative z-10">
+<h3 class="text-on-surface-variant font-semibold font-body">Active Courts</h3>
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">stadium</span>
+</div>
+</div>
+<div class="text-5xl font-display font-bold text-on-surface relative z-10">14</div>
+<div class="text-sm text-secondary font-medium mt-2 flex items-center gap-1 relative z-10">
+<span class="material-symbols-outlined text-sm">trending_up</span> All venues operational
+                </div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-container-low rounded-lg p-8 relative overflow-hidden group">
+<div class="absolute -right-8 -top-8 w-32 h-32 bg-primary-container/5 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+<div class="flex items-center justify-between mb-4 relative z-10">
+<h3 class="text-on-surface-variant font-semibold font-body">Current Occupancy</h3>
+<div class="w-10 h-10 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2 relative z-10">
+<span class="text-5xl font-display font-bold text-on-surface">85</span>
+<span class="text-2xl text-on-surface-variant font-medium">%</span>
+</div>
+<div class="w-full bg-surface-variant h-2 rounded-full mt-4 overflow-hidden relative z-10">
+<div class="bg-primary h-full rounded-full" style="width: 85%"></div>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-surface-container-low rounded-lg p-8 relative overflow-hidden group">
+<div class="absolute -right-8 -top-8 w-32 h-32 bg-secondary/5 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+<div class="flex items-center justify-between mb-4 relative z-10">
+<h3 class="text-on-surface-variant font-semibold font-body">Upcoming Bookings</h3>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+</div>
+</div>
+<div class="text-5xl font-display font-bold text-on-surface relative z-10">42</div>
+<div class="text-sm text-on-surface-variant font-medium mt-2 relative z-10">Next 24 hours</div>
+</div>
+</section>
+<!-- Court List -->
+<section>
+<div class="flex justify-between items-center mb-8">
+<h2 class="text-2xl font-display font-bold text-on-surface">Active Roster</h2>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-surface-container-low text-on-surface font-medium rounded-full hover:bg-surface-container-high transition-colors text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">filter_list</span> Filter
+                    </button>
+<button class="px-4 py-2 bg-surface-container-low text-on-surface font-medium rounded-full hover:bg-surface-container-high transition-colors text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">sort</span> Sort
+                    </button>
+</div>
+</div>
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+<!-- Court Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_12px_40px_rgba(25,27,37,0.06)] flex flex-col sm:flex-row gap-6 relative group overflow-hidden">
+<div class="w-full sm:w-48 h-48 rounded-lg overflow-hidden relative flex-shrink-0">
+<img alt="Turf Arena A" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="indoor high quality green artificial turf soccer arena under bright stadium lights with clear lines" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbrRjGH7s7xAhJU-gynFjpOFA0RnEhv_Dlj9X7f7JXOUnFr9gB0ppEj3SY68ctzATtTLneQRORcI7muqgM2y6HTXEpa8xtABI3DNS1RrNxoehylqdekEq_W9CNJ_cHO5M1uzX9lYCd-EIbd98ewbH-sx7EsZ_-6M6kiu9J6JnxUPDV0OY7EjE8Cw-iOa6ttu5dqlhpTQy0ssYMnJxb_2S1rVfuDFaTRnWwuihLoqpr0OW_YTOitJ3qdix6Fn5zopeYtyyZp0EJkBE"/>
+<div class="absolute top-3 left-3 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold font-body uppercase tracking-wider flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Active
+                        </div>
+</div>
+<div class="flex flex-col flex-1 justify-between py-2">
+<div>
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="text-2xl font-display font-bold text-on-surface mb-1">Turf Arena A</h3>
+<div class="flex gap-2">
+<span class="px-2.5 py-1 bg-surface-container-low text-on-surface-variant rounded-md text-xs font-semibold font-body">Soccer</span>
+<span class="px-2.5 py-1 bg-surface-container-low text-on-surface-variant rounded-md text-xs font-semibold font-body">7v7</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<p class="text-sm text-on-surface-variant font-body mb-4 line-clamp-2">Premium indoor artificial turf field suitable for 7v7 matches. Features high-intensity LED lighting and spectator seating.</p>
+</div>
+<div class="flex items-end justify-between border-t border-surface-variant pt-4">
+<div>
+<div class="text-xs text-on-surface-variant font-medium mb-1 uppercase tracking-wide">Base Rate</div>
+<div class="font-display font-bold text-on-surface text-xl">$85<span class="text-sm font-medium text-on-surface-variant font-body">/hr</span></div>
+<div class="text-xs text-primary font-medium mt-1">Peak: $120/hr</div>
+</div>
+<button class="bg-surface-container text-primary font-semibold py-2 px-5 rounded-full hover:bg-surface-container-high transition-colors text-sm">
+                                Configure Pricing
+                            </button>
+</div>
+</div>
+</div>
+<!-- Court Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_12px_40px_rgba(25,27,37,0.06)] flex flex-col sm:flex-row gap-6 relative group overflow-hidden">
+<div class="w-full sm:w-48 h-48 rounded-lg overflow-hidden relative flex-shrink-0">
+<img alt="Hardcourt 1" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="vibrant blue indoor basketball hardcourt with polished wooden flooring and natural light pouring through large windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZd1CcRilH3YEw7MYi7hRrfdcOQlApn2iu1_G64E8iFVEzV-bqZGGFUILIljbfz3dXDuz9RyK7osKwdEn6BB3udBjOt6d4H-OMZucyHGLGH6M7n9ckGZFYqAK9kgcaVgRoBE6QLwAxArMlPY-WUucEQwJarhk_d6oSwKk_t9ZgJhxsBI9ABvVqoQeyN92DqI3cy1iz5kz-6VrWkJs8XdI7erKQlicvT8YQTZn1jR6KRgbK5N1HmSxMJvr2jj3wJ5Y_YCh1kjBMkpY"/>
+<div class="absolute top-3 left-3 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold font-body uppercase tracking-wider flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Active
+                        </div>
+</div>
+<div class="flex flex-col flex-1 justify-between py-2">
+<div>
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="text-2xl font-display font-bold text-on-surface mb-1">Hardcourt 1</h3>
+<div class="flex gap-2">
+<span class="px-2.5 py-1 bg-surface-container-low text-on-surface-variant rounded-md text-xs font-semibold font-body">Basketball</span>
+<span class="px-2.5 py-1 bg-surface-container-low text-on-surface-variant rounded-md text-xs font-semibold font-body">FIBA Standard</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<p class="text-sm text-on-surface-variant font-body mb-4 line-clamp-2">Full-size professional hardwood court. Ideal for competitive matches and team training sessions. Scoreboard included.</p>
+</div>
+<div class="flex items-end justify-between border-t border-surface-variant pt-4">
+<div>
+<div class="text-xs text-on-surface-variant font-medium mb-1 uppercase tracking-wide">Base Rate</div>
+<div class="font-display font-bold text-on-surface text-xl">$110<span class="text-sm font-medium text-on-surface-variant font-body">/hr</span></div>
+<div class="text-xs text-primary font-medium mt-1">Peak: $150/hr</div>
+</div>
+<button class="bg-surface-container text-primary font-semibold py-2 px-5 rounded-full hover:bg-surface-container-high transition-colors text-sm">
+                                Configure Pricing
+                            </button>
+</div>
+</div>
+</div>
+<!-- Court Card 3 (Maintenance) -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_12px_40px_rgba(25,27,37,0.06)] flex flex-col sm:flex-row gap-6 relative group overflow-hidden opacity-80">
+<div class="absolute inset-0 bg-surface-variant/20 z-10 pointer-events-none"></div>
+<div class="w-full sm:w-48 h-48 rounded-lg overflow-hidden relative flex-shrink-0">
+<img alt="Padel Court C" class="w-full h-full object-cover grayscale-[30%]" data-alt="modern outdoor padel tennis court with blue turf and glass walls under bright sunny sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFpzrpHwWz9d8NacgCTbeZvSuBXnnC0-Ur7UYz7M8dmti7sVeZpqSHrpM6RpQmGLMBob30LdAtUhNhcS7-euFR-v9x0aDRe0ltWRqK8kxBwMoX7-cAMGY0iUYAj44jwaV9ZH2xGVIz5WdswXyZx_F8_9pSG2M0HSIMDRGR1aGkt2jXhD19iJkWjwloTaXDUm4eEPt4YN0loS9YukqVMb1wVjz6L1_icU62u2v9-ogaJiB2jLEt0_1TWvzT8lRfMFogosgHpwEo7_k"/>
+<div class="absolute top-3 left-3 bg-error-container text-on-error-container px-3 py-1 rounded-full text-xs font-bold font-body uppercase tracking-wider flex items-center gap-1 z-20">
+<span class="w-2 h-2 rounded-full bg-error"></span> Maintenance
+                        </div>
+</div>
+<div class="flex flex-col flex-1 justify-between py-2 relative z-20">
+<div>
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="text-2xl font-display font-bold text-on-surface mb-1">Padel Court C</h3>
+<div class="flex gap-2">
+<span class="px-2.5 py-1 bg-surface-container-low text-on-surface-variant rounded-md text-xs font-semibold font-body">Padel</span>
+<span class="px-2.5 py-1 bg-surface-container-low text-on-surface-variant rounded-md text-xs font-semibold font-body">Outdoor</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<p class="text-sm text-on-surface-variant font-body mb-4 line-clamp-2">Premium panoramic glass padel court. Currently undergoing routine turf maintenance and glass cleaning.</p>
+</div>
+<div class="flex items-end justify-between border-t border-surface-variant pt-4">
+<div>
+<div class="text-xs text-on-surface-variant font-medium mb-1 uppercase tracking-wide">Base Rate</div>
+<div class="font-display font-bold text-on-surface text-xl">$45<span class="text-sm font-medium text-on-surface-variant font-body">/hr</span></div>
+<div class="text-xs text-primary font-medium mt-1">Peak: $65/hr</div>
+</div>
+<button class="bg-surface-container text-primary font-semibold py-2 px-5 rounded-full hover:bg-surface-container-high transition-colors text-sm">
+                                Configure Pricing
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Add padding to bottom for scrolling clearance -->
+<div class="h-24"></div>
+</main>
+</body></html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Profile - Kinetic Gallery</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e1e1ef",
+                    "tertiary-fixed": "#9cf0ff",
+                    "on-secondary-fixed": "#002108",
+                    "on-primary-container": "#dfe3ff",
+                    "primary": "#003ec7",
+                    "on-secondary-fixed-variant": "#00531e",
+                    "on-surface-variant": "#434656",
+                    "inverse-surface": "#2e303a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#001452",
+                    "surface-bright": "#fbf8ff",
+                    "surface-container-low": "#f3f2ff",
+                    "primary-container": "#0052ff",
+                    "on-secondary": "#ffffff",
+                    "outline": "#737688",
+                    "inverse-primary": "#b7c4ff",
+                    "surface-tint": "#004ced",
+                    "background": "#fbf8ff",
+                    "on-surface": "#191b25",
+                    "tertiary-container": "#00717e",
+                    "primary-fixed": "#dde1ff",
+                    "secondary": "#006e2a",
+                    "on-secondary-container": "#00732c",
+                    "surface-container": "#ededfb",
+                    "on-primary-fixed-variant": "#0038b6",
+                    "on-background": "#191b25",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#a7f1ff",
+                    "on-error": "#ffffff",
+                    "surface-container-high": "#e7e7f5",
+                    "secondary-fixed": "#69ff87",
+                    "on-tertiary-fixed": "#001f24",
+                    "secondary-fixed-dim": "#3ce36a",
+                    "outline-variant": "#c3c5d9",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e1e1ef",
+                    "tertiary": "#005761",
+                    "surface": "#fbf8ff",
+                    "surface-dim": "#d9d9e7",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#f0effe",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#5cfd80",
+                    "primary-fixed-dim": "#b7c4ff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#00daf3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {},
+            "fontFamily": {
+                    "headline": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "display": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body": [
+                            "Inter"
+                    ],
+                    "label": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {}
+    },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fbf8ff;
+            color: #191b25;
+        }
+        h1, h2, h3, h4, h5, h6, .font-headline, .font-display {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .signature-gradient {
+            background: linear-gradient(135deg, #003ec7 0%, #0052ff 100%);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+<!-- TopNavBar Component -->
+<header class="sticky top-0 z-50 w-full glass-panel shadow-[0_12px_40px_rgba(25,27,37,0.06)] border-b-0">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-[1440px] mx-auto">
+<div class="flex items-center gap-8">
+<a class="text-2xl font-black tracking-tighter text-primary font-display" href="#">KINETIC</a>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body font-medium" href="#">Explore</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body font-medium" href="#">My Bookings</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body font-medium" href="#">Venues</a>
+<!-- Assuming Profile is an implicit top-level context though not strictly in JSON nav list -->
+<a class="text-primary border-b-2 border-primary pb-1 font-body font-medium" href="#">Profile</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<!-- Implicit search based on 'on_right' configuration -->
+<div class="hidden lg:flex relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 rounded-full bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all w-48 focus:w-64" placeholder="Search..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors scale-95 active:scale-90 transition-transform hover:bg-slate-100/50 p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors scale-95 active:scale-90 transition-transform hover:bg-slate-100/50 p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+<a class="hidden md:inline-flex items-center justify-center px-6 py-2.5 rounded-full signature-gradient text-on-primary font-body font-medium hover:opacity-90 transition-opacity" href="#">Find a Court</a>
+</div>
+</div>
+</header>
+<main class="flex-grow w-full max-w-[1440px] mx-auto px-4 md:px-8 py-12">
+<div class="mb-12">
+<h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface font-display mb-2">Your Profile</h1>
+<p class="text-lg text-on-surface-variant font-body">Manage your personal details and security preferences.</p>
+</div>
+<div class="flex flex-col lg:flex-row gap-12 items-start">
+<!-- Left Side: Profile Card (Asymmetric Layout Focus) -->
+<div class="w-full lg:w-1/3 flex flex-col gap-8">
+<!-- User Identity Card -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.06)] relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-container/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110 duration-500"></div>
+<div class="flex flex-col items-center text-center relative z-10">
+<div class="w-32 h-32 rounded-full overflow-hidden mb-6 border-4 border-surface-container-low shadow-sm">
+<img alt="Profile Picture" class="w-full h-full object-cover" data-alt="close up portrait of a confident young professional woman in athletic wear outdoors with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB42cLPzIxYnD053jAIeuGzp9Sc4v2RU206f9asY1MY_2HACJtKOyxWNBlYrmOnd0AE2y6dZlY2xDHAlxmTK9C6sFE9jtXp_TTdz529WBcmFkrvIliOaJAjHuaz2kcxogz4ByIof6-ODFvOQWkBBC5juZe6s2v3wluvAKQ4fmiTtivW8VQD8LiP210Fi-8-p-WRSZMRfx81Ighu5tg03FhgMbNGJDd53gzwNV3vaVoJsVjxqmwwBebB0_W-Gh0NJKsmEmho4fW2LL4"/>
+</div>
+<h2 class="text-2xl font-bold font-display text-on-surface mb-1">Alex Morgan</h2>
+<div class="flex items-center gap-2 mb-6">
+<span class="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-sm font-semibold font-body flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="verified">verified</span>
+                                Pro Member
+                            </span>
+</div>
+<div class="w-full pt-6 border-t border-surface-container-low flex flex-col gap-3">
+<a class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors group/link" href="#">
+<span class="font-body font-medium text-on-surface group-hover/link:text-primary transition-colors">Booking History</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover/link:text-primary transition-colors" data-icon="history">history</span>
+</a>
+<a class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors group/link" href="#">
+<span class="font-body font-medium text-on-surface group-hover/link:text-primary transition-colors">Payment Methods</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover/link:text-primary transition-colors" data-icon="credit_card">credit_card</span>
+</a>
+<a class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors group/link" href="#">
+<span class="font-body font-medium text-on-surface group-hover/link:text-primary transition-colors">Preferences</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover/link:text-primary transition-colors" data-icon="tune">tune</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Forms Container -->
+<div class="w-full lg:w-2/3 flex flex-col gap-8">
+<!-- Personal Details Form -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.06)]">
+<h3 class="text-xl font-bold font-display text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="person">person</span>
+                        Personal Details
+                    </h3>
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="block text-sm font-medium text-on-surface-variant font-body" for="firstName">First Name</label>
+<input class="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="firstName" type="text" value="Alex"/>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-medium text-on-surface-variant font-body" for="lastName">Last Name</label>
+<input class="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="lastName" type="text" value="Morgan"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-medium text-on-surface-variant font-body" for="email">Email Address</label>
+<input class="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="email" type="email" value="alex.morgan@example.com"/>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-medium text-on-surface-variant font-body" for="phone">Phone Number</label>
+<input class="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="phone" type="tel" value="+1 (555) 123-4567"/>
+</div>
+<div class="pt-4 flex justify-end">
+<button class="px-8 py-3 rounded-full signature-gradient text-on-primary font-body font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300" type="button">
+                                Save Changes
+                            </button>
+</div>
+</form>
+</div>
+<!-- Security Form -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.06)]">
+<h3 class="text-xl font-bold font-display text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="lock">lock</span>
+                        Security
+                    </h3>
+<form class="space-y-6">
+<div class="space-y-2">
+<label class="block text-sm font-medium text-on-surface-variant font-body" for="currentPassword">Current Password</label>
+<input class="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="currentPassword" type="password"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="block text-sm font-medium text-on-surface-variant font-body" for="newPassword">New Password</label>
+<input class="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="newPassword" type="password"/>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-medium text-on-surface-variant font-body" for="confirmPassword">Confirm New Password</label>
+<input class="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="confirmPassword" type="password"/>
+</div>
+</div>
+<div class="pt-4 flex justify-end">
+<button class="px-8 py-3 rounded-full bg-surface-container-high text-on-surface font-body font-semibold hover:bg-surface-container-highest transition-colors duration-300" type="button">
+                                Update Password
+                            </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</main>
+</body></html>

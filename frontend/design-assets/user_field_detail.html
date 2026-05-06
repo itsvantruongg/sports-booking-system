@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic Field Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e1e1ef",
+                    "tertiary-fixed": "#9cf0ff",
+                    "on-secondary-fixed": "#002108",
+                    "on-primary-container": "#dfe3ff",
+                    "primary": "#003ec7",
+                    "on-secondary-fixed-variant": "#00531e",
+                    "on-surface-variant": "#434656",
+                    "inverse-surface": "#2e303a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#001452",
+                    "surface-bright": "#fbf8ff",
+                    "surface-container-low": "#f3f2ff",
+                    "primary-container": "#0052ff",
+                    "on-secondary": "#ffffff",
+                    "outline": "#737688",
+                    "inverse-primary": "#b7c4ff",
+                    "surface-tint": "#004ced",
+                    "background": "#fbf8ff",
+                    "on-surface": "#191b25",
+                    "tertiary-container": "#00717e",
+                    "primary-fixed": "#dde1ff",
+                    "secondary": "#006e2a",
+                    "on-secondary-container": "#00732c",
+                    "surface-container": "#ededfb",
+                    "on-primary-fixed-variant": "#0038b6",
+                    "on-background": "#191b25",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#a7f1ff",
+                    "on-error": "#ffffff",
+                    "surface-container-high": "#e7e7f5",
+                    "secondary-fixed": "#69ff87",
+                    "on-tertiary-fixed": "#001f24",
+                    "secondary-fixed-dim": "#3ce36a",
+                    "outline-variant": "#c3c5d9",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e1e1ef",
+                    "tertiary": "#005761",
+                    "surface": "#fbf8ff",
+                    "surface-dim": "#d9d9e7",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#f0effe",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#5cfd80",
+                    "primary-fixed-dim": "#b7c4ff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#00daf3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {},
+            "fontFamily": {
+                    "headline": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "display": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body": [
+                            "Inter"
+                    ],
+                    "label": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {}
+    },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen pb-24">
+<!-- Top Navigation Bar -->
+<nav class="bg-[#fbf8ff]/70 backdrop-blur-xl dark:bg-slate-900/70 docked full-width top-0 no-border shadow-[0_12px_40px_rgba(25,27,37,0.06)] sticky z-50">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-[1440px] mx-auto">
+<div class="text-2xl font-black tracking-tighter text-[#003ec7] dark:text-blue-500 font-headline">
+                KINETIC
+            </div>
+<div class="hidden md:flex gap-8 font-['Plus_Jakarta_Sans'] font-bold tracking-tight">
+<a class="text-[#434656] hover:text-[#003ec7] transition-all duration-300" href="#">Explore</a>
+<a class="text-[#434656] hover:text-[#003ec7] transition-all duration-300" href="#">My Bookings</a>
+<a class="text-[#003ec7] border-b-2 border-[#003ec7] pb-1" href="#">Venues</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-[#003ec7] dark:text-blue-400 hover:bg-slate-100/50 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="text-[#003ec7] dark:text-blue-400 hover:bg-slate-100/50 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-[#003ec7] dark:text-blue-400 hover:bg-slate-100/50 transition-all duration-300 p-2 rounded-full scale-95 active:scale-90 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-bold tracking-tight hover:bg-primary-container transition-all duration-300 scale-95 active:scale-90 hidden md:block">
+                    Find a Court
+                </button>
+</div>
+</div>
+</nav>
+<!-- Hero Gallery -->
+<section class="max-w-[1440px] mx-auto px-4 md:px-8 mt-8 mb-12">
+<div class="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-4 h-[614px] min-h-[500px]">
+<div class="md:col-span-3 row-span-2 rounded-xl overflow-hidden relative group">
+<img alt="Main court view" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="high quality sports photography of a vibrant green artificial turf football field under bright stadium lights, cinematic dynamic angle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgub8ZO9eUqAqVd5T4_HMd3kDQsf7uE8bBIDbMygESq9ILpm5LXjSXzKfWncldpT3d10KOa77K_fDf5OTObUc8ZHVIVDY3TtztS5oRAwv36a1QZ7EP5Lm17F36ZXf3b1X8JWU97s6B2UrOSfQnLvd4jFWJDMXjyogRThfJ-vNrngpYKxE_YTg5X1k_5OBrmY3IURz_AXh1Uva_qP1eImueg13iZlQ4lq6KVTGEMM9nlI2nCSn6wmQlcjaTmn0Nm8UG9I3Kpk6M6cc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
+<div>
+<span class="bg-secondary text-on-secondary-container px-3 py-1 rounded-full text-sm font-semibold mb-3 inline-block">Available Now</span>
+<h1 class="text-4xl md:text-5xl font-display font-bold text-white tracking-tight mb-2">Downtown Kinetic Turf A</h1>
+<p class="text-white/80 font-body text-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">location_on</span> 124 Main St, Urban District
+                        </p>
+</div>
+</div>
+</div>
+<div class="rounded-xl overflow-hidden relative hidden md:block">
+<img alt="Amenities view" class="w-full h-full object-cover" data-alt="close up of premium locker room facilities with modern wooden benches and soft ambient lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo33ShEp5ViF8bTEDNrM981aKMfKzMyb0TNlbI9BYCnFskcBoZRabw9s2hP1C4VXc0sVsGcEvWyYe0k30Ty0SlFV5pKLYd1u9Z8mcmmtHYmiJuHTPubk4aWQM-wTRdDcMhmwQXxUyXE0H5WTw-oYshjycxdQiDdFOV7JItigOVgzBeMFCaqJbpyfLGGqeTLJ3GNNUdpzMEU6467BJEchcCxswFNaCEcx1FlrafhsQLo1Pk8jsp6NnULt5P4G7Pw-QcDX5eI6naHnI"/>
+</div>
+<div class="rounded-xl overflow-hidden relative hidden md:block group cursor-pointer">
+<img alt="More photos" class="w-full h-full object-cover" data-alt="detail shot of a soccer ball resting on fresh green turf, shallow depth of field, golden hour lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4dvzDiyzCycfHaYxmvBlFyiWcNyC03kShFvFURMo0PqSBWDn5CH87xvMh8YxwL9UNAZY8qdAs7cT8sHTK97kIDIFcTiM8HdlvJ-RIHpC_jEU0f7km4br2lZShfOzUNvsomQrrzcqGcy7TPbzgSwWZzxGjK1zPJbHvQKJ-llSqqk0vpahyaQDb3BqiSGENgxcMBqVERR2uHjF-_Wzy0m72Htm8Zu5XE4cjNJ53CIIpjYpFw8iKwyMJfdZjCLQG6XKB0cLq97vidNs"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+<span class="text-white font-headline font-bold text-lg flex items-center gap-2">
+<span class="material-symbols-outlined">photo_library</span> View All 12
+                    </span>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Content & Sidebar Layout -->
+<main class="max-w-[1440px] mx-auto px-4 md:px-8 grid grid-cols-1 lg:grid-cols-3 gap-12">
+<!-- Left Column: Details -->
+<div class="lg:col-span-2 space-y-12">
+<!-- Description -->
+<section class="bg-surface-container-low p-8 rounded-xl">
+<h2 class="text-2xl font-display font-bold mb-4 tracking-tight">About this Field</h2>
+<p class="text-on-surface-variant font-body text-lg leading-relaxed mb-6">
+                    Experience top-tier gameplay on our newly renovated FIFA-certified artificial turf. Designed for optimal shock absorption and consistent ball roll, Downtown Kinetic Turf A is perfect for 5v5 or 7v7 matches. The facility features state-of-the-art LED floodlights for night games and comprehensive drainage to ensure year-round playability.
+                </p>
+<div class="flex flex-wrap gap-4">
+<div class="flex items-center gap-2 bg-surface-container-highest px-4 py-2 rounded-full text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-primary">groups</span> 5v5 - 7v7
+                    </div>
+<div class="flex items-center gap-2 bg-surface-container-highest px-4 py-2 rounded-full text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-primary">grass</span> Artificial Turf
+                    </div>
+<div class="flex items-center gap-2 bg-surface-container-highest px-4 py-2 rounded-full text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-primary">wb_twilight</span> Floodlights
+                    </div>
+</div>
+</section>
+<!-- Amenities -->
+<section>
+<h2 class="text-2xl font-display font-bold mb-6 tracking-tight">Amenities</h2>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+<div class="bg-surface-container-lowest p-6 rounded-lg flex flex-col items-center justify-center text-center gap-3 border border-outline-variant/15 hover:shadow-[0_12px_40px_rgba(25,27,37,0.06)] transition-shadow">
+<span class="material-symbols-outlined text-3xl text-primary">local_parking</span>
+<span class="font-body font-medium">Free Parking</span>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-lg flex flex-col items-center justify-center text-center gap-3 border border-outline-variant/15 hover:shadow-[0_12px_40px_rgba(25,27,37,0.06)] transition-shadow">
+<span class="material-symbols-outlined text-3xl text-primary">water_drop</span>
+<span class="font-body font-medium">Water Station</span>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-lg flex flex-col items-center justify-center text-center gap-3 border border-outline-variant/15 hover:shadow-[0_12px_40px_rgba(25,27,37,0.06)] transition-shadow">
+<span class="material-symbols-outlined text-3xl text-primary">chair</span>
+<span class="font-body font-medium">Covered Bench</span>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-lg flex flex-col items-center justify-center text-center gap-3 border border-outline-variant/15 hover:shadow-[0_12px_40px_rgba(25,27,37,0.06)] transition-shadow">
+<span class="material-symbols-outlined text-3xl text-primary">wc</span>
+<span class="font-body font-medium">Restrooms</span>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-lg flex flex-col items-center justify-center text-center gap-3 border border-outline-variant/15 hover:shadow-[0_12px_40px_rgba(25,27,37,0.06)] transition-shadow">
+<span class="material-symbols-outlined text-3xl text-primary">checkroom</span>
+<span class="font-body font-medium">Locker Rooms</span>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-lg flex flex-col items-center justify-center text-center gap-3 border border-outline-variant/15 hover:shadow-[0_12px_40px_rgba(25,27,37,0.06)] transition-shadow">
+<span class="material-symbols-outlined text-3xl text-primary">wifi</span>
+<span class="font-body font-medium">Free WiFi</span>
+</div>
+</div>
+</section>
+<!-- Location -->
+<section>
+<h2 class="text-2xl font-display font-bold mb-6 tracking-tight">Location</h2>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/15 h-[300px] relative">
+<img alt="Map location" class="w-full h-full object-cover grayscale opacity-80" data-alt="stylized modern map interface showing an urban grid with a distinct blue pin marker" data-location="New York" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS8Qr2EgjCwQ4HIg3GUHahBX-jRqS9dBVT9W2fhHasTJNxCvwM6JlEJ-cPzP3JtnUFpa5xJafVA8uJnXYIB5oQCrMEhFhbv1T_iK_vuDGll8UL0793i34aPBiJ4RNe-6iNl7kMR9uUdHgBTx9J_7ggfZjbtTXJMKQxk3wF-TZotrHGdgVnzWixYP9QnnrroxNKYVIKsQ9JFGYNefJdgtfqLS_YgdEXfSb4Lid7RyfPkjyDCey7TZLA10pwhCSXwMwxJnphQsABb4o"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-5xl text-primary drop-shadow-md" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Booking Sidebar -->
+<div class="lg:col-span-1">
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(25,27,37,0.06)] border border-outline-variant/15 sticky top-32">
+<div class="mb-8">
+<h3 class="text-3xl font-display font-bold text-primary tracking-tight mb-1">$45 <span class="text-lg text-on-surface-variant font-body font-normal">/ 60 min</span></h3>
+<div class="flex items-center gap-1 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm text-yellow-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold text-on-surface">4.9</span> (128 reviews)
+                    </div>
+</div>
+<!-- Date Picker -->
+<div class="mb-6">
+<label class="block text-sm font-semibold text-on-surface mb-3 font-body">Select Date</label>
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<button class="flex-shrink-0 w-16 h-20 rounded-lg flex flex-col items-center justify-center bg-surface-container hover:bg-surface-container-high transition-colors border border-transparent">
+<span class="text-xs text-on-surface-variant mb-1">Mon</span>
+<span class="text-lg font-bold">12</span>
+</button>
+<button class="flex-shrink-0 w-16 h-20 rounded-lg flex flex-col items-center justify-center bg-primary text-on-primary shadow-md">
+<span class="text-xs opacity-80 mb-1">Tue</span>
+<span class="text-lg font-bold">13</span>
+</button>
+<button class="flex-shrink-0 w-16 h-20 rounded-lg flex flex-col items-center justify-center bg-surface-container hover:bg-surface-container-high transition-colors border border-transparent">
+<span class="text-xs text-on-surface-variant mb-1">Wed</span>
+<span class="text-lg font-bold">14</span>
+</button>
+<button class="flex-shrink-0 w-16 h-20 rounded-lg flex flex-col items-center justify-center bg-surface-container hover:bg-surface-container-high transition-colors border border-transparent">
+<span class="text-xs text-on-surface-variant mb-1">Thu</span>
+<span class="text-lg font-bold">15</span>
+</button>
+</div>
+</div>
+<!-- Time Slots -->
+<div class="mb-8">
+<div class="flex justify-between items-end mb-3">
+<label class="block text-sm font-semibold text-on-surface font-body">Available Times</label>
+<span class="text-xs text-on-surface-variant">Duration: 60m</span>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<button class="py-2 px-1 rounded-md text-sm font-medium border border-outline-variant/30 text-outline-variant bg-surface-dim cursor-not-allowed">
+                            16:00
+                        </button>
+<button class="py-2 px-1 rounded-md text-sm font-medium border border-outline-variant text-on-surface hover:border-primary hover:text-primary transition-colors bg-surface-container-lowest">
+                            17:00
+                        </button>
+<button class="py-2 px-1 rounded-md text-sm font-medium border-2 border-primary text-primary bg-primary/5 font-bold shadow-sm">
+                            18:00
+                        </button>
+<button class="py-2 px-1 rounded-md text-sm font-medium border border-outline-variant/30 text-outline-variant bg-surface-dim cursor-not-allowed">
+                            19:00
+                        </button>
+<button class="py-2 px-1 rounded-md text-sm font-medium border border-outline-variant text-on-surface hover:border-primary hover:text-primary transition-colors bg-surface-container-lowest">
+                            20:00
+                        </button>
+<button class="py-2 px-1 rounded-md text-sm font-medium border border-outline-variant text-on-surface hover:border-primary hover:text-primary transition-colors bg-surface-container-lowest">
+                            21:00
+                        </button>
+</div>
+</div>
+<!-- Price Calc -->
+<div class="bg-surface-container p-4 rounded-lg mb-8">
+<div class="flex justify-between text-sm mb-2 text-on-surface-variant">
+<span>$45 x 1 hour</span>
+<span>$45.00</span>
+</div>
+<div class="flex justify-between text-sm mb-4 text-on-surface-variant">
+<span>Service Fee</span>
+<span>$4.50</span>
+</div>
+<div class="h-px bg-outline-variant/30 w-full mb-4"></div>
+<div class="flex justify-between font-bold text-lg text-on-surface">
+<span>Total</span>
+<span>$49.50</span>
+</div>
+</div>
+<!-- CTA -->
+<button class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-4 rounded-full font-display font-bold text-lg hover:shadow-lg transition-all active:scale-[0.98]">
+                    Book Now
+                </button>
+<p class="text-center text-xs text-on-surface-variant mt-4 font-body">You won't be charged yet</p>
+</div>
+</div>
+</main>
+</body></html>

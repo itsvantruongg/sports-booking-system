@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic HQ - User Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e1e1ef",
+                        "tertiary-fixed": "#9cf0ff",
+                        "on-secondary-fixed": "#002108",
+                        "on-primary-container": "#dfe3ff",
+                        "primary": "#003ec7",
+                        "on-secondary-fixed-variant": "#00531e",
+                        "on-surface-variant": "#434656",
+                        "inverse-surface": "#2e303a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001452",
+                        "surface-bright": "#fbf8ff",
+                        "surface-container-low": "#f3f2ff",
+                        "primary-container": "#0052ff",
+                        "on-secondary": "#ffffff",
+                        "outline": "#737688",
+                        "inverse-primary": "#b7c4ff",
+                        "surface-tint": "#004ced",
+                        "background": "#fbf8ff",
+                        "on-surface": "#191b25",
+                        "tertiary-container": "#00717e",
+                        "primary-fixed": "#dde1ff",
+                        "secondary": "#006e2a",
+                        "on-secondary-container": "#00732c",
+                        "surface-container": "#ededfb",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "on-background": "#191b25",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#a7f1ff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e7e7f5",
+                        "secondary-fixed": "#69ff87",
+                        "on-tertiary-fixed": "#001f24",
+                        "secondary-fixed-dim": "#3ce36a",
+                        "outline-variant": "#c3c5d9",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e1ef",
+                        "tertiary": "#005761",
+                        "surface": "#fbf8ff",
+                        "surface-dim": "#d9d9e7",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0effe",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#5cfd80",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#00daf3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #fbf8ff; color: #191b25; }
+        h1, h2, h3, h4, h5, h6, .font-headline, .font-display { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex min-h-screen overflow-x-hidden">
+<!-- SideNavBar -->
+<nav class="bg-[#fbf8ff] dark:bg-slate-950 text-[#003ec7] dark:text-blue-400 font-['Plus_Jakarta_Sans'] font-semibold h-screen w-72 rounded-r-[3rem] tonal-shift bg-surface-container-low shadow-[20px_0_60px_rgba(25,27,37,0.04)] flex flex-col h-full p-6 fixed left-0 top-0 z-40 hidden md:flex">
+<div class="mb-10">
+<div class="text-xl font-black text-[#003ec7] mb-8">Kinetic HQ</div>
+<div class="flex items-center gap-3 mb-6">
+<img alt="Kinetic Partner Portal" class="w-12 h-12 rounded-full object-cover" data-alt="close up of a professional businessman in a bright modern office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsoFzML--6opPpnJ1-K9pTsIDMDIyiXdqj8AiOzCdNmqm79SjIZCJOfCJcJh_mqrMrxDIY9S_fj_4czIRDQBKlhhOettuwBW1sWoE1IBeZ2Nw9GxO_KhTweGr6ru1wbHosB6I2hIhVcjxyDRu_5tHRn0HBkY88t0WVVKnOCadjiN54LrQnyKtWJNBKauRgmfukiR6LvsVwdmXh8sAbsjyeVUvOc62etm80vrkyuHSjTLehtY-KmoM5ZW63ZEqf7v2FOs7IRYg597Y"/>
+<div>
+<div class="text-sm font-bold text-on-surface">Kinetic HQ</div>
+<div class="text-xs text-on-surface-variant">Partner Dashboard</div>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-3 rounded-full font-bold hover:bg-gradient-to-br hover:from-[#003ec7] hover:to-[#0052ff] transition-all shadow-sm">
+                Add New Court
+            </button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-2">
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined">stadium</span>
+<span>Management</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span>Calendar</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Revenue</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 bg-gradient-to-br from-[#003ec7] to-[#0052ff] text-white rounded-full shadow-lg hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Users</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<div class="mt-auto pt-6 border-t border-surface-variant space-y-2">
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-error hover:bg-error-container/50 rounded-full transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Sign Out</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-72 p-6 md:p-12 max-w-[1600px]">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+<div>
+<h1 class="text-4xl md:text-5xl font-display font-extrabold text-on-surface tracking-tight mb-2">User Management</h1>
+<p class="text-on-surface-variant text-lg">Oversee platform athletes, tier status, and access control.</p>
+</div>
+<!-- Search & Filter -->
+<div class="flex items-center gap-3 bg-surface-container-low rounded-full p-2 pl-6 shadow-sm border border-transparent focus-within:border-outline-variant/30 focus-within:bg-surface-bright transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-on-surface-variant/60 w-64 md:w-80 font-body" placeholder="Search athletes by name or email..." type="text"/>
+<button class="bg-surface-container-highest p-3 rounded-full hover:bg-primary hover:text-on-primary transition-colors text-on-surface">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+</header>
+<!-- Metric Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<!-- Total Users Card -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.04)] relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all"></div>
+<div class="flex justify-between items-start mb-6 relative z-10">
+<div class="bg-surface-container p-3 rounded-lg text-primary">
+<span class="material-symbols-outlined text-3xl">groups</span>
+</div>
+<span class="bg-surface-container-high text-on-surface text-sm font-semibold px-3 py-1 rounded-full">+12% this month</span>
+</div>
+<div class="relative z-10">
+<h3 class="text-on-surface-variant font-medium mb-1">Total Registered Athletes</h3>
+<div class="text-4xl font-display font-bold text-on-surface">24,592</div>
+</div>
+</div>
+<!-- Active Users Card -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.04)] relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-32 h-32 bg-secondary/5 rounded-full blur-2xl group-hover:bg-secondary/10 transition-all"></div>
+<div class="flex justify-between items-start mb-6 relative z-10">
+<div class="bg-surface-container p-3 rounded-lg text-secondary">
+<span class="material-symbols-outlined text-3xl">directions_run</span>
+</div>
+<span class="bg-surface-container-high text-on-surface text-sm font-semibold px-3 py-1 rounded-full">Weekly Active</span>
+</div>
+<div class="relative z-10">
+<h3 class="text-on-surface-variant font-medium mb-1">Active Athletes</h3>
+<div class="text-4xl font-display font-bold text-on-surface">18,204</div>
+</div>
+</div>
+<!-- Banned Users Card -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.04)] relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-32 h-32 bg-error/5 rounded-full blur-2xl group-hover:bg-error/10 transition-all"></div>
+<div class="flex justify-between items-start mb-6 relative z-10">
+<div class="bg-error-container p-3 rounded-lg text-error">
+<span class="material-symbols-outlined text-3xl">block</span>
+</div>
+</div>
+<div class="relative z-10">
+<h3 class="text-on-surface-variant font-medium mb-1">Restricted Accounts</h3>
+<div class="text-4xl font-display font-bold text-on-surface">142</div>
+</div>
+</div>
+</div>
+<!-- User Table Section -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_12px_60px_rgba(25,27,37,0.06)] overflow-hidden">
+<!-- Table Controls -->
+<div class="p-6 border-b border-surface-container-low flex justify-between items-center bg-surface-container-lowest">
+<h2 class="text-2xl font-display font-bold text-on-surface">Athlete Directory</h2>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-secondary-fixed transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                        All Status
+                    </button>
+<button class="px-4 py-2 bg-surface-container text-on-surface rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm">download</span>
+                        Export
+                    </button>
+</div>
+</div>
+<!-- Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant text-sm font-semibold uppercase tracking-wider">
+<th class="p-6 font-body">Athlete</th>
+<th class="p-6 font-body">Contact</th>
+<th class="p-6 font-body">Joined Date</th>
+<th class="p-6 font-body">Status</th>
+<th class="p-6 font-body text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-low">
+<!-- Row 1 (Pro Tier, Active) -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="p-6">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Sarah Jenkins" class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="portrait of an athletic young woman in athletic wear outdoors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI9Cdn6vUOm-QQdf1mSNR75xdeKT1IDP1ii7L5HKMzNNaNGFYLAvWtlc5qF7NFmCr1VFlixVjVnEBRbq84Lbmyo-fLPJXKN7ySK6kcW7bKCSlSJGSlYBzcqVCVTn5x935m53jhM0fVVHSvxmbbqIm8y_eLt44Ts64ZIimHuhH-T8jI8zGh_UqzjJrxHnhIPZKg_L-UosVATYYvKIvCqk_acEwdmHt-pIBKugIR1S0m4-TwtwBt0Vx9mmc5JiYAFmMfhnDUP-6FyaQ"/>
+<div class="absolute -bottom-1 -right-1 bg-tertiary-container text-on-tertiary-container text-[10px] font-bold px-1.5 py-0.5 rounded border-2 border-surface-container-lowest">PRO</div>
+</div>
+<div>
+<div class="font-bold text-on-surface text-lg">Sarah Jenkins</div>
+<div class="text-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sports_tennis</span> Tennis Enthusiast
+                                        </div>
+</div>
+</div>
+</td>
+<td class="p-6">
+<div class="text-on-surface font-medium">sarah.j@example.com</div>
+<div class="text-on-surface-variant text-sm">+1 (555) 123-4567</div>
+</td>
+<td class="p-6 text-on-surface font-medium">Oct 12, 2023</td>
+<td class="p-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm font-bold">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Active
+                                </span>
+</td>
+<td class="p-6 text-right">
+<button class="text-on-surface-variant hover:text-error p-2 rounded-full hover:bg-error/10 transition-colors" title="Ban User">
+<span class="material-symbols-outlined">block</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary p-2 rounded-full hover:bg-primary/10 transition-colors ml-2" title="More Options">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 (Standard, Active) -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="p-6">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Marcus Chen" class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="portrait of a confident young man in sportswear looking directly at camera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwZCVV-9Bv-KvC2amB-bdP7CLaoU--eyWP3JY4na4EOKrG3DnBFk-wgubs-j_R5WOYX0b9Aq1VGBa-FwSA3TE7h_5dyoU73dkGWCdR74_DhrWgJAjf9j3k3V89OWTYqD2Ho-eXPQN3EQ--yZv4uV-36eOInDUeDl0MUSFU9XXWbiZ2muB2lQcQIR-OOkwS_RSFrVFgIBd1vgQJuG3fW9K_O3gWDNMxsJDFqq1ZwRMYxvTqCw4NV5MYHNuWNIMHf0biepafQ-PdPF8"/>
+</div>
+<div>
+<div class="font-bold text-on-surface text-lg">Marcus Chen</div>
+<div class="text-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sports_basketball</span> Basketball
+                                        </div>
+</div>
+</div>
+</td>
+<td class="p-6">
+<div class="text-on-surface font-medium">m.chen88@example.com</div>
+<div class="text-on-surface-variant text-sm">+1 (555) 987-6543</div>
+</td>
+<td class="p-6 text-on-surface font-medium">Jan 05, 2024</td>
+<td class="p-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm font-bold">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Active
+                                </span>
+</td>
+<td class="p-6 text-right">
+<button class="text-on-surface-variant hover:text-error p-2 rounded-full hover:bg-error/10 transition-colors" title="Ban User">
+<span class="material-symbols-outlined">block</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary p-2 rounded-full hover:bg-primary/10 transition-colors ml-2" title="More Options">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 (Banned) -->
+<tr class="hover:bg-surface-bright transition-colors group bg-surface-container-low/30">
+<td class="p-6 opacity-70 group-hover:opacity-100 transition-opacity">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="David Miller" class="w-12 h-12 rounded-full object-cover shadow-sm grayscale" data-alt="portrait of a man with short hair looking away" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6jbprGBeUYHlH1zkT5MzfpaZkLW2gOhalqf01Hah9ilGojik3fbPky9gYDOpvuCZSPvRwGhTumecYUCF-v-60FoEqoW2ScyiTbBypzJa4K2oPYXTumK2X8RT0WRPe3EQL2330GoRBI1nvFwXRtQDBQeJc6u8IDPeWi_lMozMNmG1J_y4lWafx27KkNwPyzeP8G0dcgzcYqFE-SazPafqysGcKe_CD974qksKFTBnP4Mrekwmsf-eV5PF7FbO7vq8bh0HSSHx-nxU"/>
+</div>
+<div>
+<div class="font-bold text-on-surface text-lg">David Miller</div>
+<div class="text-sm text-on-surface-variant">Multiple No-Shows</div>
+</div>
+</div>
+</td>
+<td class="p-6 opacity-70 group-hover:opacity-100 transition-opacity">
+<div class="text-on-surface font-medium">davidm.banned@example.com</div>
+<div class="text-on-surface-variant text-sm">--</div>
+</td>
+<td class="p-6 text-on-surface font-medium opacity-70 group-hover:opacity-100 transition-opacity">Nov 22, 2023</td>
+<td class="p-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-error-container text-error rounded-full text-sm font-bold">
+<span class="material-symbols-outlined text-[16px]">cancel</span> Banned
+                                </span>
+</td>
+<td class="p-6 text-right">
+<button class="text-primary hover:text-primary-container font-bold text-sm px-4 py-2 bg-primary/10 rounded-full hover:bg-primary/20 transition-colors">
+                                    Unban User
+                                </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-6 border-t border-surface-container-low flex justify-between items-center bg-surface-container-lowest">
+<div class="text-sm text-on-surface-variant font-medium">Showing 1 to 3 of 24,592 entries</div>
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold shadow-md">1</button>
+<button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors font-bold">2</button>
+<button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors font-bold">3</button>
+<span class="w-10 h-10 flex items-center justify-center text-on-surface-variant">...</span>
+<button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

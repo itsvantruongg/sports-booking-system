@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e1e1ef",
+                    "tertiary-fixed": "#9cf0ff",
+                    "on-secondary-fixed": "#002108",
+                    "on-primary-container": "#dfe3ff",
+                    "primary": "#003ec7",
+                    "on-secondary-fixed-variant": "#00531e",
+                    "on-surface-variant": "#434656",
+                    "inverse-surface": "#2e303a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#001452",
+                    "surface-bright": "#fbf8ff",
+                    "surface-container-low": "#f3f2ff",
+                    "primary-container": "#0052ff",
+                    "on-secondary": "#ffffff",
+                    "outline": "#737688",
+                    "inverse-primary": "#b7c4ff",
+                    "surface-tint": "#004ced",
+                    "background": "#fbf8ff",
+                    "on-surface": "#191b25",
+                    "tertiary-container": "#00717e",
+                    "primary-fixed": "#dde1ff",
+                    "secondary": "#006e2a",
+                    "on-secondary-container": "#00732c",
+                    "surface-container": "#ededfb",
+                    "on-primary-fixed-variant": "#0038b6",
+                    "on-background": "#191b25",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#a7f1ff",
+                    "on-error": "#ffffff",
+                    "surface-container-high": "#e7e7f5",
+                    "secondary-fixed": "#69ff87",
+                    "on-tertiary-fixed": "#001f24",
+                    "secondary-fixed-dim": "#3ce36a",
+                    "outline-variant": "#c3c5d9",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e1e1ef",
+                    "tertiary": "#005761",
+                    "surface": "#fbf8ff",
+                    "surface-dim": "#d9d9e7",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#f0effe",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#5cfd80",
+                    "primary-fixed-dim": "#b7c4ff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#00daf3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {},
+            "fontFamily": {
+                    "headline": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "display": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body": [
+                            "Inter"
+                    ],
+                    "label": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {}
+    },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .signature-gradient {
+            background: linear-gradient(135deg, #003ec7 0%, #0052ff 100%);
+        }
+        .signature-gradient:hover {
+            background: linear-gradient(135deg, #0052ff 0%, #003ec7 100%);
+        }
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen flex items-center justify-center p-4 antialiased overflow-hidden relative">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center opacity-40" data-alt="abstract blurred view of a dynamic athletic indoor court with bright overhead lights casting long shadows in cool blue and white tones" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBwhu0Fy3ADcguPdl7Sxw3AHAh01r0nmX954feODjS0WZSCKibJZ6TgpGNDQWeSjE4dbWOCVi6UnEmoOFz8Qnqw4LyHqJiIfVblxPdTkMadbY9N88smsX9mTIn9ph205NZyQzTJAaOQHECreMzcyQlO8WWZRtRxx1VA0-7sCj3jK7WbMN5Pwjj6Mjjhum0wiXzbA8aRWynJonJNqQUUb6pZEHKXQ0MaPMrI75Urf5heKg5OEEfW_Pfg8_A_XPxtbdm1B40Eoj8ryuQ');"></div>
+<div class="absolute inset-0 bg-gradient-to-br from-surface/80 to-surface-container/90"></div>
+</div>
+<div class="relative z-10 w-full max-w-md">
+<div class="text-center mb-10">
+<h1 class="font-display font-black text-4xl tracking-tighter text-primary">KINETIC</h1>
+<p class="font-body text-on-surface-variant mt-2 text-sm tracking-wide uppercase">Partner Portal</p>
+</div>
+<div class="glass-panel rounded-xl shadow-[0_24px_60px_rgba(25,27,37,0.08)] p-8 md:p-12 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-primary-container"></div>
+<h2 class="font-headline text-2xl font-bold tracking-tight text-on-surface mb-8 text-center">Welcome Back</h2>
+<form action="#" class="space-y-6" method="POST">
+<div class="space-y-2">
+<label class="block font-label text-sm font-medium text-on-surface-variant" for="email">Email or Phone</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">mail</span>
+</div>
+<input class="block w-full pl-12 pr-4 py-4 bg-surface-container-low border-0 outline-none rounded-lg text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all duration-200" id="email" name="email" placeholder="Enter your credentials" type="text"/>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<label class="block font-label text-sm font-medium text-on-surface-variant" for="password">Password</label>
+<a class="font-label text-sm font-medium text-primary hover:text-primary-container transition-colors" href="#">Forgot Password?</a>
+</div>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">lock</span>
+</div>
+<input class="block w-full pl-12 pr-12 py-4 bg-surface-container-low border-0 outline-none rounded-lg text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all duration-200" id="password" name="password" placeholder="••••••••" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-4 flex items-center text-outline hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined">visibility_off</span>
+</button>
+</div>
+</div>
+<div class="pt-2">
+<button class="w-full flex justify-center items-center py-4 px-6 border border-transparent rounded-full shadow-sm text-base font-medium text-on-primary signature-gradient focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300 transform active:scale-95" type="submit">
+                        Login
+                        <span class="material-symbols-outlined ml-2 text-xl">arrow_forward</span>
+</button>
+</div>
+</form>
+<div class="mt-8 text-center">
+<p class="font-body text-sm text-on-surface-variant">
+                    Don't have an account? 
+                    <a class="font-label font-semibold text-primary hover:text-primary-container transition-colors ml-1" href="#">Register Now</a>
+</p>
+</div>
+</div>
+</div>
+</body></html>

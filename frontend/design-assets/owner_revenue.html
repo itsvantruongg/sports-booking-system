@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Owner - Revenue Reports</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e1e1ef",
+                        "tertiary-fixed": "#9cf0ff",
+                        "on-secondary-fixed": "#002108",
+                        "on-primary-container": "#dfe3ff",
+                        "primary": "#003ec7",
+                        "on-secondary-fixed-variant": "#00531e",
+                        "on-surface-variant": "#434656",
+                        "inverse-surface": "#2e303a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001452",
+                        "surface-bright": "#fbf8ff",
+                        "surface-container-low": "#f3f2ff",
+                        "primary-container": "#0052ff",
+                        "on-secondary": "#ffffff",
+                        "outline": "#737688",
+                        "inverse-primary": "#b7c4ff",
+                        "surface-tint": "#004ced",
+                        "background": "#fbf8ff",
+                        "on-surface": "#191b25",
+                        "tertiary-container": "#00717e",
+                        "primary-fixed": "#dde1ff",
+                        "secondary": "#006e2a",
+                        "on-secondary-container": "#00732c",
+                        "surface-container": "#ededfb",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "on-background": "#191b25",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#a7f1ff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e7e7f5",
+                        "secondary-fixed": "#69ff87",
+                        "on-tertiary-fixed": "#001f24",
+                        "secondary-fixed-dim": "#3ce36a",
+                        "outline-variant": "#c3c5d9",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e1ef",
+                        "tertiary": "#005761",
+                        "surface": "#fbf8ff",
+                        "surface-dim": "#d9d9e7",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0effe",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#5cfd80",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#00daf3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #fbf8ff; color: #191b25; }
+        h1, h2, h3, h4, h5, h6, .font-headline, .font-display { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
+    </style>
+</head>
+<body class="flex min-h-screen bg-background text-on-background">
+<!-- SideNavBar Component -->
+<nav class="hidden md:flex flex-col h-screen w-72 rounded-r-[3rem] bg-[#fbf8ff] dark:bg-slate-950 p-6 fixed left-0 top-0 z-40 shadow-[20px_0_60px_rgba(25,27,37,0.04)] bg-surface-container-low transition-all duration-300">
+<div class="text-xl font-black text-[#003ec7] mb-8 font-['Plus_Jakarta_Sans'] tracking-tighter">
+            KINETIC
+        </div>
+<div class="flex items-center gap-4 mb-8 p-2 rounded-xl hover:bg-surface-container-high transition-colors">
+<img alt="Kinetic Partner Portal" class="w-12 h-12 rounded-full object-cover" data-alt="professional headshot of an athletic business owner in soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAY43-LtcZ4kEwMwNRjs4HldPM__8y1VA1um8Uc1gdHb-_iVhaaWaunAzLmHgtu3om4qgZpT4XDKvTdjBIvSz9nNWCrq-8APoA2LjkB_ajmig5HW5vD-s9E-AgOQ1p9NX4tbYp17iDUMTh78PLtb1oY58xrzPtGUYzFjwNkJDIk_zLNsBW3hQjVD8Rnni--qrSvCdXstpeFMY-rK5jzAku1RjFha4RFaYqpQbR9xjwkeuQHZF11Y-Y8Atq38Ds4VFdFFM3Fh7DamHA"/>
+<div>
+<p class="font-headline font-bold text-on-surface text-sm">Kinetic HQ</p>
+<p class="font-body text-on-surface-variant text-xs">Partner Dashboard</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto space-y-2 font-['Plus_Jakarta_Sans'] font-semibold">
+<!-- Inactive -->
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+                Dashboard
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">stadium</span>
+                Management
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
+                Calendar
+            </a>
+<!-- Active -->
+<a class="flex items-center gap-4 px-4 py-3 bg-gradient-to-br from-[#003ec7] to-[#0052ff] text-white rounded-full shadow-lg hover:shadow-md active:scale-98 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+                Revenue
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">group</span>
+                Users
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-4 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+                Settings
+            </a>
+</div>
+<div class="mt-auto space-y-4 pt-8">
+<button class="w-full py-3 px-4 bg-primary text-on-primary rounded-full font-headline font-bold hover:bg-primary-container transition-colors bg-gradient-to-br from-[#003ec7] to-[#0052ff]">
+                Add New Court
+            </button>
+<div class="space-y-2 font-['Plus_Jakarta_Sans'] font-semibold">
+<a class="flex items-center gap-4 px-4 py-2 text-[#434656] hover:bg-slate-100 rounded-full transition-colors" href="#">
+<span class="material-symbols-outlined">help</span> Support
+                </a>
+<a class="flex items-center gap-4 px-4 py-2 text-[#434656] hover:bg-slate-100 rounded-full transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span> Sign Out
+                </a>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-72 p-6 md:p-12 xl:p-16 overflow-y-auto w-full max-w-[1600px] mx-auto">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+<div>
+<h1 class="font-display text-4xl md:text-5xl font-extrabold text-on-surface mb-2 tracking-tight">Revenue Reports</h1>
+<p class="font-body text-lg text-on-surface-variant">Financial overview for Kinetic HQ</p>
+</div>
+<div class="flex items-center gap-4 w-full md:w-auto">
+<div class="relative flex-1 md:flex-none">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">calendar_month</span>
+<select class="w-full md:w-auto pl-12 pr-10 py-3 bg-surface-container-lowest border-none rounded-full font-body font-medium text-on-surface focus:ring-2 focus:ring-primary/20 appearance-none shadow-sm cursor-pointer hover:bg-surface-bright transition-colors">
+<option>Last 30 Days</option>
+<option>This Month</option>
+<option>Last Quarter</option>
+<option>Year to Date</option>
+</select>
+</div>
+<div class="flex bg-surface-container-low rounded-full p-1 shadow-sm">
+<button class="px-6 py-2 rounded-full font-headline font-semibold text-sm text-on-surface-variant hover:bg-surface-container transition-colors">Week</button>
+<button class="px-6 py-2 rounded-full font-headline font-semibold text-sm bg-surface-container-lowest text-primary shadow-sm transition-colors">Month</button>
+<button class="px-6 py-2 rounded-full font-headline font-semibold text-sm text-on-surface-variant hover:bg-surface-container transition-colors">Year</button>
+</div>
+</div>
+</header>
+<!-- KPI Metrics Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<!-- Total Revenue Card -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(25,27,37,0.03)] border-none relative overflow-hidden group">
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-500"></div>
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-primary/10 rounded-2xl">
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</div>
+<span class="inline-flex items-center gap-1 text-secondary font-headline font-bold text-sm bg-secondary/10 px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> 12.5%
+                    </span>
+</div>
+<h3 class="font-body text-on-surface-variant font-medium mb-1">Total Revenue</h3>
+<p class="font-display text-4xl font-extrabold text-on-surface tracking-tight">$124,500<span class="text-xl text-on-surface-variant font-medium">.00</span></p>
+</div>
+<!-- Avg Booking Value -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(25,27,37,0.03)] border-none relative overflow-hidden group">
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-tertiary-container/5 rounded-full blur-3xl group-hover:bg-tertiary-container/10 transition-colors duration-500"></div>
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-tertiary-container/10 rounded-2xl">
+<span class="material-symbols-outlined text-tertiary-container text-2xl" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+</div>
+<span class="inline-flex items-center gap-1 text-secondary font-headline font-bold text-sm bg-secondary/10 px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> 4.2%
+                    </span>
+</div>
+<h3 class="font-body text-on-surface-variant font-medium mb-1">Avg Booking Value</h3>
+<p class="font-display text-4xl font-extrabold text-on-surface tracking-tight">$68<span class="text-xl text-on-surface-variant font-medium">.50</span></p>
+</div>
+<!-- Top Performing Asset -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(25,27,37,0.03)] border-none relative overflow-hidden group">
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-secondary/5 rounded-full blur-3xl group-hover:bg-secondary/10 transition-colors duration-500"></div>
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-secondary/10 rounded-2xl">
+<span class="material-symbols-outlined text-secondary text-2xl" style="font-variation-settings: 'FILL' 1;">sports_tennis</span>
+</div>
+</div>
+<h3 class="font-body text-on-surface-variant font-medium mb-1">Top Performing Asset</h3>
+<p class="font-display text-2xl font-extrabold text-on-surface tracking-tight mb-1">Center Court 1</p>
+<p class="font-body text-sm text-secondary font-semibold">412 Bookings this month</p>
+</div>
+</section>
+<!-- Chart Section -->
+<section class="bg-surface-container-lowest p-8 rounded-lg shadow-[0_12px_40px_rgba(25,27,37,0.03)] mb-12">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h2 class="font-headline text-2xl font-bold text-on-surface">Revenue Trend</h2>
+<p class="font-body text-on-surface-variant text-sm mt-1">Daily revenue over the selected period</p>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Conceptual Chart Area (Visual Representation) -->
+<div class="h-[300px] w-full flex items-end gap-2 relative">
+<!-- Y-Axis Labels -->
+<div class="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-on-surface-variant font-body pb-8 pr-4 border-r border-outline-variant/20">
+<span>$6k</span>
+<span>$4k</span>
+<span>$2k</span>
+<span>$0</span>
+</div>
+<!-- Chart Grid Lines -->
+<div class="absolute left-10 right-0 top-0 h-[calc(100%-2rem)] flex flex-col justify-between pointer-events-none">
+<div class="w-full border-t border-outline-variant/10"></div>
+<div class="w-full border-t border-outline-variant/10"></div>
+<div class="w-full border-t border-outline-variant/10"></div>
+<div class="w-full border-t border-outline-variant/20"></div>
+</div>
+<!-- Bars (Simulated line chart points using bars/gradients for visual flair without JS) -->
+<div class="ml-12 flex-1 flex items-end justify-between h-[calc(100%-2rem)] relative z-10">
+<div class="w-full h-1/3 bg-gradient-to-t from-primary/20 to-primary-container rounded-t-sm hover:from-primary/40 transition-colors cursor-pointer relative group">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity font-body">$2,100</div>
+</div>
+<div class="w-full h-1/2 bg-gradient-to-t from-primary/20 to-primary-container rounded-t-sm hover:from-primary/40 transition-colors cursor-pointer relative group mx-1">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity font-body">$3,200</div>
+</div>
+<div class="w-full h-2/5 bg-gradient-to-t from-primary/20 to-primary-container rounded-t-sm hover:from-primary/40 transition-colors cursor-pointer relative group mx-1"></div>
+<div class="w-full h-3/5 bg-gradient-to-t from-primary/20 to-primary-container rounded-t-sm hover:from-primary/40 transition-colors cursor-pointer relative group mx-1"></div>
+<div class="w-full h-4/5 bg-gradient-to-t from-primary/20 to-primary-container rounded-t-sm hover:from-primary/40 transition-colors cursor-pointer relative group mx-1"></div>
+<div class="w-full h-full bg-gradient-to-t from-secondary/40 to-secondary rounded-t-sm hover:from-secondary/60 transition-colors cursor-pointer relative group mx-1">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity font-body">$5,800</div>
+</div>
+<div class="w-full h-3/4 bg-gradient-to-t from-primary/20 to-primary-container rounded-t-sm hover:from-primary/40 transition-colors cursor-pointer relative group mx-1"></div>
+</div>
+<!-- X-Axis Labels -->
+<div class="absolute bottom-0 left-12 right-0 flex justify-between text-xs text-on-surface-variant font-body pt-2">
+<span>Mon</span>
+<span>Tue</span>
+<span>Wed</span>
+<span>Thu</span>
+<span>Fri</span>
+<span class="text-secondary font-bold">Sat</span>
+<span>Sun</span>
+</div>
+</div>
+</section>
+</main>
+</body></html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic HQ - Master Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#e1e1ef",
+                        "tertiary-fixed": "#9cf0ff",
+                        "on-secondary-fixed": "#002108",
+                        "on-primary-container": "#dfe3ff",
+                        "primary": "#003ec7",
+                        "on-secondary-fixed-variant": "#00531e",
+                        "on-surface-variant": "#434656",
+                        "inverse-surface": "#2e303a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001452",
+                        "surface-bright": "#fbf8ff",
+                        "surface-container-low": "#f3f2ff",
+                        "primary-container": "#0052ff",
+                        "on-secondary": "#ffffff",
+                        "outline": "#737688",
+                        "inverse-primary": "#b7c4ff",
+                        "surface-tint": "#004ced",
+                        "background": "#fbf8ff",
+                        "on-surface": "#191b25",
+                        "tertiary-container": "#00717e",
+                        "primary-fixed": "#dde1ff",
+                        "secondary": "#006e2a",
+                        "on-secondary-container": "#00732c",
+                        "surface-container": "#ededfb",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "on-background": "#191b25",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#a7f1ff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e7e7f5",
+                        "secondary-fixed": "#69ff87",
+                        "on-tertiary-fixed": "#001f24",
+                        "secondary-fixed-dim": "#3ce36a",
+                        "outline-variant": "#c3c5d9",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e1ef",
+                        "tertiary": "#005761",
+                        "surface": "#fbf8ff",
+                        "surface-dim": "#d9d9e7",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0effe",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#5cfd80",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#00daf3"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans", "sans-serif"],
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #fbf8ff; color: #191b25; }
+        h1, h2, h3, h4, h5, h6, .font-headline, .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface flex min-h-screen text-on-surface selection:bg-primary selection:text-on-primary">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-72 rounded-r-[3rem] bg-surface-container-low shadow-[20px_0_60px_rgba(25,27,37,0.04)] fixed left-0 top-0 z-40 p-6">
+<div class="flex items-center gap-4 mb-8">
+<div class="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-headline font-bold text-xl">K</div>
+<div>
+<h1 class="text-xl font-black text-primary font-headline tracking-tight">Kinetic HQ</h1>
+<p class="text-xs text-on-surface-variant font-medium">Partner Dashboard</p>
+</div>
+</div>
+<button class="w-full py-3 px-4 rounded-full bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold text-sm shadow-lg hover:shadow-md active:scale-95 transition-all duration-300 mb-8 flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">add</span>
+            Add New Court
+        </button>
+<ul class="flex flex-col gap-2 flex-grow">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 bg-gradient-to-br from-primary to-primary-container text-white rounded-full shadow-lg font-headline font-semibold text-sm transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-full font-headline font-semibold text-sm hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">stadium</span>
+                    Management
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-full font-headline font-semibold text-sm hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+                    Calendar
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-full font-headline font-semibold text-sm hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+                    Revenue
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-full font-headline font-semibold text-sm hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+                    Users
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-full font-headline font-semibold text-sm hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+<div class="mt-auto border-t border-outline-variant/15 pt-4">
+<ul class="flex flex-col gap-2">
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container rounded-full font-headline font-semibold text-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+                        Support
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-error-container hover:text-error rounded-full font-headline font-semibold text-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+                        Sign Out
+                    </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-0 md:ml-72 p-6 lg:p-12 min-h-screen">
+<!-- Header Section -->
+<header class="flex justify-between items-end mb-12">
+<div>
+<p class="text-on-surface-variant font-medium text-sm mb-1 uppercase tracking-wider">Super Admin Overview</p>
+<h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-primary">Master Dashboard</h2>
+</div>
+<div class="hidden md:flex items-center gap-4 bg-surface-container-low px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-medium text-sm text-on-surface">Platform Status: Healthy</span>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+<!-- Macro Metrics (Top Row) -->
+<div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Total Users -->
+<div class="bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-primary">group</span>
+</div>
+<p class="text-on-surface-variant font-medium text-sm mb-2">Total Users</p>
+<h3 class="text-4xl font-headline font-bold text-on-surface tracking-tight">142k</h3>
+<div class="mt-4 flex items-center gap-2 text-secondary font-medium text-sm">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+12% this month</span>
+</div>
+</div>
+<!-- Total Partners -->
+<div class="bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-primary">storefront</span>
+</div>
+<p class="text-on-surface-variant font-medium text-sm mb-2">Total Partners</p>
+<h3 class="text-4xl font-headline font-bold text-on-surface tracking-tight">3,402</h3>
+<div class="mt-4 flex items-center gap-2 text-secondary font-medium text-sm">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+45 new this week</span>
+</div>
+</div>
+<!-- Platform Bookings -->
+<div class="bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-primary">book_online</span>
+</div>
+<p class="text-on-surface-variant font-medium text-sm mb-2">Platform Bookings</p>
+<h3 class="text-4xl font-headline font-bold text-on-surface tracking-tight">89k</h3>
+<div class="mt-4 flex items-center gap-2 text-secondary font-medium text-sm">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+8% vs last week</span>
+</div>
+</div>
+</div>
+<!-- Revenue Overview (Large Chart Area) -->
+<div class="lg:col-span-8 bg-surface-container-lowest p-8 rounded-lg relative overflow-hidden">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h3 class="text-xl font-headline font-bold text-on-surface">Revenue Overview</h3>
+<p class="text-on-surface-variant text-sm mt-1">Monthly platform GMV across all regions</p>
+</div>
+<select class="bg-surface-container-low border-none rounded-full text-sm font-medium text-on-surface px-4 py-2 focus:ring-0 cursor-pointer">
+<option>This Year</option>
+<option>Last Year</option>
+</select>
+</div>
+<!-- Stylized Bar Chart Representation -->
+<div class="h-64 flex items-end justify-between gap-2 mt-4">
+<div class="w-full bg-surface-container rounded-t-md h-[40%] relative group cursor-pointer hover:bg-primary-fixed transition-colors"></div>
+<div class="w-full bg-surface-container rounded-t-md h-[55%] relative group cursor-pointer hover:bg-primary-fixed transition-colors"></div>
+<div class="w-full bg-surface-container rounded-t-md h-[45%] relative group cursor-pointer hover:bg-primary-fixed transition-colors"></div>
+<div class="w-full bg-surface-container rounded-t-md h-[70%] relative group cursor-pointer hover:bg-primary-fixed transition-colors"></div>
+<div class="w-full bg-surface-container rounded-t-md h-[65%] relative group cursor-pointer hover:bg-primary-fixed transition-colors"></div>
+<div class="w-full bg-primary/80 rounded-t-md h-[85%] relative group cursor-pointer hover:bg-primary transition-colors">
+<div class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">$1.2M</div>
+</div>
+<div class="w-full bg-surface-container rounded-t-md h-[60%] relative group cursor-pointer hover:bg-primary-fixed transition-colors"></div>
+<div class="w-full bg-surface-container rounded-t-md h-[75%] relative group cursor-pointer hover:bg-primary-fixed transition-colors"></div>
+<div class="w-full bg-surface-container rounded-t-md h-[50%] relative group cursor-pointer hover:bg-primary-fixed transition-colors"></div>
+<div class="w-full bg-surface-container rounded-t-md h-[80%] relative group cursor-pointer hover:bg-primary-fixed transition-colors"></div>
+<div class="w-full bg-surface-container rounded-t-md h-[90%] relative group cursor-pointer hover:bg-primary-fixed transition-colors"></div>
+<div class="w-full bg-primary rounded-t-md h-[100%] relative group cursor-pointer shadow-[0_0_20px_rgba(0,62,199,0.3)]">
+<div class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-xs py-1 px-2 rounded opacity-100">$1.8M</div>
+</div>
+</div>
+<div class="flex justify-between text-xs text-on-surface-variant font-medium mt-4 px-2 uppercase">
+<span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+</div>
+</div>
+<!-- New Partners Sidebar -->
+<div class="lg:col-span-4 bg-surface-container-low p-8 rounded-lg lg:row-span-2 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-headline font-bold text-on-surface">New Partners</h3>
+<button class="text-primary hover:text-primary-container font-medium text-sm transition-colors">View All</button>
+</div>
+<div class="flex flex-col gap-4 flex-grow">
+<!-- Partner Item 1 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 hover:shadow-[0_12px_40px_rgba(25,27,37,0.06)] transition-all cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-tertiary-container overflow-hidden shrink-0">
+<img alt="Padel Court facility exterior" class="w-full h-full object-cover" data-alt="modern indoor sports facility exterior with glass walls and bright lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzVG-zN2ZFuAkwhpacezMnNh8RRZ7nGcW9NJv3QfALO5D9h11hj0SbGBDsPL8ipcgobtKbz7jaOxPFkunwZZbNh4EIj7yv1zhf2GJZaC9eUvTgKJXtbyrG0fP6Sf2gKYFi7MFOP1YwEwk3oAL_V6ERVGd3wDBw7mvegbV7cZVC_wqyI05qVQWWdBxbK4lSF3MYXnL-FAhyBeXh7QZzVacNJ1IMC0oD7lWY34UIbrCr7gWEwidk6_4tB3HJwzh_d_HET4QmJdcz4z8"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-headline font-bold text-sm text-on-surface">Apex Padel Club</h4>
+<p class="text-xs text-on-surface-variant">Miami, FL • 8 Courts</p>
+</div>
+<div class="text-xs font-medium text-secondary bg-secondary-container px-2 py-1 rounded-md">New</div>
+</div>
+<!-- Partner Item 2 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 hover:shadow-[0_12px_40px_rgba(25,27,37,0.06)] transition-all cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-primary-container overflow-hidden shrink-0">
+<img alt="Tennis court surface" class="w-full h-full object-cover" data-alt="close up of blue tennis court surface with white line in bright sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSGyoh-H7tHNY6Ov6Bh87QMyUzFYe2-AeF-m5JIPBPbA7mTeMi2WFR_TiIVX65gfWaVP3XnFJB-yawmXHTFthgI8J__uqa66UYhyg5i9Cmh9JTSwpUq2lJgSWN21lLJQXg0pUz5nbLD4m2lcVkin7iKwXVlaLoasC7FSR5RZk_5ZX7p4L2V8y1R26GFOT5hcamlOJgfQ9L5MgJ8j9AU69vZu7XODHo5qk5dhveCeDKz7kk-6N2QvN76aldjT7i_06gK9kBSCrcha8"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-headline font-bold text-sm text-on-surface">Racket &amp; Rhythm</h4>
+<p class="text-xs text-on-surface-variant">Austin, TX • 12 Courts</p>
+</div>
+<div class="text-xs font-medium text-on-surface-variant">2d ago</div>
+</div>
+<!-- Partner Item 3 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 hover:shadow-[0_12px_40px_rgba(25,27,37,0.06)] transition-all cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">sports_tennis</span>
+</div>
+<div class="flex-grow">
+<h4 class="font-headline font-bold text-sm text-on-surface">Metro Pickleball</h4>
+<p class="text-xs text-on-surface-variant">Chicago, IL • 6 Courts</p>
+</div>
+<div class="text-xs font-medium text-on-surface-variant">3d ago</div>
+</div>
+<!-- Partner Item 4 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 hover:shadow-[0_12px_40px_rgba(25,27,37,0.06)] transition-all cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-tertiary-container overflow-hidden shrink-0">
+<img alt="Indoor sports venue" class="w-full h-full object-cover" data-alt="wide shot of empty indoor basketball court with wooden floor and bright overhead lights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCt-xf4FWLsRzrU4rNja0IY_VtMMM_66VoxijDTxli7L1-TSOZbOIlgX-CM_712JTs24X4Ou3wsMDOu2isqWCnelfYHJe4WfJsXGsoKOoCPk_AmVIL51appCa2Ck84Bzwh9HtERfdbykmOSAJVXW1_jzdOnRFZMy1WD9PWoAzwlR78URU2qE9FHwg1dXDDs1X0DEmIrZKSA7vKRrb3ufci2VuBB5dnKBk3MJAQiB3vylgXnlCVp6EQZTZ4LSOGLltRDJ4DcwoopmCE"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-headline font-bold text-sm text-on-surface">The Vault Athletics</h4>
+<p class="text-xs text-on-surface-variant">Denver, CO • 4 Courts</p>
+</div>
+<div class="text-xs font-medium text-on-surface-variant">5d ago</div>
+</div>
+</div>
+<button class="w-full mt-6 py-3 rounded-full border-2 border-outline-variant/30 text-primary font-headline font-semibold hover:bg-surface-container transition-colors text-sm">
+                    Manage Applications
+                </button>
+</div>
+</div>
+</main>
+</body></html>

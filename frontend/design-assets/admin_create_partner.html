@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic - Partner Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e1e1ef",
+                    "tertiary-fixed": "#9cf0ff",
+                    "on-secondary-fixed": "#002108",
+                    "on-primary-container": "#dfe3ff",
+                    "primary": "#003ec7",
+                    "on-secondary-fixed-variant": "#00531e",
+                    "on-surface-variant": "#434656",
+                    "inverse-surface": "#2e303a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#001452",
+                    "surface-bright": "#fbf8ff",
+                    "surface-container-low": "#f3f2ff",
+                    "primary-container": "#0052ff",
+                    "on-secondary": "#ffffff",
+                    "outline": "#737688",
+                    "inverse-primary": "#b7c4ff",
+                    "surface-tint": "#004ced",
+                    "background": "#fbf8ff",
+                    "on-surface": "#191b25",
+                    "tertiary-container": "#00717e",
+                    "primary-fixed": "#dde1ff",
+                    "secondary": "#006e2a",
+                    "on-secondary-container": "#00732c",
+                    "surface-container": "#ededfb",
+                    "on-primary-fixed-variant": "#0038b6",
+                    "on-background": "#191b25",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#a7f1ff",
+                    "on-error": "#ffffff",
+                    "surface-container-high": "#e7e7f5",
+                    "secondary-fixed": "#69ff87",
+                    "on-tertiary-fixed": "#001f24",
+                    "secondary-fixed-dim": "#3ce36a",
+                    "outline-variant": "#c3c5d9",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e1e1ef",
+                    "tertiary": "#005761",
+                    "surface": "#fbf8ff",
+                    "surface-dim": "#d9d9e7",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#f0effe",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#5cfd80",
+                    "primary-fixed-dim": "#b7c4ff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#00daf3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {},
+            "fontFamily": {
+                    "headline": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "display": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body": [
+                            "Inter"
+                    ],
+                    "label": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {}
+    },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .display-font { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-[#fbf8ff] dark:bg-slate-950 text-[#003ec7] dark:text-blue-400 font-['Plus_Jakarta_Sans'] font-semibold h-screen w-72 rounded-r-[3rem] tonal-shift bg-surface-container-low shadow-[20px_0_60px_rgba(25,27,37,0.04)] flex flex-col p-6 fixed left-0 top-0 z-40 hidden md:flex">
+<div class="mb-8">
+<h1 class="text-xl font-black text-[#003ec7]">Kinetic HQ</h1>
+<p class="text-sm text-on-surface-variant font-body">Partner Dashboard</p>
+</div>
+<ul class="flex flex-col gap-2 flex-grow">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined" data-icon="stadium">stadium</span>
+                    Management
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+                    Calendar
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+                    Revenue
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 bg-gradient-to-br from-[#003ec7] to-[#0052ff] text-white rounded-full shadow-lg hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                    Users
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+<button class="mt-4 mb-8 bg-primary text-on-primary rounded-full py-3 px-4 font-semibold hover:bg-gradient-to-br hover:from-primary hover:to-primary-container transition-all duration-300 shadow-md">
+            Add New Court
+        </button>
+<ul class="flex flex-col gap-2 mt-auto">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                    Support
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-[#434656] hover:bg-slate-100 rounded-full hover:translate-x-1 transition-transform duration-200 hover:shadow-md active:scale-98" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                    Sign Out
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content -->
+<main class="flex-1 md:ml-72 p-8 lg:p-12 overflow-y-auto h-screen bg-surface">
+<div class="max-w-6xl mx-auto">
+<header class="mb-12">
+<h2 class="display-font text-4xl font-bold text-on-surface tracking-tight mb-2">Partner Onboarding</h2>
+<p class="font-body text-lg text-on-surface-variant">Add a new partner venue to the Kinetic network.</p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+<!-- Left Column: Form -->
+<div class="lg:col-span-8">
+<form class="space-y-8 bg-surface-container-low rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.04)] relative z-10">
+<!-- Venue Details Section -->
+<div>
+<h3 class="display-font text-2xl font-bold text-on-surface mb-6 border-b-2 border-surface-container-high pb-4 inline-block">Venue Details</h3>
+<div class="space-y-6">
+<div>
+<label class="block font-body text-sm font-semibold text-on-surface mb-2" for="venueName">Venue Name</label>
+<input class="w-full bg-surface-container-lowest border-2 border-transparent rounded-md px-4 py-3 font-body text-on-surface placeholder:text-outline-variant focus:border-surface-variant focus:bg-surface-bright focus:ring-0 transition-colors duration-200" id="venueName" name="venueName" placeholder="e.g. Downtown Athletics Center" type="text"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<label class="block font-body text-sm font-semibold text-on-surface mb-2" for="venueType">Primary Sport/Facility Type</label>
+<select class="w-full bg-surface-container-lowest border-2 border-transparent rounded-md px-4 py-3 font-body text-on-surface focus:border-surface-variant focus:bg-surface-bright focus:ring-0 transition-colors duration-200" id="venueType" name="venueType">
+<option disabled="" selected="" value="">Select facility type</option>
+<option value="tennis">Tennis Courts</option>
+<option value="padel">Padel Courts</option>
+<option value="basketball">Basketball</option>
+<option value="turf">Indoor Turf</option>
+</select>
+</div>
+<div>
+<label class="block font-body text-sm font-semibold text-on-surface mb-2" for="venueCity">City</label>
+<input class="w-full bg-surface-container-lowest border-2 border-transparent rounded-md px-4 py-3 font-body text-on-surface placeholder:text-outline-variant focus:border-surface-variant focus:bg-surface-bright focus:ring-0 transition-colors duration-200" id="venueCity" name="venueCity" placeholder="City" type="text"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Owner Contact Section -->
+<div class="pt-6">
+<h3 class="display-font text-2xl font-bold text-on-surface mb-6 border-b-2 border-surface-container-high pb-4 inline-block">Owner Contact</h3>
+<div class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<label class="block font-body text-sm font-semibold text-on-surface mb-2" for="ownerFirstName">First Name</label>
+<input class="w-full bg-surface-container-lowest border-2 border-transparent rounded-md px-4 py-3 font-body text-on-surface placeholder:text-outline-variant focus:border-surface-variant focus:bg-surface-bright focus:ring-0 transition-colors duration-200" id="ownerFirstName" name="ownerFirstName" placeholder="First Name" type="text"/>
+</div>
+<div>
+<label class="block font-body text-sm font-semibold text-on-surface mb-2" for="ownerLastName">Last Name</label>
+<input class="w-full bg-surface-container-lowest border-2 border-transparent rounded-md px-4 py-3 font-body text-on-surface placeholder:text-outline-variant focus:border-surface-variant focus:bg-surface-bright focus:ring-0 transition-colors duration-200" id="ownerLastName" name="ownerLastName" placeholder="Last Name" type="text"/>
+</div>
+</div>
+<div>
+<label class="block font-body text-sm font-semibold text-on-surface mb-2" for="ownerEmail">Email Address</label>
+<input class="w-full bg-surface-container-lowest border-2 border-transparent rounded-md px-4 py-3 font-body text-on-surface placeholder:text-outline-variant focus:border-surface-variant focus:bg-surface-bright focus:ring-0 transition-colors duration-200" id="ownerEmail" name="ownerEmail" placeholder="partner@example.com" type="email"/>
+</div>
+<div>
+<label class="block font-body text-sm font-semibold text-on-surface mb-2" for="ownerPhone">Phone Number</label>
+<input class="w-full bg-surface-container-lowest border-2 border-transparent rounded-md px-4 py-3 font-body text-on-surface placeholder:text-outline-variant focus:border-surface-variant focus:bg-surface-bright focus:ring-0 transition-colors duration-200" id="ownerPhone" name="ownerPhone" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+</div>
+</div>
+</form>
+</div>
+<!-- Right Column: Info & Action -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Security Protocol Note -->
+<div class="bg-surface-container-highest rounded-xl p-6 relative overflow-hidden">
+<div class="absolute -right-8 -top-8 w-32 h-32 bg-primary/5 rounded-full blur-2xl"></div>
+<div class="flex items-start gap-4 relative z-10">
+<div class="bg-surface-container-lowest p-2 rounded-full text-primary shrink-0">
+<span class="material-symbols-outlined" data-icon="lock" data-weight="fill" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+<div>
+<h4 class="display-font text-lg font-bold text-on-surface mb-2">Security Protocol</h4>
+<p class="font-body text-sm text-on-surface-variant leading-relaxed">
+                                    For security purposes, initial passwords are not set here. The system will auto-generate strong credentials and send a secure password setup link directly to the partner's email address upon creation.
+                                </p>
+</div>
+</div>
+</div>
+<!-- Action Card -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_24px_60px_rgba(25,27,37,0.06)] border border-outline-variant/15 flex flex-col justify-center items-center text-center mt-auto">
+<div class="w-16 h-16 bg-surface-container-low rounded-full flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-3xl" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<h4 class="display-font text-xl font-bold text-on-surface mb-2">Ready to Launch?</h4>
+<p class="font-body text-sm text-on-surface-variant mb-8">Review details before sending the onboarding invitation.</p>
+<button class="w-full bg-primary text-on-primary font-display font-bold text-lg rounded-full py-4 px-6 hover:bg-gradient-to-br hover:from-primary hover:to-primary-container shadow-[0_12px_40px_rgba(0,62,199,0.2)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0">
+                            Create Partner Account
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

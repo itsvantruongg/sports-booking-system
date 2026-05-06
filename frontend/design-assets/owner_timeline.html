@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Owner - Quản lý Lịch (Timeline) | Kinetic</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e1e1ef",
+                        "tertiary-fixed": "#9cf0ff",
+                        "on-secondary-fixed": "#002108",
+                        "on-primary-container": "#dfe3ff",
+                        "primary": "#003ec7",
+                        "on-secondary-fixed-variant": "#00531e",
+                        "on-surface-variant": "#434656",
+                        "inverse-surface": "#2e303a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001452",
+                        "surface-bright": "#fbf8ff",
+                        "surface-container-low": "#f3f2ff",
+                        "primary-container": "#0052ff",
+                        "on-secondary": "#ffffff",
+                        "outline": "#737688",
+                        "inverse-primary": "#b7c4ff",
+                        "surface-tint": "#004ced",
+                        "background": "#fbf8ff",
+                        "on-surface": "#191b25",
+                        "tertiary-container": "#00717e",
+                        "primary-fixed": "#dde1ff",
+                        "secondary": "#006e2a",
+                        "on-secondary-container": "#00732c",
+                        "surface-container": "#ededfb",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "on-background": "#191b25",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#a7f1ff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e7e7f5",
+                        "secondary-fixed": "#69ff87",
+                        "on-tertiary-fixed": "#001f24",
+                        "secondary-fixed-dim": "#3ce36a",
+                        "outline-variant": "#c3c5d9",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e1ef",
+                        "tertiary": "#005761",
+                        "surface": "#fbf8ff",
+                        "surface-dim": "#d9d9e7",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0effe",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#5cfd80",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#00daf3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-72 rounded-r-[3rem] bg-[#fbf8ff] dark:bg-slate-950 shadow-[20px_0_60px_rgba(25,27,37,0.04)] z-40 fixed left-0 top-0 p-6 flex-shrink-0">
+<!-- Brand Header -->
+<div class="mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary font-display font-black text-xl">K</div>
+<div>
+<h2 class="text-xl font-black text-[#003ec7] font-display tracking-tight leading-none">Kinetic HQ</h2>
+<p class="text-sm text-on-surface-variant font-label mt-1">Partner Dashboard</p>
+</div>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 space-y-2">
+<a class="flex items-center gap-4 px-4 py-3 rounded-full text-[#434656] hover:bg-slate-100 hover:translate-x-1 transition-transform duration-200 font-['Plus_Jakarta_Sans'] font-semibold" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-full text-[#434656] hover:bg-slate-100 hover:translate-x-1 transition-transform duration-200 font-['Plus_Jakarta_Sans'] font-semibold" href="#">
+<span class="material-symbols-outlined" data-icon="stadium">stadium</span>
+<span>Management</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-full bg-gradient-to-br from-[#003ec7] to-[#0052ff] text-white shadow-lg hover:shadow-md active:scale-98 font-['Plus_Jakarta_Sans'] font-semibold" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span>Calendar</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-full text-[#434656] hover:bg-slate-100 hover:translate-x-1 transition-transform duration-200 font-['Plus_Jakarta_Sans'] font-semibold" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Revenue</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-full text-[#434656] hover:bg-slate-100 hover:translate-x-1 transition-transform duration-200 font-['Plus_Jakarta_Sans'] font-semibold" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>Users</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-full text-[#434656] hover:bg-slate-100 hover:translate-x-1 transition-transform duration-200 font-['Plus_Jakarta_Sans'] font-semibold" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<!-- CTA -->
+<button class="mt-auto mb-6 w-full py-4 bg-primary text-on-primary rounded-full font-label font-semibold shadow-lg hover:bg-primary-container transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+            Add New Court
+        </button>
+<!-- Footer Navigation -->
+<div class="space-y-2 border-t border-surface-variant pt-4">
+<a class="flex items-center gap-4 px-4 py-3 rounded-full text-[#434656] hover:bg-slate-100 hover:translate-x-1 transition-transform duration-200 font-['Plus_Jakarta_Sans'] font-semibold" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-full text-[#434656] hover:bg-slate-100 hover:translate-x-1 transition-transform duration-200 font-['Plus_Jakarta_Sans'] font-semibold" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Sign Out</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-72 flex flex-col h-screen overflow-hidden">
+<!-- Top Action Bar (Mobile Nav & Filters) -->
+<header class="flex-shrink-0 px-6 py-6 lg:px-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface z-10 shadow-sm relative">
+<div>
+<h1 class="text-3xl font-display font-bold tracking-tight text-on-surface">Timeline</h1>
+<p class="text-on-surface-variant font-body mt-1">Thursday, Oct 26</p>
+</div>
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<div class="flex-1 sm:flex-none flex items-center bg-surface-container rounded-full p-1">
+<button class="px-4 py-2 rounded-full bg-surface-container-lowest shadow-sm text-primary font-label font-medium text-sm">All</button>
+<button class="px-4 py-2 rounded-full text-on-surface-variant font-label font-medium text-sm hover:text-primary transition-colors">Soccer</button>
+<button class="px-4 py-2 rounded-full text-on-surface-variant font-label font-medium text-sm hover:text-primary transition-colors">Padel</button>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Timeline Canvas -->
+<div class="flex-1 overflow-auto bg-surface-container-low relative scrollbar-hide p-6 lg:p-12">
+<div class="min-w-[1200px] bg-surface rounded-xl shadow-[0_12px_40px_rgba(25,27,37,0.06)] overflow-hidden flex flex-col">
+<!-- Time Header (X-Axis) -->
+<div class="flex border-b border-surface-variant bg-surface sticky top-0 z-20">
+<div class="w-32 flex-shrink-0 p-4 border-r border-surface-variant flex items-center justify-center bg-surface">
+<span class="text-sm font-label text-on-surface-variant font-medium">Courts / Time</span>
+</div>
+<div class="flex-1 flex">
+<!-- Hours 06:00 to 24:00 (Simplified for demo, usually loop in JS) -->
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">06:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">07:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">08:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">09:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">10:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">11:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">12:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">13:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">14:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">15:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">16:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">17:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">18:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">19:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">20:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">21:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">22:00</div>
+<div class="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">23:00</div>
+</div>
+</div>
+<!-- Courts List (Y-Axis) & Grid -->
+<div class="relative">
+<!-- Grid Lines Background -->
+<div class="absolute inset-0 flex ml-32 pointer-events-none z-0">
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+<div class="flex-1 border-r border-surface-variant/30"></div>
+</div>
+<!-- Court Row 1 (Soccer) -->
+<div class="flex border-b border-surface-variant/50 relative z-10 group">
+<div class="w-32 flex-shrink-0 p-4 border-r border-surface-variant bg-surface flex flex-col justify-center relative z-20">
+<span class="font-display font-semibold text-on-surface">Court 1</span>
+<span class="text-xs font-label text-on-surface-variant">Soccer 5v5</span>
+</div>
+<div class="flex-1 relative h-20 bg-transparent hover:bg-surface-container-low/50 transition-colors cursor-pointer" onclick="alert('Manual Lock dialog')">
+<!-- Bookings -->
+<div class="absolute top-2 bottom-2 left-[11%] w-[16%] bg-primary/10 rounded-lg border-l-4 border-primary p-2 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+<p class="text-xs font-bold text-primary truncate">J. Doe - Match</p>
+<p class="text-[10px] text-primary/80 truncate">08:00 - 11:00</p>
+</div>
+<div class="absolute top-2 bottom-2 left-[50%] w-[11%] bg-primary/10 rounded-lg border-l-4 border-primary p-2 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+<p class="text-xs font-bold text-primary truncate">Academy Training</p>
+<p class="text-[10px] text-primary/80 truncate">15:00 - 17:00</p>
+</div>
+</div>
+</div>
+<!-- Court Row 2 (Soccer) -->
+<div class="flex border-b border-surface-variant/50 relative z-10 group">
+<div class="w-32 flex-shrink-0 p-4 border-r border-surface-variant bg-surface flex flex-col justify-center relative z-20">
+<span class="font-display font-semibold text-on-surface">Court 2</span>
+<span class="text-xs font-label text-on-surface-variant">Soccer 7v7</span>
+</div>
+<div class="flex-1 relative h-20 bg-transparent hover:bg-surface-container-low/50 transition-colors cursor-pointer" onclick="alert('Manual Lock dialog')">
+<!-- Bookings -->
+<div class="absolute top-2 bottom-2 left-[33%] w-[22%] bg-surface-variant rounded-lg border border-outline-variant p-2 overflow-hidden hover:shadow-md transition-shadow cursor-not-allowed opacity-80" title="Maintenance">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="build">build</span>
+<p class="text-xs font-bold truncate">Maintenance</p>
+</div>
+<p class="text-[10px] text-on-surface-variant/80 truncate">12:00 - 16:00</p>
+</div>
+<div class="absolute top-2 bottom-2 left-[72%] w-[11%] bg-primary/10 rounded-lg border-l-4 border-primary p-2 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+<p class="text-xs font-bold text-primary truncate">Evening League</p>
+<p class="text-[10px] text-primary/80 truncate">19:00 - 21:00</p>
+</div>
+</div>
+</div>
+<!-- Court Row 3 (Padel) -->
+<div class="flex border-b border-surface-variant/50 relative z-10 group">
+<div class="w-32 flex-shrink-0 p-4 border-r border-surface-variant bg-surface flex flex-col justify-center relative z-20">
+<span class="font-display font-semibold text-on-surface">Padel 1</span>
+<span class="text-xs font-label text-on-surface-variant">Indoor Double</span>
+</div>
+<div class="flex-1 relative h-20 bg-transparent hover:bg-surface-container-low/50 transition-colors cursor-pointer" onclick="alert('Manual Lock dialog')">
+<!-- Bookings -->
+<div class="absolute top-2 bottom-2 left-[5%] w-[8%] bg-secondary/10 rounded-lg border-l-4 border-secondary p-2 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+<p class="text-xs font-bold text-secondary truncate">Private Lesson</p>
+<p class="text-[10px] text-secondary/80 truncate">07:00 - 08:30</p>
+</div>
+<div class="absolute top-2 bottom-2 left-[22%] w-[11%] bg-secondary/10 rounded-lg border-l-4 border-secondary p-2 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+<p class="text-xs font-bold text-secondary truncate">M. Smith</p>
+<p class="text-[10px] text-secondary/80 truncate">10:00 - 12:00</p>
+</div>
+<div class="absolute top-2 bottom-2 left-[61%] w-[8%] bg-secondary/10 rounded-lg border-l-4 border-secondary p-2 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+<p class="text-xs font-bold text-secondary truncate">Open Play</p>
+<p class="text-[10px] text-secondary/80 truncate">17:00 - 18:30</p>
+</div>
+</div>
+</div>
+<!-- Court Row 4 (Padel) -->
+<div class="flex border-b border-surface-variant/50 relative z-10 group">
+<div class="w-32 flex-shrink-0 p-4 border-r border-surface-variant bg-surface flex flex-col justify-center relative z-20">
+<span class="font-display font-semibold text-on-surface">Padel 2</span>
+<span class="text-xs font-label text-on-surface-variant">Outdoor</span>
+</div>
+<div class="flex-1 relative h-20 bg-transparent hover:bg-surface-container-low/50 transition-colors cursor-pointer" onclick="alert('Manual Lock dialog')">
+<!-- Bookings -->
+<div class="absolute top-2 bottom-2 left-[44%] w-[16%] bg-secondary/10 rounded-lg border-l-4 border-secondary p-2 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+<p class="text-xs font-bold text-secondary truncate">Tournament QF</p>
+<p class="text-[10px] text-secondary/80 truncate">14:00 - 17:00</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

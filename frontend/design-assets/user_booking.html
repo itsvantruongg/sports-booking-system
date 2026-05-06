@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trang Đặt Lịch - Kinetic</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e1e1ef",
+                        "tertiary-fixed": "#9cf0ff",
+                        "on-secondary-fixed": "#002108",
+                        "on-primary-container": "#dfe3ff",
+                        "primary": "#003ec7",
+                        "on-secondary-fixed-variant": "#00531e",
+                        "on-surface-variant": "#434656",
+                        "inverse-surface": "#2e303a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001452",
+                        "surface-bright": "#fbf8ff",
+                        "surface-container-low": "#f3f2ff",
+                        "primary-container": "#0052ff",
+                        "on-secondary": "#ffffff",
+                        "outline": "#737688",
+                        "inverse-primary": "#b7c4ff",
+                        "surface-tint": "#004ced",
+                        "background": "#fbf8ff",
+                        "on-surface": "#191b25",
+                        "tertiary-container": "#00717e",
+                        "primary-fixed": "#dde1ff",
+                        "secondary": "#006e2a",
+                        "on-secondary-container": "#00732c",
+                        "surface-container": "#ededfb",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "on-background": "#191b25",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#a7f1ff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e7e7f5",
+                        "secondary-fixed": "#69ff87",
+                        "on-tertiary-fixed": "#001f24",
+                        "secondary-fixed-dim": "#3ce36a",
+                        "outline-variant": "#c3c5d9",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e1ef",
+                        "tertiary": "#005761",
+                        "surface": "#fbf8ff",
+                        "surface-dim": "#d9d9e7",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0effe",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#5cfd80",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#00daf3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans", "sans-serif"],
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen antialiased flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-[#fbf8ff]/70 backdrop-blur-xl dark:bg-slate-900/70 shadow-[0_12px_40px_rgba(25,27,37,0.06)] sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-[1440px] mx-auto">
+<!-- Brand -->
+<div class="flex items-center gap-8">
+<a class="text-2xl font-black tracking-tighter text-[#003ec7] dark:text-blue-500 font-display" href="#">KINETIC</a>
+<!-- Desktop Nav -->
+<div class="hidden md:flex gap-6">
+<a class="text-[#434656] hover:text-[#003ec7] font-['Plus_Jakarta_Sans'] font-bold tracking-tight hover:bg-slate-100/50 transition-all duration-300 px-3 py-2 rounded-lg" href="#">Explore</a>
+<a class="text-[#003ec7] border-b-2 border-[#003ec7] pb-1 font-['Plus_Jakarta_Sans'] font-bold tracking-tight px-3 py-2" href="#">My Bookings</a>
+<a class="text-[#434656] hover:text-[#003ec7] font-['Plus_Jakarta_Sans'] font-bold tracking-tight hover:bg-slate-100/50 transition-all duration-300 px-3 py-2 rounded-lg" href="#">Venues</a>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<button class="hidden md:flex items-center justify-center bg-primary text-on-primary px-6 py-2.5 rounded-full font-label font-medium hover:bg-gradient-to-br hover:from-primary hover:to-primary-container transition-all scale-95 active:scale-90">
+                    Find a Court
+                </button>
+<button class="text-[#434656] hover:text-[#003ec7] p-2 hover:bg-slate-100/50 transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-[#434656] hover:text-[#003ec7] p-2 hover:bg-slate-100/50 transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-[1440px] mx-auto px-4 md:px-8 py-8 md:py-12">
+<div class="mb-10">
+<h1 class="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-2">Complete Your Booking</h1>
+<p class="font-body text-on-surface-variant text-lg">Secure your court time in just a few steps.</p>
+</div>
+<div class="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
+<!-- Left Column: Form Steps -->
+<div class="w-full lg:w-2/3 flex flex-col gap-8">
+<!-- Step 1: Schedule -->
+<section class="bg-surface-container-low rounded-xl p-8 lg:p-10 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-2 h-full bg-primary rounded-l-xl"></div>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-display font-bold text-lg">1</div>
+<h2 class="font-display text-2xl font-bold text-on-surface">Schedule Selection</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Date Picker Mock -->
+<div>
+<label class="block font-label text-on-surface-variant text-sm font-medium mb-2">Select Date</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-outline-variant/15 text-on-surface font-body rounded-lg py-3 pl-4 pr-10 focus:ring-primary focus:border-primary" readonly="" type="text" value="Oct 24, 2023"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">calendar_today</span>
+</div>
+</div>
+<!-- Time Slots Mock -->
+<div>
+<label class="block font-label text-on-surface-variant text-sm font-medium mb-2">Select Time</label>
+<div class="grid grid-cols-2 gap-3">
+<button class="py-2.5 px-4 rounded-lg bg-surface-container-lowest border border-outline-variant/20 text-on-surface font-body text-sm hover:bg-surface-container-highest transition-colors">18:00 - 19:00</button>
+<button class="py-2.5 px-4 rounded-lg bg-secondary-container text-on-secondary-container font-body text-sm font-medium border border-transparent">19:00 - 20:30</button>
+<button class="py-2.5 px-4 rounded-lg bg-surface-container-lowest border border-outline-variant/20 text-on-surface font-body text-sm hover:bg-surface-container-highest transition-colors">20:30 - 22:00</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Step 2: Contact Info -->
+<section class="bg-surface-container-low rounded-xl p-8 lg:p-10">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-10 h-10 rounded-full border-2 border-outline-variant text-outline flex items-center justify-center font-display font-bold text-lg">2</div>
+<h2 class="font-display text-2xl font-bold text-on-surface">Contact Information</h2>
+</div>
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<label class="block font-label text-on-surface-variant text-sm font-medium mb-2">Full Name</label>
+<input class="w-full bg-surface-container-lowest border-outline-variant/15 text-on-surface font-body rounded-lg py-3 px-4 focus:ring-primary focus:border-primary transition-all" placeholder="Jane Doe" type="text"/>
+</div>
+<div>
+<label class="block font-label text-on-surface-variant text-sm font-medium mb-2">Phone Number</label>
+<input class="w-full bg-surface-container-lowest border-outline-variant/15 text-on-surface font-body rounded-lg py-3 px-4 focus:ring-primary focus:border-primary transition-all" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+</div>
+<div>
+<label class="block font-label text-on-surface-variant text-sm font-medium mb-2">Email Address</label>
+<input class="w-full bg-surface-container-lowest border-outline-variant/15 text-on-surface font-body rounded-lg py-3 px-4 focus:ring-primary focus:border-primary transition-all" placeholder="jane@example.com" type="email"/>
+</div>
+</form>
+</section>
+</div>
+<!-- Right Column: Order Summary (Sidebar) -->
+<aside class="w-full lg:w-1/3">
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.06)] sticky top-28">
+<h3 class="font-display text-xl font-bold text-on-surface mb-6">Order Summary</h3>
+<!-- Venue Info -->
+<div class="flex items-center gap-4 mb-6 pb-6 border-b border-surface-variant">
+<div class="w-16 h-16 rounded-lg overflow-hidden shrink-0">
+<img alt="Premium indoor basketball court with polished wood floor and bright lights" class="w-full h-full object-cover" data-alt="Premium indoor basketball court with polished wood floor and bright stadium lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnyRlfWNE16IRkeEtTLfC_UYmk3Ke_46A-g6wIlPW6dcE4c07kU0K3LXlg9-tl6c2PCs41ywjf7CRKb_VwT64_Mf3vN4dCn2e7YVI7EwT4eJt9TgzwHiNy0nfy5us3SoMZrTzpBdQxGi7_UgMr0zU_80b1YPfuEnEPcisPCHktO1mNuiOGazxqsJ1QghXvOXUtI8b8-adb_B1V3w_YCtISf3-KUw6V9TqCY_SO1O8oEBf7PtbFpvVTcjJK281EQGFopzXKgKTzYJI"/>
+</div>
+<div>
+<h4 class="font-headline font-bold text-on-surface">Downtown Arena - Court A</h4>
+<p class="font-body text-sm text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                                123 Main St.
+                            </p>
+</div>
+</div>
+<!-- Time Info -->
+<div class="mb-6 pb-6 border-b border-surface-variant space-y-3">
+<div class="flex justify-between items-center text-sm font-body">
+<span class="text-on-surface-variant">Date</span>
+<span class="font-medium text-on-surface">Oct 24, 2023</span>
+</div>
+<div class="flex justify-between items-center text-sm font-body">
+<span class="text-on-surface-variant">Time</span>
+<span class="font-medium text-on-surface">19:00 - 20:30 (1.5 hrs)</span>
+</div>
+</div>
+<!-- Financials -->
+<div class="space-y-3 mb-8">
+<div class="flex justify-between items-center text-sm font-body">
+<span class="text-on-surface-variant">Subtotal</span>
+<span class="font-medium text-on-surface">$120.00</span>
+</div>
+<div class="flex justify-between items-center text-sm font-body">
+<span class="text-on-surface-variant">Service Fee (5%)</span>
+<span class="font-medium text-on-surface">$6.00</span>
+</div>
+<div class="flex justify-between items-center pt-3 border-t border-surface-variant mt-3">
+<span class="font-headline font-bold text-on-surface text-lg">Total</span>
+<span class="font-display font-extrabold text-primary text-2xl">$126.00</span>
+</div>
+</div>
+<!-- Instant Confirm Notice -->
+<div class="flex items-start gap-3 bg-secondary-container/30 p-4 rounded-lg mb-8">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<div>
+<p class="font-body text-sm font-semibold text-on-surface">Instant Confirmation</p>
+<p class="font-body text-xs text-on-surface-variant mt-1">Your booking will be confirmed immediately upon completion.</p>
+</div>
+</div>
+<!-- CTA -->
+<button class="w-full bg-primary text-on-primary py-4 rounded-full font-headline font-bold text-lg hover:bg-gradient-to-br hover:from-primary hover:to-primary-container transition-all shadow-lg hover:shadow-xl active:scale-[0.98]">
+                        Confirm Booking
+                    </button>
+</div>
+</aside>
+</div>
+</main>
+</body></html>
