@@ -128,7 +128,6 @@ export default function AdminPage() {
           <div className="flex flex-col gap-4 flex-grow">
             {[
               { href: "/admin/users", icon: "manage_accounts", color: "text-primary bg-primary/10 group-hover:bg-primary/20", label: "Quản lý Users", sub: `${fmt(data?.totalUsers)} người dùng` },
-              { href: "/admin/courts", icon: "sports_tennis", color: "text-secondary bg-secondary/10 group-hover:bg-secondary/20", label: "Quản lý Sân", sub: `${fmt(data?.totalVenues)} cụm sân` },
               { href: "/admin/add-partner", icon: "person_add", color: "text-tertiary bg-tertiary/10 group-hover:bg-tertiary/20", label: "Thêm Owner mới", sub: "Thêm chủ sân vào hệ thống" },
               { href: "/admin/settings", icon: "settings", color: "text-on-surface-variant bg-surface-variant group-hover:bg-outline/20", label: "Cài đặt hệ thống", sub: "Sport types & config" },
             ].map(item => (

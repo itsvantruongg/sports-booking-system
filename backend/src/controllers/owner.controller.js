@@ -36,19 +36,28 @@ const getOwnerDashboard = async (req, res) => {
       status: { $ne: 'CANCELLED' }
     });
 
-    // Doanh thu: Các đơn ĐÃ THANH TOÁN (PAID)
+    // Doanh thu (Đã thu tiền): Các đơn ĐÃ THANH TOÁN (PAID)
     const revenue = bookings
       .filter(b => b.payment_status === 'PAID')
       .reduce((sum, b) => sum + b.total_price, 0);
 
-    // Công nợ: Các đơn ĐÃ DUYỆT hoặc HOÀN THÀNH nhưng CHƯA THU TIỀN (PENDING)
+    // Treo nợ (Chưa thu tiền): Các đơn ĐÃ XÁC NHẬN hoặc HOÀN THÀNH nhưng THANH TOÁN CHƯA XONG (PENDING)
     const debt = bookings
       .filter(b => b.payment_status === 'PENDING' && (b.status === 'CONFIRMED' || b.status === 'COMPLETED'))
       .reduce((sum, b) => sum + b.total_price, 0);
 
-    const occupancy = bookings.filter(b => b.status === 'CONFIRMED' || b.status === 'COMPLETED').length;
+    // Công suất (Occupancy): Tổng số SLOTS đã được đặt (CONFIRMED hoặc COMPLETED)
+    const occupancy = bookings
+      .filter(b => b.status === 'CONFIRMED' || b.status === 'COMPLETED')
+      .reduce((sum, b) => sum + (b.slot_count || 0), 0);
 
-    res.status(200).json({ revenue, debt, occupancy, booking_count: bookings.length });
+    res.status(200).json({ 
+      revenue, 
+      debt, 
+      occupancy, 
+      booking_count: bookings.length,
+      total_bookings_count: bookings.length // Đã bao gồm cả Pending
+    });
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
@@ -245,6 +254,36 @@ const blockSlots = async (req, res) => {
     );
 
     res.status(200).json({ message: `Đã khóa ${time_slot_ids.length} slot thành công` });
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+// POST /api/owner/time-slots/unblock
+const unblockSlots = async (req, res) => {
+  try {
+    const { time_slot_ids } = req.body;
+    if (!time_slot_ids?.length) return res.status(400).json({ message: 'Thiếu danh sách slot' });
+
+    // Xác thực quyền sở hữu cho TẤT CẢ các slots
+    const slotsToUnblock = await TimeSlot.find({ _id: { $in: time_slot_ids } })
+      .populate({
+        path: 'court_id',
+        populate: { path: 'cluster_id', select: 'owner_id' }
+      });
+
+    const isAllOwnedByMe = slotsToUnblock.every(s => 
+      s.court_id?.cluster_id?.owner_id?.toString() === req.user._id.toString()
+    );
+
+    if (!isAllOwnedByMe || slotsToUnblock.length === 0) {
+      return res.status(403).json({ message: 'Bạn không có quyền mở khóa một hoặc nhiều slot trong danh sách này' });
+    }
+
+    await TimeSlot.updateMany(
+      { _id: { $in: time_slot_ids }, status: 'BLOCKED' },
+      { status: 'AVAILABLE', blocked_by: null, block_reason: null }
+    );
+
+    res.status(200).json({ message: `Đã mở khóa ${time_slot_ids.length} slot thành công` });
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
@@ -467,5 +506,5 @@ module.exports = {
   createPricingRule, getOwnerTimeSlots, blockSlots,
   getOwnerBookings, updateBookingStatus, getOwnerReport, getOwnerCustomers,
   generateSlots, getPricingRules, deletePricingRule, confirmBookingPayment,
-  updatePricingRule, bulkCreatePricingRules
+  updatePricingRule, bulkCreatePricingRules, unblockSlots
 };

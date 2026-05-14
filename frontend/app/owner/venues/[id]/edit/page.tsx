@@ -203,11 +203,10 @@ export default function EditVenuePage() {
               <button
                 key={a}
                 onClick={() => toggleAmenity(a)}
-                className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
-                  form.amenities.includes(a)
+                className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${form.amenities.includes(a)
                     ? "bg-primary text-on-primary shadow-md"
                     : "bg-surface-container-low text-on-surface hover:bg-surface-container"
-                }`}
+                  }`}
               >
                 {form.amenities.includes(a) && "✓ "}{a}
               </button>

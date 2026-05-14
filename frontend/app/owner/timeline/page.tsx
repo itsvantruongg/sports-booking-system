@@ -15,6 +15,7 @@ export default function OwnerTimelinePage() {
   const [blockReason, setBlockReason] = useState("");
   const [showBlockPanel, setShowBlockPanel] = useState(false);
   const [blocking, setBlocking] = useState(false);
+  const [unblockingSlotId, setUnblockingSlotId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
   const showToast = (msg: string, type: "success" | "error") => {
@@ -64,6 +65,12 @@ export default function OwnerTimelinePage() {
   };
 
   useEffect(() => { fetchTimeline(); }, [date]);
+
+  useEffect(() => {
+    const handleGlobalClick = () => setUnblockingSlotId(null);
+    window.addEventListener("click", handleGlobalClick);
+    return () => window.removeEventListener("click", handleGlobalClick);
+  }, []);
 
   const slotsByCourt = (courts || []).reduce((acc, court) => {
     if (!court?._id) return acc;
@@ -129,6 +136,26 @@ export default function OwnerTimelinePage() {
     finally { setBlocking(false); }
   };
 
+  const handleUnblockSlot = async (slotId: string) => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    try {
+      const res = await fetch("http://localhost:5000/api/owner/time-slots/unblock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ time_slot_ids: [slotId] }),
+      });
+      if (res.ok) {
+        showToast("✅ Đã mở khóa slot thành công!", "success");
+        setUnblockingSlotId(null);
+        await fetchTimeline();
+      } else {
+        const err = await res.json();
+        showToast(err.message || "Mở khóa thất bại.", "error");
+      }
+    } catch { showToast("Lỗi kết nối.", "error"); }
+  };
+
   return (
     <div className="flex-1 md:flex flex-col overflow-hidden p-6 md:p-8">
       {/* Toast */}
@@ -179,7 +206,7 @@ export default function OwnerTimelinePage() {
       {/* Header */}
       <header className="flex-shrink-0 px-6 py-6 lg:px-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface z-10 shadow-sm relative rounded-xl mb-4">
         <div>
-          <h1 className="text-3xl font-display font-bold tracking-tight text-on-surface">Timeline Lịch Đặt Sân</h1>
+          <h1 className="text-5xl font-display font-bold tracking-tight text-on-surface">Timeline Lịch Đặt Sân</h1>
           <p className="text-on-surface-variant font-body mt-1">
             {new Date(date).toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
@@ -231,15 +258,15 @@ export default function OwnerTimelinePage() {
         {loading ? (
           <div className="flex justify-center items-center h-32 text-on-surface-variant">Đang tải lịch đặt sân...</div>
         ) : (
-          <div className="min-w-[1200px] bg-surface rounded-xl overflow-hidden flex flex-col">
+          <div className="w-full bg-surface rounded-xl overflow-hidden flex flex-col">
             {/* Time Header */}
             <div className="flex border-b border-surface-variant bg-surface sticky top-0 z-20">
-              <div className="w-32 flex-shrink-0 p-4 border-r border-surface-variant flex items-center justify-center bg-surface">
+              <div className="w-44 flex-shrink-0 p-4 border-r border-surface-variant flex items-center justify-center bg-surface">
                 <span className="text-sm font-label text-on-surface-variant font-medium">Sân / Giờ</span>
               </div>
               <div className="flex-1 flex">
                 {Array.from({ length: 18 }).map((_, i) => (
-                  <div key={i} className="flex-1 min-w-[60px] p-2 text-center text-xs font-label text-on-surface-variant border-r border-surface-variant/50">
+                  <div key={i} className="flex-1 min-w-[50px] p-2 text-center text-xs sm:text-sm font-label text-on-surface-variant border-r border-surface-variant">
                     {(i + 6).toString().padStart(2, '0')}:00
                   </div>
                 ))}
@@ -248,10 +275,13 @@ export default function OwnerTimelinePage() {
 
             {/* Courts */}
             <div className="relative">
-              {/* Grid Lines */}
-              <div className="absolute inset-0 flex ml-32 pointer-events-none z-0">
-                {Array.from({ length: 18 }).map((_, i) => (
-                  <div key={i} className="flex-1 border-r border-surface-variant/30" />
+              {/* Background Grid Overlay (Visible in gaps between rounded slots) */}
+              <div className="absolute inset-0 flex ml-44 pointer-events-none z-0">
+                {Array.from({ length: 18 * 2 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`flex-1 min-w-[25px] border-r ${i % 2 === 1 ? 'border-surface-variant/40' : 'border-surface-variant/10 border-dashed'}`}
+                  />
                 ))}
               </div>
 
@@ -261,54 +291,72 @@ export default function OwnerTimelinePage() {
                 courts.map(court => {
                   const courtSlots = slotsByCourt[court._id] ?? [];
                   // Build available 30-min slots for click-to-block
-                  const availableSlots = courtSlots.filter(s => s.status === 'AVAILABLE');
+                  const availableSlots = courtSlots.filter((s: any) => s.status === 'AVAILABLE');
 
                   return (
-                    <div key={court._id} className="flex border-b border-surface-variant/50 relative z-10 group">
-                      <div className="w-32 flex-shrink-0 p-4 border-r border-surface-variant bg-surface flex flex-col justify-center relative z-20">
-                        <span className="font-display font-semibold text-on-surface truncate" title={court.name}>{court.name}</span>
-                        <span className="text-xs font-label text-on-surface-variant">{court.sport_type_id?.name || 'Sân thể thao'}</span>
+                    <div key={court._id} className="flex border-b border-surface-variant/50 relative z-10 group bg-transparent">
+                      <div className="w-44 flex-shrink-0 px-4 py-2 border-r border-surface-variant bg-surface flex flex-col justify-center relative z-20">
+                        <span className="font-display font-semibold text-on-surface text-sm leading-tight" title={court.name}>{court.name}</span>
+                        <span className="text-[10px] font-label text-on-surface-variant mt-0.5">{court.sport_type_id?.name || 'Sân thể thao'}</span>
                       </div>
                       <div className="flex-1 relative h-20 bg-transparent">
                         {/* Clickable available slots overlay */}
-                        {availableSlots.map(slot => {
+                        {availableSlots.map((slot: any) => {
                           const pos = calculatePosition(slot.start_time, slot.end_time);
                           const isSelected = selectedSlots.includes(slot._id);
                           return (
                             <div
                               key={`avail-${slot._id}`}
                               onClick={() => toggleSlotSelect(slot._id, slot.status)}
-                              className={`absolute top-2 bottom-2 rounded-lg cursor-pointer border-2 transition-all z-10 ${isSelected
+                              className={`absolute top-1.5 bottom-1.5 rounded-lg cursor-pointer border-2 transition-all z-10 ${isSelected
                                 ? "bg-yellow-200 border-yellow-500 shadow-md scale-y-110"
                                 : "border-transparent hover:bg-surface-container-low hover:border-outline-variant/50"
                                 }`}
-                              style={{ left: pos.left, width: pos.width }}
+                              style={{ left: `calc(${pos.left} + 2px)`, width: `calc(${pos.width} - 4px)` }}
                               title={`${slot.start_time} - ${slot.end_time}: Trống${isSelected ? " (đang chọn)" : " - Click để chọn"}`}
                             />
                           );
                         })}
 
                         {/* Booked/Blocked slots */}
-                        {courtSlots.map(slot => {
+                        {courtSlots.map((slot: any) => {
                           const pos = calculatePosition(slot.start_time, slot.end_time);
                           if (slot.status === 'AVAILABLE') return null;
                           const isBlocked = slot.status === 'BLOCKED';
-                          const bgClass = isBlocked ? 'bg-error/10 border-error' : 'bg-primary/10 border-primary';
+                          const isUnblocking = unblockingSlotId === slot._id;
+                          const bgClass = isBlocked ? 'bg-error-container border-error/30' : 'bg-primary/10 border-primary/20';
                           const textClass = isBlocked ? 'text-error' : 'text-primary';
                           return (
                             <div
                               key={slot._id}
-                              className={`absolute top-2 bottom-2 rounded-lg border-l-4 p-2 overflow-hidden hover:shadow-md transition-shadow cursor-pointer z-20 ${bgClass}`}
-                              style={{ left: pos.left, width: pos.width }}
-                              title={`${slot.start_time} - ${slot.end_time}: ${isBlocked ? slot.block_reason || 'Bảo trì' : 'Đã đặt'}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (isBlocked) setUnblockingSlotId(isUnblocking ? null : slot._id);
+                              }}
+                              className={`absolute top-1.5 bottom-1.5 rounded-lg border border-l-4 p-2 overflow-hidden hover:shadow-md transition-all cursor-pointer z-20 ${bgClass} ${isUnblocking ? 'ring-2 ring-error shadow-xl' : ''}`}
+                              style={{ left: `calc(${pos.left} + 2px)`, width: `calc(${pos.width} - 4px)` }}
+                              title={`${slot.start_time} - ${slot.end_time}: ${isBlocked ? (slot.block_reason || 'Bảo trì') + ' - Click để quản lý' : 'Đã đặt'}`}
                             >
-                              <p className={`text-xs font-bold truncate ${textClass}`}>
-                                {isBlocked
-                                  ? <><span className="material-symbols-outlined text-[12px] align-middle">lock</span> {slot.block_reason || 'Khóa'}</>
-                                  : 'Khách đặt'
-                                }
-                              </p>
-                              <p className={`text-[10px] truncate ${textClass} opacity-80`}>{slot.start_time} - {slot.end_time}</p>
+                              <div className="flex flex-col h-full relative">
+                                <p className={`text-xs font-bold truncate ${textClass}`}>
+                                  {isBlocked
+                                    ? <><span className="material-symbols-outlined text-[14px] align-middle">lock</span> {slot.block_reason || 'Khóa'}</>
+                                    : 'Khách đặt'
+                                  }
+                                </p>
+                                <p className={`text-[10px] truncate ${textClass} opacity-80`}>{slot.start_time} - {slot.end_time}</p>
+
+                                {isUnblocking && (
+                                  <div className="absolute inset-0 bg-error flex items-center justify-center z-30 animate-in fade-in zoom-in duration-200">
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); handleUnblockSlot(slot._id); }}
+                                      className="bg-white text-error text-xs font-black px-4 py-1.5 rounded-full shadow-lg hover:bg-error-container transition-colors"
+                                    >
+                                      MỞ KHÓA
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           );
                         })}

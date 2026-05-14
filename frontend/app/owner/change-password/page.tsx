@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function OwnerChangePasswordPage() {
   return (
-    <div className="bg-background min-h-screen flex items-center justify-center font-body text-on-background p-4 relative overflow-hidden">
+    <div className="bg-background min-h-screen flex items-center justify-center font-body text-on-surface p-4 relative overflow-hidden">
       {/* Decorative Ambient Glows */}
       <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[100px] pointer-events-none"></div>

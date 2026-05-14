@@ -8,19 +8,24 @@ const sendEmail = require('../utils/sendEmail');
 // GET /api/admin/dashboard
 const getAdminDashboard = async (req, res) => {
   try {
-    const [userCount, venueCount, stats] = await Promise.all([
+    const [userCount, ownerCount, venueCount, bookingCount, stats] = await Promise.all([
       User.countDocuments({ role: 'USER' }),
+      User.countDocuments({ role: 'OWNER' }),
       VenueCluster.countDocuments({ status: 'ACTIVE' }),
+      Booking.countDocuments({ status: { $ne: 'CANCELLED' } }),
       Booking.aggregate([
-        { $match: { payment_status: 'PAID' } },
+        { $match: { payment_status: 'PAID', status: { $ne: 'CANCELLED' } } },
         { $group: { _id: null, total_revenue: { $sum: '$total_price' }, platform_fee: { $sum: '$platform_fee' } } }
       ])
     ]);
+
     res.status(200).json({
-      user_count: userCount,
-      venue_count: venueCount,
-      total_platform_fee: stats[0]?.platform_fee || 0,
-      total_revenue: stats[0]?.total_revenue || 0,
+      totalUsers: userCount,
+      totalOwners: ownerCount,
+      totalVenues: venueCount,
+      totalBookings: bookingCount,
+      totalRevenue: stats[0]?.total_revenue || 0,
+      totalPlatformFee: stats[0]?.platform_fee || 0,
     });
   } catch (error) { res.status(500).json({ message: error.message }); }
 };

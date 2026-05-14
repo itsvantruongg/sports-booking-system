@@ -53,13 +53,16 @@ function PaymentContent() {
   useEffect(() => {
     if (step !== "success") return;
     const timer = setInterval(() => {
-      setCountdown(c => {
-        if (c <= 1) { clearInterval(timer); router.push(`/user/booking-confirmation?bookingId=${bookingId}`); return 0; }
-        return c - 1;
-      });
+      setCountdown(c => (c > 0 ? c - 1 : 0));
     }, 1000);
     return () => clearInterval(timer);
-  }, [step, router]);
+  }, [step]);
+
+  useEffect(() => {
+    if (step === "success" && countdown <= 0) {
+      router.push(`/user/booking-confirmation?bookingId=${bookingId}`);
+    }
+  }, [step, countdown, router, bookingId]);
 
   const handlePay = async () => {
     const token = localStorage.getItem("access_token");

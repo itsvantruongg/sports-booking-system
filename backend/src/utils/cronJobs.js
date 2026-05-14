@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const Court = require('../models/Court');
 const PricingRule = require('../models/PricingRule');
 const TimeSlot = require('../models/TimeSlot');
+const Booking = require('../models/Booking');
 
 /**
  * Hàm sinh lịch cho một sân cụ thể trong một khoảng ngày
@@ -22,28 +23,24 @@ const generateSlotsForCourt = async (courtId, startDate, endDate) => {
 
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     const dayType = [0, 6].includes(d.getDay()) ? 'WEEKEND' : 'WEEKDAY';
-
-    // Sửa lỗi: toISOString() có thể làm lệch ngày nếu ở múi giờ GMT+7
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     const dateStr = `${y}-${m}-${day}`;
     const slotDate = new Date(dateStr + "T00:00:00.000Z");
 
-    console.log(`[Cron] Processing ${courtId} for ${dateStr} (${dayType})`);
-
     const rules = await PricingRule.find({ court_id: courtId, day_type: dayType });
-
     const targetSlots = [...defaultIntervals];
 
     for (const rule of rules) {
-      // Chuẩn hóa giờ (VD: 6:00 -> 06:00)
       const normStart = rule.slot_start.includes(':') && rule.slot_start.length === 4 ? '0' + rule.slot_start : rule.slot_start;
       const isDefault = defaultIntervals.some(i => i.start === normStart);
-      if (!isDefault) {
-        targetSlots.push({ start: normStart, end: rule.slot_end });
-      }
+      if (!isDefault) targetSlots.push({ start: normStart, end: rule.slot_end });
     }
+
+    // TỐI ƯU: Sử dụng bulkWrite để giảm số lần gọi Database
+    const ops = [];
+    const existingSlots = await TimeSlot.find({ court_id: courtId, slot_date: slotDate });
 
     for (const target of targetSlots) {
       const rule = rules.find(r => {
@@ -51,79 +48,73 @@ const generateSlotsForCourt = async (courtId, startDate, endDate) => {
         return rs === target.start;
       });
 
-      const slotData = {
-        end_time: rule ? rule.slot_end : target.end,
-        price: rule ? rule.price_per_slot : 100000,
-        label: rule ? rule.label : 'Giá mặc định',
-      };
-
-      // Tìm slot hiện có để giữ nguyên status (tránh ghi đè BOOKED thành AVAILABLE)
-      const existing = await TimeSlot.findOne({ court_id: courtId, slot_date: slotDate, start_time: target.start });
+      const existing = existingSlots.find(s => s.start_time === target.start);
       const status = existing ? existing.status : 'AVAILABLE';
 
-      await TimeSlot.findOneAndUpdate(
-        { court_id: courtId, slot_date: slotDate, start_time: target.start },
-        { ...slotData, status },
-        { upsert: true, new: true }
-      );
+      ops.push({
+        updateOne: {
+          filter: { court_id: courtId, slot_date: slotDate, start_time: target.start },
+          update: {
+            $set: {
+              end_time: rule ? rule.slot_end : target.end,
+              price: rule ? rule.price_per_slot : 100000,
+              label: rule ? rule.label : 'Giá mặc định',
+              status
+            }
+          },
+          upsert: true
+        }
+      });
+    }
+
+    if (ops.length > 0) {
+      await TimeSlot.bulkWrite(ops);
     }
   }
-  console.log(`[Cron] Finished generation for Court ${courtId}`);
+  console.log(`[Cron] Bulk generated/updated slots for Court ${courtId}`);
 };
 
 /**
- * Tác vụ tự động chạy vào 00:01 mỗi đêm
- * Tự động tạo lịch cho ngày thứ 30 kể từ hôm nay
- * ĐỒNG THỜI: Kiểm tra và bù lịch cho 7 ngày tới nếu còn trống (chạy khi khởi động)
+ * Tác vụ tự động chạy
  */
 const initCronJobs = async () => {
-  // 1. Chạy ngay khi khởi động: Kiểm tra 7 ngày tới
-  console.log('--- STARTING STARTUP SLOT CHECK (Next 7 days) ---');
+  console.log('--- SYSTEM BACKGROUND TASKS INITIALIZING ---');
+
   try {
-    const courts = await Court.find({ status: 'ACTIVE' });
-    console.log(`Found ${courts.length} ACTIVE courts to process.`);
-
-    for (let i = 0; i <= 7; i++) {
-      const targetDate = new Date();
-      targetDate.setDate(targetDate.getDate() + i);
-      const dateStr = targetDate.toISOString().split('T')[0];
-
-      for (const court of courts) {
-        await generateSlotsForCourt(court._id, dateStr, dateStr);
-      }
-    }
-    console.log('--- STARTUP SLOT CHECK COMPLETED ---');
-  } catch (err) {
-    console.error('--- STARTUP SLOT CHECK FAILED ---', err);
-  }
-
-  // 1.5 Chạy ngay khi khởi động: Tự động hoàn thành các đơn đã qua giờ
-  await autoCompleteBookings();
-
-  // 2. Lập lịch chạy hàng đêm lúc 00:01
-  cron.schedule('1 0 * * *', async () => {
-    console.log('--- STARTING AUTO SLOT GENERATION ---');
-    try {
-      const courts = await Court.find({ status: 'ACTIVE' });
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 30);
-      const dateStr = futureDate.toISOString().split('T')[0];
-
-      for (const court of courts) {
-        await generateSlotsForCourt(court._id, dateStr, dateStr);
-      }
-      console.log(`--- AUTO GENERATION SUCCESS FOR DATE: ${dateStr} ---`);
-    } catch (error) {
-      console.error('--- AUTO GENERATION FAILED ---', error);
-    }
-  });
-
-  // 3. Tác vụ tự động hoàn thành đơn đặt sân (Chạy mỗi 30 phút)
-  cron.schedule('*/30 * * * *', async () => {
+    // 1. Tự động hoàn thành các đơn đã qua giờ & Sửa lỗi slot mồ côi (Chạy mỗi khi khởi động)
     await autoCompleteBookings();
-  });
 
-  console.log('Cron Jobs initialized: Automated slot generation and auto-completion active.');
+    // 2. Lập lịch quét tự động mỗi 30 phút
+    cron.schedule('*/30 * * * *', async () => {
+      await autoCompleteBookings();
+    });
+
+    // 3. Lập lịch chạy hàng đêm lúc 00:01 để sinh lịch cho ngày thứ 30 kể từ hôm nay
+    cron.schedule('1 0 * * *', async () => {
+      console.log('--- STARTING NIGHTLY SLOT PRE-GENERATION ---');
+      try {
+        const courts = await Court.find({ status: 'ACTIVE' });
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + 30);
+
+        const y = futureDate.getFullYear();
+        const m = String(futureDate.getMonth() + 1).padStart(2, '0');
+        const d = String(futureDate.getDate()).padStart(2, '0');
+        const dateStr = `${y}-${m}-${d}`;
+
+        for (const court of courts) {
+          await generateSlotsForCourt(court._id, dateStr, dateStr);
+        }
+        console.log(`--- NIGHTLY SLOT GENERATION COMPLETED FOR DATE: ${dateStr} ---`);
+      } catch (err) {
+        console.error('--- NIGHTLY SLOT GENERATION FAILED ---', err);
+      }
+    });
+
+    console.log('✅ Cron Jobs initialized: Background tasks are active.');
+  } catch (error) {
+    console.error('❌ Failed to initialize Cron Jobs:', error);
+  }
 };
 
 /**
@@ -200,5 +191,4 @@ const autoCompleteBookings = async () => {
   }
 };
 
-const Booking = require('../models/Booking');
 module.exports = { initCronJobs, generateSlotsForCourt };

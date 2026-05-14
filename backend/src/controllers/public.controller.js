@@ -101,23 +101,37 @@ const getCourtTimeSlots = async (req, res) => {
 
     console.log(`[PublicAPI] Fetching slots for court ${req.params.id} on ${date} (UTC: ${startOfDay.toISOString()} - ${endOfDay.toISOString()})`);
 
-    const slots = await TimeSlot.find({
+    let slots = await TimeSlot.find({
       court_id: req.params.id,
       slot_date: { $gte: startOfDay, $lte: endOfDay },
       status: 'AVAILABLE',
     }).sort('start_time');
+
+    // TỐI ƯU: Lazy Generation - Nếu chưa có lịch, sinh ngay lúc khách cần xem
+    if (slots.length === 0) {
+      const { generateSlotsForCourt } = require('../utils/cronJobs');
+      console.log(`[PublicAPI] No slots found for ${date}. Triggering lazy generation...`);
+      await generateSlotsForCourt(req.params.id, date, date);
+
+      // Lấy lại sau khi sinh
+      slots = await TimeSlot.find({
+        court_id: req.params.id,
+        slot_date: { $gte: startOfDay, $lte: endOfDay },
+        status: 'AVAILABLE',
+      }).sort('start_time');
+    }
 
     console.log(`[PublicAPI] Found ${slots.length} available slots.`);
 
     // Lọc bỏ các ca đã quá giờ nếu là ngày hôm nay
     const now = new Date();
     const todayStr = now.toISOString().split('T')[0];
-    
+
     let results = slots;
     if (date === todayStr) {
       const currentHour = now.getHours();
       const currentMinute = now.getMinutes();
-      
+
       results = slots.filter(slot => {
         const [slotHour, slotMin] = slot.start_time.split(':').map(Number);
         // Chỉ hiện các ca bắt đầu sau giờ hiện tại

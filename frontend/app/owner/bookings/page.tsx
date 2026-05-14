@@ -102,7 +102,7 @@ export default function OwnerBookingsPage() {
       {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
-          <h1 className="text-4xl md:text-5xl font-display font-black tracking-tight text-on-surface">Quản lý Đặt Sân</h1>
+          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-on-surface">Quản lý Đặt Sân</h1>
           <p className="text-on-surface-variant font-body mt-2">Xem và xử lý các yêu cầu đặt sân từ khách hàng.</p>
         </div>
         <button onClick={fetchBookings} className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface font-bold text-sm hover:bg-surface-container transition-colors">

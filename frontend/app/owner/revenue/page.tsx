@@ -124,7 +124,7 @@ export default function OwnerRevenuePage() {
       {/* Header Section */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
         <div>
-          <h1 className="font-display text-4xl md:text-5xl font-extrabold text-on-surface mb-2 tracking-tight">Báo Cáo Doanh Thu</h1>
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-on-surface mb-2 tracking-tight">Báo Cáo Doanh Thu</h1>
           <p className="font-body text-lg text-on-surface-variant">Tổng quan tài chính trong tháng</p>
         </div>
         <div className="flex items-center gap-4 w-full md:w-auto">

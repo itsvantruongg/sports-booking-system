@@ -5,7 +5,7 @@ const {
   createPricingRule, getOwnerTimeSlots, blockSlots,
   getOwnerBookings, updateBookingStatus, getOwnerReport, getOwnerCustomers,
   generateSlots, getPricingRules, deletePricingRule, confirmBookingPayment,
-  updatePricingRule, bulkCreatePricingRules
+  updatePricingRule, bulkCreatePricingRules, unblockSlots
 } = require('../controllers/owner.controller');
 const { protect, checkMustChangePassword } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
@@ -176,6 +176,7 @@ router.get('/time-slots', getOwnerTimeSlots);
  *         description: Khóa thành công
  */
 router.post('/time-slots/block', blockSlots);
+router.post('/time-slots/unblock', unblockSlots);
 router.post('/time-slots/generate', generateSlots);
 
 /**

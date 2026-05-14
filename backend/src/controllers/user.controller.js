@@ -189,35 +189,57 @@ const getFavorites = async (req, res) => {
     const user = await User.findById(req.user._id).populate('favorites');
     if (!user) return res.status(404).json({ message: 'User not found' });
 
+    console.log(`[UserAPI] User ${req.user._id} has ${user.favorites.length} items in favorites list.`);
+
     // Lọc bỏ các favorite bị null (do venue đã bị xóa)
     const validFavorites = user.favorites.filter(f => f != null);
 
+    if (user.favorites.length !== validFavorites.length) {
+      console.warn(`[UserAPI] Filtered out ${user.favorites.length - validFavorites.length} null favorites (possibly deleted venues).`);
+    }
+
     // Populate ratings for each favorite
     const results = await Promise.all(validFavorites.map(async (cluster) => {
-      const clusterObj = cluster.toObject();
-      const ratingAgg = await Review.aggregate([
-        { $match: { cluster_id: cluster._id } },
-        { $group: { _id: null, avg: { $avg: '$rating' }, count: { $sum: 1 } } }
-      ]);
-      const rating = ratingAgg[0] || { avg: 0, count: 0 };
-      return { ...clusterObj, avg_rating: Number(rating.avg.toFixed(1)), review_count: rating.count };
+      try {
+        const clusterObj = cluster.toObject();
+        const ratingAgg = await Review.aggregate([
+          { $match: { cluster_id: cluster._id } },
+          { $group: { _id: null, avg: { $avg: '$rating' }, count: { $sum: 1 } } }
+        ]);
+        const rating = ratingAgg[0] || { avg: 0, count: 0 };
+        return { ...clusterObj, avg_rating: Number(rating.avg.toFixed(1)), review_count: rating.count };
+      } catch (err) {
+        console.error(`[UserAPI] Error processing favorite cluster ${cluster._id}:`, err);
+        return null;
+      }
     }));
 
-    res.status(200).json(results);
-  } catch (error) { res.status(500).json({ message: error.message }); }
+    const finalResults = results.filter(r => r != null);
+    res.status(200).json(finalResults);
+  } catch (error) {
+    console.error(`[UserAPI] Get favorites failed:`, error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
 // POST /api/users/favorites
 const addFavorite = async (req, res) => {
   try {
     const { venue_id } = req.body;
+    console.log(`[UserAPI] Adding favorite: User=${req.user._id}, Venue=${venue_id}`);
+
     if (!venue_id) return res.status(400).json({ message: 'Thiếu venue_id' });
 
-    await User.findByIdAndUpdate(req.user._id, {
+    const updatedUser = await User.findByIdAndUpdate(req.user._id, {
       $addToSet: { favorites: venue_id }
-    });
+    }, { new: true });
+
+    console.log(`[UserAPI] Favorite added successfully. Total favorites: ${updatedUser.favorites.length}`);
     res.status(200).json({ message: 'Đã thêm vào yêu thích' });
-  } catch (error) { res.status(500).json({ message: error.message }); }
+  } catch (error) {
+    console.error(`[UserAPI] Add favorite failed:`, error);
+    res.status(500).json({ message: 'Lỗi hệ thống khi thêm yêu thích: ' + error.message });
+  }
 };
 
 // DELETE /api/users/favorites/:id
@@ -242,7 +264,7 @@ const processPayment = async (req, res) => {
     }
 
     booking.payment_method = method;
-    
+
     // Tìm chủ sân để gửi thông báo
     const court = await Court.findById(booking.court_id).populate('cluster_id');
     const ownerId = court.cluster_id.owner_id;
@@ -280,8 +302,8 @@ const processPayment = async (req, res) => {
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
-module.exports = { 
-  getMe, updateMe, createBooking, getMyBookings, getBookingById, 
+module.exports = {
+  getMe, updateMe, createBooking, getMyBookings, getBookingById,
   cancelBooking, createReview, getFavorites, addFavorite, removeFavorite,
   processPayment
 };
