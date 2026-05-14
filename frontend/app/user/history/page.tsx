@@ -1,180 +1,253 @@
 "use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Toast from "@/components/ui/Toast";
 
 export default function UserHistoryPage() {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'Upcoming' | 'Completed' | 'Cancelled'>('Upcoming');
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+      try {
+        const res = await fetch("http://localhost:5000/api/users/bookings", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setBookings(Array.isArray(data) ? data : data.data ?? []);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBookings();
+  }, [router]);
+
+  const filteredBookings = bookings.filter((b) => {
+    if (activeTab === 'Upcoming') return ['PENDING', 'CONFIRMED'].includes(b.status);
+    if (activeTab === 'Completed') return b.status === 'COMPLETED';
+    if (activeTab === 'Cancelled') return b.status === 'CANCELLED';
+    return true;
+  });
+
+  const totalHours = bookings.reduce((sum, b) => {
+    if (b.status === 'COMPLETED') {
+      const start = new Date(`1970-01-01T${b.start_time}:00Z`);
+      const end = new Date(`1970-01-01T${b.end_time}:00Z`);
+      return sum + (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+    }
+    return sum;
+  }, 0);
+
+  const upcomingCount = bookings.filter(b => ['PENDING', 'CONFIRMED'].includes(b.status)).length;
+
+  const handleCancel = async (bookingId: string) => {
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    setCancellingId(bookingId);
+    try {
+      const res = await fetch(`http://localhost:5000/api/users/bookings/${bookingId}/cancel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ cancel_reason: 'User cancelled via dashboard' }),
+      });
+      if (res.ok) {
+        setBookings(prev => prev.map(b => b._id === bookingId ? { ...b, status: 'CANCELLED' } : b));
+        setConfirmCancelId(null);
+        setToast({ message: "Đã hủy đơn đặt sân thành công", type: "success" });
+      } else {
+        const err = await res.json();
+        setToast({ message: err.message || "Không thể hủy đơn này", type: "error" });
+      }
+    } catch {
+      setToast({ message: "Lỗi kết nối máy chủ", type: "error" });
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'CONFIRMED': return 'bg-green-500/10 text-green-600 border-green-500/20';
+      case 'PENDING': return 'bg-amber-500/10 text-amber-600 border-amber-500/20';
+      case 'CANCELLED': return 'bg-red-500/10 text-red-600 border-red-500/20';
+      case 'COMPLETED': return 'bg-primary/10 text-primary border-primary/20';
+      default: return 'bg-surface-container-highest text-on-surface-variant border-outline-variant/30';
+    }
+  };
+
   return (
-    <>
-      <main className="flex-grow w-full max-w-[1440px] mx-auto px-4 md:px-8 py-8 md:py-12 flex flex-col lg:flex-row gap-8 lg:gap-12 relative">
-{/* Left Column: Bookings Area */}
-<div className="flex-grow flex flex-col gap-8 w-full lg:w-2/3">
-{/* Page Header & Tabs */}
-<div className="flex flex-col gap-6">
-<div>
-<h1 className="text-4xl md:text-5xl font-display font-black tracking-tight text-on-surface">My Bookings</h1>
-<p className="text-lg text-on-surface-variant mt-2 font-body">Manage your upcoming matches and view your history.</p>
-</div>
-{/* Custom Tabs */}
-<div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-<button className="px-6 py-3 rounded-full bg-surface-container-high text-on-surface font-headline font-bold text-sm whitespace-nowrap transition-all shadow-[0_12px_40px_rgba(25,27,37,0.06)] hover:bg-surface-container-highest">
-                        Upcoming
-                    </button>
-<button className="px-6 py-3 rounded-full bg-surface text-on-surface-variant font-headline font-semibold text-sm whitespace-nowrap hover:bg-surface-container-low transition-all">
-                        Completed
-                    </button>
-<button className="px-6 py-3 rounded-full bg-surface text-on-surface-variant font-headline font-semibold text-sm whitespace-nowrap hover:bg-surface-container-low transition-all">
-                        Cancelled
-                    </button>
-</div>
-</div>
-{/* Bookings List (Asymmetrical/Cards) */}
-<div className="flex flex-col gap-6">
-{/* Booking Card 1 (Upcoming - High Priority) */}
-<div className="bg-surface-container-lowest rounded-xl md:rounded-xl overflow-hidden flex flex-col md:flex-row shadow-[0_12px_40px_rgba(25,27,37,0.06)] group hover:shadow-[0_20px_60px_rgba(25,27,37,0.1)] transition-all duration-300">
-{/* Image Area */}
-<div className="w-full md:w-1/3 h-48 md:h-auto relative overflow-hidden">
-<img alt="Padel court" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="High quality wide angle shot of a modern blue padel court outdoors under bright sunny sky with glass walls" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvtS3JLPev0Ln34ywImlSI9ReO-_A0sgIVBIb_blFc_XfU9PvTCdEI_RJLr9EtWF1rhpGPx6heQIKq3ZDI-RAsqaRBVFOwepFC2FBuAHjYAYPjwb-CLgcfOHzplD_BlhNy_zR6XyIFS6PpwGGp4V7uFNOcMVxwfbxO_Xp5ldLw6lRO17cEJ_6eEy8ra4bLogOv361dp7CiyLpJn6-JL-NJ62xwg-Z5mMP-O__vkbhRCdOh9U0jzco4-BUtolJ_bNiwW7C3HkqSNgs" />
-<div className="absolute top-4 left-4 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold font-headline flex items-center gap-1 shadow-sm">
-<span className="material-symbols-outlined text-[14px]">bolt</span>
-                            Confirmed
-                        </div>
-</div>
-{/* Content Area */}
-<div className="p-6 md:p-8 flex flex-col justify-between flex-grow w-full md:w-2/3 bg-surface-container-lowest">
-<div>
-<div className="flex justify-between items-start mb-2">
-<h3 className="text-2xl font-display font-black tracking-tight text-on-surface">Oasis Padel Club</h3>
-<span className="text-lg font-headline font-bold text-primary">$45.00</span>
-</div>
-<p className="text-on-surface-variant font-body mb-6 flex items-center gap-2">
-<span className="material-symbols-outlined text-[18px]">location_on</span>
-                                Court 3 - Premium Glass
-                            </p>
-<div className="grid grid-cols-2 gap-4 mb-6">
-<div className="bg-surface-container-low p-3 rounded-lg flex items-center gap-3">
-<span className="material-symbols-outlined text-primary">calendar_today</span>
-<div>
-<p className="text-xs text-on-surface-variant font-medium">Date</p>
-<p className="text-sm font-bold font-headline text-on-surface">Thu, Oct 26</p>
-</div>
-</div>
-<div className="bg-surface-container-low p-3 rounded-lg flex items-center gap-3">
-<span className="material-symbols-outlined text-primary">schedule</span>
-<div>
-<p className="text-xs text-on-surface-variant font-medium">Time</p>
-<p className="text-sm font-bold font-headline text-on-surface">18:00 - 19:30</p>
-</div>
-</div>
-</div>
-</div>
-<div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-auto">
-<div className="flex -space-x-2">
-<div className="w-8 h-8 rounded-full bg-surface-variant border-2 border-surface-container-lowest flex items-center justify-center text-xs font-bold text-on-surface-variant">4P</div>
-</div>
-<div className="flex gap-3 w-full sm:w-auto">
-<button className="flex-1 sm:flex-none px-4 py-2 rounded-full font-headline font-bold text-sm border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors">
-                                    Cancel
-                                </button>
-<button className="flex-1 sm:flex-none px-6 py-2 rounded-full font-headline font-bold text-sm bg-primary text-on-primary bg-gradient-to-br from-primary to-primary-container hover:shadow-lg transition-all">
-                                    Manage
-                                </button>
-</div>
-</div>
-</div>
-</div>
-{/* Booking Card 2 */}
-<div className="bg-surface-container-lowest rounded-xl md:rounded-xl overflow-hidden flex flex-col md:flex-row shadow-[0_4px_20px_rgba(25,27,37,0.04)] group hover:shadow-[0_12px_40px_rgba(25,27,37,0.06)] transition-all duration-300">
-{/* Image Area */}
-<div className="w-full md:w-1/3 h-48 md:h-auto relative overflow-hidden">
-<img alt="Tennis court" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90" data-alt="Overhead shot of a green hard tennis court with white lines and bright sunlight casting shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJV4M0A6DLzGcX2UicHpG2LFSXGTnQvFU_uboqasnUEbWZctDVx0rsAkCpR16CNuqtA5P8G6a-3drkKDFz8xPgGTIaRXM4ZpUEkchtmNMN-_5-Tclg9BQmCk-cKitORo3nWCP5ZmFpM_b92FDCo1BFlvcQAS_JZcNtdEUJO0LwBzXoJkRuZqpeDPQfuIlmFXSINKgUkgpX9MzngOz5KsYj9x6n_UgpDoHN8FDhzR3UjuvkW49AA2V38n3yb1bboFOPJcGDC-6OGps" />
-<div className="absolute top-4 left-4 bg-surface/80 backdrop-blur-md text-on-surface px-3 py-1 rounded-full text-xs font-bold font-headline flex items-center gap-1 shadow-sm">
-                            Upcoming
-                        </div>
-</div>
-{/* Content Area */}
-<div className="p-6 md:p-8 flex flex-col justify-between flex-grow w-full md:w-2/3 bg-surface-container-lowest">
-<div>
-<div className="flex justify-between items-start mb-2">
-<h3 className="text-2xl font-display font-bold tracking-tight text-on-surface">Downtown Tennis Center</h3>
-<span className="text-lg font-headline font-bold text-primary">$30.00</span>
-</div>
-<p className="text-on-surface-variant font-body mb-6 flex items-center gap-2">
-<span className="material-symbols-outlined text-[18px]">location_on</span>
-                                Court 1 - Hard Court
-                            </p>
-<div className="grid grid-cols-2 gap-4 mb-6">
-<div className="bg-surface-container-low p-3 rounded-lg flex items-center gap-3">
-<span className="material-symbols-outlined text-primary">calendar_today</span>
-<div>
-<p className="text-xs text-on-surface-variant font-medium">Date</p>
-<p className="text-sm font-bold font-headline text-on-surface">Sat, Oct 28</p>
-</div>
-</div>
-<div className="bg-surface-container-low p-3 rounded-lg flex items-center gap-3">
-<span className="material-symbols-outlined text-primary">schedule</span>
-<div>
-<p className="text-xs text-on-surface-variant font-medium">Time</p>
-<p className="text-sm font-bold font-headline text-on-surface">09:00 - 10:30</p>
-</div>
-</div>
-</div>
-</div>
-<div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-auto">
-<div className="flex -space-x-2">
-<div className="w-8 h-8 rounded-full bg-surface-variant border-2 border-surface-container-lowest flex items-center justify-center text-xs font-bold text-on-surface-variant">2P</div>
-</div>
-<div className="flex gap-3 w-full sm:w-auto">
-<button className="flex-1 sm:flex-none px-4 py-2 rounded-full font-headline font-bold text-sm border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors">
-                                    Cancel
-                                </button>
-<button className="flex-1 sm:flex-none px-6 py-2 rounded-full font-headline font-bold text-sm bg-surface-container text-primary hover:bg-surface-container-high transition-all">
-                                    Manage
-                                </button>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-{/* Right Column: Sidebar Summary */}
-<div className="w-full lg:w-1/3 flex flex-col gap-6">
-{/* Summary Widget (Glassmorphism/Floating vibe) */}
-<div className="bg-surface-container-low rounded-xl p-8 sticky top-32">
-<h3 className="text-xl font-display font-black tracking-tight text-on-surface mb-6">Monthly Summary</h3>
-<div className="flex flex-col gap-6">
-{/* Stat 1 */}
-<div className="bg-surface-container-lowest rounded-lg p-5 shadow-sm border border-outline-variant/10">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-<span className="material-symbols-outlined">timer</span>
-</div>
-<div>
-<p className="text-sm text-on-surface-variant font-medium">Total Hours Played</p>
-<p className="text-2xl font-headline font-black text-on-surface">12.5 <span className="text-sm font-medium text-on-surface-variant">hrs</span></p>
-</div>
-</div>
-</div>
-{/* Stat 2 */}
-<div className="bg-surface-container-lowest rounded-lg p-5 shadow-sm border border-outline-variant/10">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
-<span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>sports_tennis</span>
-</div>
-<div>
-<p className="text-sm text-on-surface-variant font-medium">Upcoming Sessions</p>
-<p className="text-2xl font-headline font-black text-on-surface">3</p>
-</div>
-</div>
-</div>
-</div>
-<div className="mt-8 pt-6 border-t border-outline-variant/20">
-<button className="w-full py-3 rounded-full font-headline font-bold text-sm bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2">
-                        View Full History
-                        <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-</button>
-</div>
-</div>
-</div>
-      </main>
-    </>
+    <main className="w-full max-w-[1440px] mx-auto px-4 md:px-8 py-12 flex flex-col lg:flex-row gap-12">
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      
+      {/* Cancel Dialog */}
+      {confirmCancelId && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-surface-container-lowest/80 backdrop-blur-xl animate-in fade-in">
+          <div className="bg-surface-container-low rounded-[2rem] p-10 max-w-sm w-full mx-4 shadow-2xl border border-outline-variant/20">
+            <div className="flex flex-col items-center text-center mb-8">
+              <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mb-6">
+                <span className="material-symbols-outlined text-4xl text-red-500">warning</span>
+              </div>
+              <h3 className="text-2xl font-black text-on-surface mb-2">Xác nhận hủy?</h3>
+              <p className="text-on-surface-variant font-bold opacity-60">Bạn có chắc chắn muốn hủy lịch đặt sân này không? Hành động này không thể hoàn tác.</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <button onClick={() => setConfirmCancelId(null)} className="py-4 rounded-2xl font-black text-sm border border-outline-variant/30 text-on-surface hover:bg-surface-container-highest transition-all">Quay lại</button>
+              <button onClick={() => handleCancel(confirmCancelId)} disabled={cancellingId === confirmCancelId} className="py-4 rounded-2xl bg-red-500 text-white font-black text-sm hover:shadow-xl hover:shadow-red-500/20 transition-all disabled:opacity-40">
+                {cancellingId === confirmCancelId ? 'Đang xử lý...' : 'Đồng ý hủy'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Left Area: History List */}
+      <div className="flex-grow space-y-10">
+        <header>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-on-surface mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>Lịch sử đặt sân</h1>
+          <p className="text-on-surface-variant font-bold opacity-60">Quản lý các trận đấu sắp tới và xem lại hành trình thể thao của bạn.</p>
+        </header>
+
+        <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar border-b border-outline-variant/10">
+          {(['Upcoming', 'Completed', 'Cancelled'] as const).map(tab => (
+            <button 
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' : 'text-on-surface-variant hover:bg-primary/5'}`}
+            >
+              {tab === 'Upcoming' ? 'Sắp diễn ra' : tab === 'Completed' ? 'Đã hoàn thành' : 'Đã hủy'}
+            </button>
+          ))}
+        </div>
+
+        <div className="space-y-6">
+          {loading ? (
+            <div className="flex flex-col items-center py-24 gap-4">
+              <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-xs font-black text-outline uppercase tracking-widest">Đang tải dữ liệu...</p>
+            </div>
+          ) : filteredBookings.length === 0 ? (
+            <div className="py-32 text-center bg-surface-container-low rounded-[2.5rem] border border-dashed border-outline-variant/30">
+              <span className="material-symbols-outlined text-6xl opacity-10 mb-4 block">event_busy</span>
+              <p className="text-on-surface-variant font-black">Không có lịch đặt sân nào trong mục này.</p>
+              <Link href="/fields" className="mt-6 inline-block text-primary font-black hover:underline">Đặt sân ngay</Link>
+            </div>
+          ) : (
+            filteredBookings.map((booking) => (
+              <div key={booking._id} className="bg-surface-container-low rounded-[2rem] overflow-hidden flex flex-col md:flex-row border border-outline-variant/10 group hover:shadow-2xl hover:shadow-primary/5 transition-all">
+                <div className="w-full md:w-56 h-48 md:h-auto shrink-0 relative bg-surface-container">
+                  <img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=1000&auto=format&fit=crop" alt="Venue" />
+                  <div className={`absolute top-4 left-4 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter border ${getStatusColor(booking.status)}`}>
+                    {booking.status}
+                  </div>
+                </div>
+                
+                <div className="p-8 flex flex-col flex-1">
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <h3 className="text-2xl font-black text-on-surface mb-2">{booking.court_id?.name || 'Sân thể thao'}</h3>
+                      <p className="text-xs font-black text-on-surface-variant opacity-60 uppercase tracking-widest flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm">location_on</span>
+                        {booking.court_id?.cluster_id?.name || booking.court_id?.cluster_id?.address || 'Địa điểm chưa xác định'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-black text-primary">{booking.total_price?.toLocaleString('vi-VN')} ₫</p>
+                      <p className="text-[10px] font-black text-outline uppercase tracking-widest">Đã thanh toán</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                    <div className="bg-surface-container-highest/30 p-4 rounded-2xl border border-outline-variant/5">
+                      <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1">Ngày đá</p>
+                      <p className="font-black text-on-surface text-sm">{new Date(booking.booking_date).toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric', month: 'numeric' })}</p>
+                    </div>
+                    <div className="bg-surface-container-highest/30 p-4 rounded-2xl border border-outline-variant/5">
+                      <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1">Thời gian</p>
+                      <p className="font-black text-on-surface text-sm">{booking.start_time} - {booking.end_time}</p>
+                    </div>
+                    <div className="bg-surface-container-highest/30 p-4 rounded-2xl border border-outline-variant/5 hidden md:block">
+                      <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1">Mã đặt sân</p>
+                      <p className="font-black text-on-surface text-sm">#{booking._id.slice(-6).toUpperCase()}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-auto pt-6 border-t border-outline-variant/10">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                      <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Sân đã sẵn sàng</span>
+                    </div>
+                    <div className="flex gap-3">
+                      {['PENDING', 'CONFIRMED'].includes(booking.status) && (
+                        <button onClick={() => setConfirmCancelId(booking._id)} className="px-6 py-2.5 rounded-xl font-black text-xs text-red-500 hover:bg-red-500/5 transition-all">Hủy đặt sân</button>
+                      )}
+                      <Link href={`/user/history/${booking._id}`} className="px-6 py-2.5 rounded-xl bg-surface-container-highest text-on-surface font-black text-xs hover:bg-primary/10 hover:text-primary transition-all">Chi tiết hóa đơn</Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Right Sidebar: Summary */}
+      <aside className="w-full lg:w-96 shrink-0">
+        <div className="bg-surface-container-low rounded-[2.5rem] p-10 border border-outline-variant/10 sticky top-32 shadow-xl shadow-primary/5">
+          <h3 className="text-xl font-black mb-8 flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary">analytics</span>
+            Thống kê tháng này
+          </h3>
+          
+          <div className="space-y-6">
+            <div className="bg-surface-container-lowest p-6 rounded-3xl border border-outline-variant/10 group hover:border-primary/30 transition-all">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined">timer</span>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1">Tổng giờ chơi</p>
+                  <p className="text-3xl font-black text-on-surface">{totalHours.toFixed(1)} <span className="text-xs font-bold text-outline uppercase">Giờ</span></p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-surface-container-lowest p-6 rounded-3xl border border-outline-variant/10 group hover:border-secondary/30 transition-all">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>sports_soccer</span>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1">Trận sắp tới</p>
+                  <p className="text-3xl font-black text-on-surface">{upcomingCount} <span className="text-xs font-bold text-outline uppercase">Trận</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 p-6 bg-primary rounded-3xl text-on-primary">
+            <p className="text-sm font-black mb-2 flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]">verified</span>
+              Thành viên Kim cương
+            </p>
+            <p className="text-xs font-bold opacity-80 leading-relaxed">Bạn nhận được ưu đãi giảm 10% cho tất cả các lần đặt sân trong tháng này!</p>
+          </div>
+        </div>
+      </aside>
+    </main>
   );
 }

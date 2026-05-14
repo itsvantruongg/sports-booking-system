@@ -1,7 +1,125 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function UserProfilePage() {
+  const router = useRouter();
+  
+  // Profile State
+  const [profile, setProfile] = useState({ name: "", email: "", phone: "", role: "" });
+  const [loading, setLoading] = useState(true);
+  
+  // Password State
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:5000/api/users/me", {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setProfile({
+            name: data.name || "",
+            email: data.email || "",
+            phone: data.phone || "",
+            role: data.role || "USER"
+          });
+        } else {
+          localStorage.removeItem("access_token");
+          router.push("/login");
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [router]);
+
+  const handleUpdateProfile = async () => {
+    const token = localStorage.getItem("access_token");
+    try {
+      const res = await fetch("http://localhost:5000/api/users/me", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: profile.name,
+          phone: profile.phone
+        })
+      });
+      if (res.ok) {
+        alert("Cập nhật thông tin thành công!");
+      } else {
+        const data = await res.json();
+        alert(data.message || "Cập nhật thất bại");
+      }
+    } catch (error) {
+      alert("Lỗi kết nối");
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      alert("Mật khẩu xác nhận không khớp!");
+      return;
+    }
+    
+    const token = localStorage.getItem("access_token");
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/force-change", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          old_password: oldPassword,
+          new_password: newPassword
+        })
+      });
+      if (res.ok) {
+        alert("Đổi mật khẩu thành công!");
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        const data = await res.json();
+        alert(data.message || "Đổi mật khẩu thất bại");
+      }
+    } catch (error) {
+      alert("Lỗi kết nối");
+    }
+  };
+
+  const handleSignOut = (e: React.MouseEvent) => {
+    e.preventDefault();
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user_role");
+    router.push("/login");
+  };
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-full min-h-[500px]">Đang tải...</div>;
+  }
+
   return (
     <>
       <main className="flex-grow w-full max-w-[1440px] mx-auto px-4 md:px-8 py-12">
@@ -16,14 +134,14 @@ export default function UserProfilePage() {
 <div className="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.06)] relative overflow-hidden group">
 <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110 duration-500"></div>
 <div className="flex flex-col items-center text-center relative z-10">
-<div className="w-32 h-32 rounded-full overflow-hidden mb-6 border-4 border-surface-container-low shadow-sm">
-<img alt="Profile Picture" className="w-full h-full object-cover" data-alt="close up portrait of a confident young professional woman in athletic wear outdoors with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB42cLPzIxYnD053jAIeuGzp9Sc4v2RU206f9asY1MY_2HACJtKOyxWNBlYrmOnd0AE2y6dZlY2xDHAlxmTK9C6sFE9jtXp_TTdz529WBcmFkrvIliOaJAjHuaz2kcxogz4ByIof6-ODFvOQWkBBC5juZe6s2v3wluvAKQ4fmiTtivW8VQD8LiP210Fi-8-p-WRSZMRfx81Ighu5tg03FhgMbNGJDd53gzwNV3vaVoJsVjxqmwwBebB0_W-Gh0NJKsmEmho4fW2LL4" />
+<div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center text-on-primary text-5xl font-bold mb-6 border-4 border-surface-container-low shadow-sm">
+  {profile.name.charAt(0).toUpperCase()}
 </div>
-<h2 className="text-2xl font-bold font-display text-on-surface mb-1">Alex Morgan</h2>
+<h2 className="text-2xl font-bold font-display text-on-surface mb-1">{profile.name}</h2>
 <div className="flex items-center gap-2 mb-6">
-<span className="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-sm font-semibold font-body flex items-center gap-1">
+<span className="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-sm font-semibold font-body flex items-center gap-1 uppercase">
 <span className="material-symbols-outlined text-sm" data-icon="verified">verified</span>
-                                Pro Member
+                                {profile.role}
                             </span>
 </div>
 <div className="w-full pt-6 border-t border-surface-container-low flex flex-col gap-3">
@@ -39,10 +157,10 @@ export default function UserProfilePage() {
 <span className="font-body font-medium text-on-surface group-hover/link:text-primary transition-colors">Preferences</span>
 <span className="material-symbols-outlined text-on-surface-variant group-hover/link:text-primary transition-colors" data-icon="tune">tune</span>
 </a>
-<Link className="flex items-center justify-between p-3 rounded-lg hover:bg-red-50 transition-colors group/link mt-2" href="/">
+<a className="flex items-center justify-between p-3 rounded-lg hover:bg-red-50 transition-colors group/link mt-2 cursor-pointer" onClick={handleSignOut}>
 <span className="font-body font-medium text-red-600 group-hover/link:text-red-700 transition-colors">Sign Out</span>
 <span className="material-symbols-outlined text-red-500 group-hover/link:text-red-700 transition-colors">logout</span>
-</Link>
+</a>
 </div>
 </div>
 </div>
@@ -55,31 +173,27 @@ export default function UserProfilePage() {
 <span className="material-symbols-outlined text-primary" data-icon="person">person</span>
                         Personal Details
                     </h3>
-<form className="space-y-6">
-<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div className="space-y-6">
+<div className="grid grid-cols-1 gap-6">
 <div className="space-y-2">
-<label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="firstName">First Name</label>
-<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="firstName" type="text" defaultValue="Alex" />
-</div>
-<div className="space-y-2">
-<label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="lastName">Last Name</label>
-<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="lastName" type="text" defaultValue="Morgan" />
+<label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="fullName">Full Name</label>
+<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="fullName" type="text" value={profile.name} onChange={(e) => setProfile({...profile, name: e.target.value})} />
 </div>
 </div>
 <div className="space-y-2">
 <label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="email">Email Address</label>
-<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="email" type="email" defaultValue="alex.morgan@example.com" />
+<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface-variant font-body p-4" id="email" type="email" value={profile.email} disabled />
 </div>
 <div className="space-y-2">
 <label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="phone">Phone Number</label>
-<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="phone" type="tel" defaultValue="+1 (555) 123-4567" />
+<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="phone" type="tel" value={profile.phone} onChange={(e) => setProfile({...profile, phone: e.target.value})} placeholder="+84 987 654 321" />
 </div>
 <div className="pt-4 flex justify-end">
-<button className="px-8 py-3 rounded-full signature-gradient text-on-primary font-body font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300" type="button">
+<button onClick={handleUpdateProfile} className="px-8 py-3 rounded-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-body font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300" type="button">
                                 Save Changes
                             </button>
 </div>
-</form>
+</div>
 </div>
 {/* Security Form */}
 <div className="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.06)]">
@@ -87,27 +201,27 @@ export default function UserProfilePage() {
 <span className="material-symbols-outlined text-primary" data-icon="lock">lock</span>
                         Security
                     </h3>
-<form className="space-y-6">
+<div className="space-y-6">
 <div className="space-y-2">
 <label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="currentPassword">Current Password</label>
-<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="currentPassword" type="password" />
+<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="currentPassword" type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
 </div>
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 <div className="space-y-2">
 <label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="newPassword">New Password</label>
-<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="newPassword" type="password" />
+<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
 </div>
 <div className="space-y-2">
 <label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="confirmPassword">Confirm New Password</label>
-<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="confirmPassword" type="password" />
+<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
 </div>
 </div>
 <div className="pt-4 flex justify-end">
-<button className="px-8 py-3 rounded-full bg-surface-container-high text-on-surface font-body font-semibold hover:bg-surface-container-highest transition-colors duration-300" type="button">
+<button onClick={handleUpdatePassword} className="px-8 py-3 rounded-full bg-surface-container-high text-on-surface font-body font-semibold hover:bg-surface-container-highest transition-colors duration-300" type="button">
                                 Update Password
                             </button>
 </div>
-</form>
+</div>
 </div>
 </div>
 </div>

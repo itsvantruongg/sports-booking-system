@@ -15,12 +15,21 @@ const getSportTypes = async (req, res) => {
 // GET /api/public/venues?sport=<id>&city=...&district=...&date=...
 const getPublicVenues = async (req, res) => {
   try {
-    const { sport, city, district, date, page = 1, limit = 12 } = req.query;
+    const { sport, city, district, q, date, page = 1, limit = 12 } = req.query;
 
     // Build query cụm sân
     const venueQuery = { status: 'ACTIVE' };
-    if (city) venueQuery.city = new RegExp(city, 'i');
-    if (district) venueQuery.district = new RegExp(district, 'i');
+    if (city) venueQuery.city = new RegExp(city.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    if (district) venueQuery.district = new RegExp(district.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    if (q) {
+      const safeQ = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      venueQuery.$or = [
+        { name: new RegExp(safeQ, 'i') },
+        { address: new RegExp(safeQ, 'i') },
+        { city: new RegExp(safeQ, 'i') },
+        { district: new RegExp(safeQ, 'i') }
+      ];
+    }
 
     let clusterIds;
 
@@ -86,14 +95,39 @@ const getCourtTimeSlots = async (req, res) => {
     const court = await Court.findById(req.params.id);
     if (!court) return res.status(404).json({ message: 'Không tìm thấy sân' });
 
-    const slotDate = new Date(date);
+    // Đảm bảo lấy đúng ngày theo giờ UTC để khớp với cách lưu trong DB
+    const startOfDay = new Date(date + "T00:00:00.000Z");
+    const endOfDay = new Date(date + "T23:59:59.999Z");
+
+    console.log(`[PublicAPI] Fetching slots for court ${req.params.id} on ${date} (UTC: ${startOfDay.toISOString()} - ${endOfDay.toISOString()})`);
+
     const slots = await TimeSlot.find({
       court_id: req.params.id,
-      slot_date: slotDate,
+      slot_date: { $gte: startOfDay, $lte: endOfDay },
       status: 'AVAILABLE',
     }).sort('start_time');
 
-    res.status(200).json(slots);
+    console.log(`[PublicAPI] Found ${slots.length} available slots.`);
+
+    // Lọc bỏ các ca đã quá giờ nếu là ngày hôm nay
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    
+    let results = slots;
+    if (date === todayStr) {
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      
+      results = slots.filter(slot => {
+        const [slotHour, slotMin] = slot.start_time.split(':').map(Number);
+        // Chỉ hiện các ca bắt đầu sau giờ hiện tại
+        if (slotHour > currentHour) return true;
+        if (slotHour === currentHour && slotMin > currentMinute) return true;
+        return false;
+      });
+    }
+
+    res.status(200).json(results);
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
 

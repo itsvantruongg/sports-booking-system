@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const {
-  getOwnerDashboard, updateVenue, getOwnerCourts,
+  getOwnerDashboard, getOwnerVenues, updateVenue, getOwnerCourts,
   createPricingRule, getOwnerTimeSlots, blockSlots,
-  getOwnerBookings, getOwnerReport
+  getOwnerBookings, updateBookingStatus, getOwnerReport, getOwnerCustomers,
+  generateSlots, getPricingRules, deletePricingRule, confirmBookingPayment,
+  updatePricingRule, bulkCreatePricingRules
 } = require('../controllers/owner.controller');
 const { protect, checkMustChangePassword } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
@@ -24,7 +26,8 @@ router.use(protect, authorize('OWNER'), checkMustChangePassword);
  *   get:
  *     summary: Lấy dữ liệu tổng quan trang Dashboard
  *     tags: [Owner]
- *     security: [{ bearerAuth: [] }]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: range
@@ -37,11 +40,26 @@ router.get('/dashboard', getOwnerDashboard);
 
 /**
  * @swagger
+ * /api/owner/venues:
+ *   get:
+ *     summary: Lấy danh sách các cụm sân của Owner
+ *     tags: [Owner]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Trả về danh sách cụm sân
+ */
+router.get('/venues', getOwnerVenues);
+
+/**
+ * @swagger
  * /api/owner/venues/{id}:
  *   put:
  *     summary: Cập nhật thông tin cụm sân (mô tả, tiện ích, hình ảnh)
  *     tags: [Owner]
- *     security: [{ bearerAuth: [] }]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -69,7 +87,8 @@ router.put('/venues/:id', updateVenue);
  *   get:
  *     summary: Lấy danh sách các sân con thuộc sở hữu
  *     tags: [Owner]
- *     security: [{ bearerAuth: [] }]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: cluster_id
@@ -86,7 +105,8 @@ router.get('/courts', getOwnerCourts);
  *   post:
  *     summary: Tạo quy tắc giá mới cho sân
  *     tags: [Owner]
- *     security: [{ bearerAuth: [] }]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -106,6 +126,10 @@ router.get('/courts', getOwnerCourts);
  *         description: Tạo thành công
  */
 router.post('/pricing-rules', createPricingRule);
+router.post('/pricing-rules/bulk', bulkCreatePricingRules);
+router.get('/pricing-rules', getPricingRules);
+router.put('/pricing-rules/:id', updatePricingRule);
+router.delete('/pricing-rules/:id', deletePricingRule);
 
 /**
  * @swagger
@@ -113,7 +137,8 @@ router.post('/pricing-rules', createPricingRule);
  *   get:
  *     summary: Xem timeline lịch sân (TimeSlots) theo ngày
  *     tags: [Owner]
- *     security: [{ bearerAuth: [] }]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: date
@@ -134,7 +159,8 @@ router.get('/time-slots', getOwnerTimeSlots);
  *   post:
  *     summary: Khóa slot thủ công (khi có khách đặt ngoài)
  *     tags: [Owner]
- *     security: [{ bearerAuth: [] }]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -150,6 +176,7 @@ router.get('/time-slots', getOwnerTimeSlots);
  *         description: Khóa thành công
  */
 router.post('/time-slots/block', blockSlots);
+router.post('/time-slots/generate', generateSlots);
 
 /**
  * @swagger
@@ -157,7 +184,8 @@ router.post('/time-slots/block', blockSlots);
  *   get:
  *     summary: Quản lý danh sách đơn đặt sân tại các sân của mình
  *     tags: [Owner]
- *     security: [{ bearerAuth: [] }]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: status
@@ -170,6 +198,8 @@ router.post('/time-slots/block', blockSlots);
  *         description: Danh sách đơn đặt sân
  */
 router.get('/bookings', getOwnerBookings);
+router.put('/bookings/:id/status', updateBookingStatus);
+router.put('/bookings/:id/confirm-payment', confirmBookingPayment);
 
 /**
  * @swagger
@@ -177,7 +207,8 @@ router.get('/bookings', getOwnerBookings);
  *   get:
  *     summary: Báo cáo doanh thu chi tiết theo tháng
  *     tags: [Owner]
- *     security: [{ bearerAuth: [] }]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: month
@@ -190,5 +221,19 @@ router.get('/bookings', getOwnerBookings);
  *         description: Dữ liệu báo cáo
  */
 router.get('/reports', getOwnerReport);
+
+/**
+ * @swagger
+ * /api/owner/customers:
+ *   get:
+ *     summary: Lấy danh sách khách hàng đã đặt sân
+ *     tags: [Owner]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách khách hàng
+ */
+router.get('/customers', getOwnerCustomers);
 
 module.exports = router;

@@ -1,48 +1,51 @@
 "use client";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const navLinks = [
-  { href: "/user",         label: "Explore" },
-  { href: "/user/history", label: "My Bookings" },
-  { href: "/user/fields",  label: "Venues" },
-];
+import Link from "next/link";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+
+  // Certain pages might want to hide the global navbar/footer if they handle it themselves
+  // But for now, we want a consistent experience.
+  
+  const isPaymentPage = pathname === "/user/payment";
+  
+  if (isPaymentPage) {
+    return <div className="min-h-screen bg-surface-container-lowest text-on-surface">{children}</div>;
+  }
+
   return (
-    <div className="min-h-screen bg-[#fbf8ff] text-[#191b25]">
-      <header className="sticky top-0 z-50 bg-[#fbf8ff]/80 backdrop-blur-xl shadow-[0_12px_40px_rgba(25,27,37,0.06)]">
-        <div className="flex justify-between items-center w-full px-8 py-4 max-w-[1440px] mx-auto">
-          <div className="flex items-center gap-8">
-            <Link href="/user" className="text-2xl font-black tracking-tighter text-[#003ec7]" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
-              KINETIC
-            </Link>
-            <nav className="hidden md:flex gap-6 font-bold tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
-              {navLinks.map(({ href, label }) => (
-                <Link key={href} href={href}
-                  className={pathname === href || (href !== "/user" && pathname.startsWith(href))
-                    ? "text-[#003ec7] border-b-2 border-[#003ec7] pb-1"
-                    : "text-[#434656] hover:text-[#003ec7] transition-colors"}>
-                  {label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-          <div className="flex items-center gap-4">
-            <button className="p-2 text-[#003ec7] hover:bg-[#ededfb] rounded-full transition-colors">
-              <span className="material-symbols-outlined">notifications</span>
-            </button>
-            <Link href="/user/profile" className="p-2 text-[#003ec7] hover:bg-[#ededfb] rounded-full transition-colors">
-              <span className="material-symbols-outlined">account_circle</span>
-            </Link>
-            <Link href="/user/fields" className="bg-[#003ec7] text-white px-6 py-3 rounded-full font-bold hover:bg-[#0052ff] transition-all shadow-md" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
-              Find a Court
-            </Link>
-          </div>
+    <div className="min-h-screen bg-surface-container-lowest text-on-surface flex flex-col">
+      <Navbar />
+      
+      <div className="flex-1">
+        {children}
+      </div>
+
+      <Footer />
+
+      {/* Mobile Bottom Navigation - Kept for mobile UX */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-md border-t border-outline-variant/10 safe-area-pb">
+        <div className="flex items-center justify-around px-2 py-3">
+          {[
+            { href: "/user",           icon: "home",          label: "Khám phá" },
+            { href: "/fields",         icon: "search",        label: "Tìm sân" },
+            { href: "/user/favorites", icon: "favorite",      label: "Yêu thích" },
+            { href: "/user/history",   icon: "receipt_long",  label: "Đơn đặt" },
+            { href: "/user/profile",   icon: "person",        label: "Hồ sơ" },
+          ].map(({ href, icon, label }) => {
+            const isActive = pathname === href || (href !== "/user" && pathname.startsWith(href));
+            return (
+              <Link key={href} href={href} className={`flex flex-col items-center gap-1 px-3 transition-all ${isActive ? "text-primary" : "text-on-surface-variant/60"}`}>
+                <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>{icon}</span>
+                <span className={`text-[10px] font-black uppercase tracking-widest ${isActive ? "text-primary" : "text-on-surface-variant/60"}`}>{label}</span>
+              </Link>
+            );
+          })}
         </div>
-      </header>
-      <div>{children}</div>
+      </nav>
     </div>
   );
 }

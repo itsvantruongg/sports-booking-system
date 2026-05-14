@@ -19,14 +19,14 @@ const userSchema = new mongoose.Schema({
   must_change_password: { type: Boolean, default: false },
   // refresh_token lưu trực tiếp để có thể revoke
   refresh_token: { type: String, select: false },
+  favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'VenueCluster' }],
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
 // Tự động hash password trước khi lưu
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
 userSchema.methods.matchPassword = async function (enteredPassword) {

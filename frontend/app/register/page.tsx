@@ -7,10 +7,33 @@ import { useRouter } from "next/navigation";
 export default function RegisterPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/");
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.message || "Registration failed");
+        return;
+      }
+
+      alert("Registration successful! Please login.");
+      router.push("/login");
+    } catch (error) {
+      alert("Error connecting to server");
+      console.error(error);
+    }
   };
 
   return (
@@ -61,6 +84,8 @@ export default function RegisterPage() {
                   name="fullName" 
                   placeholder="John Doe" 
                   type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   required
                 />
               </div>
@@ -79,6 +104,8 @@ export default function RegisterPage() {
                   name="email" 
                   placeholder="john@example.com" 
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -97,6 +124,8 @@ export default function RegisterPage() {
                   name="password" 
                   placeholder="••••••••" 
                   type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
                 <button 
@@ -139,7 +168,7 @@ export default function RegisterPage() {
           <div className="mt-10 text-center">
             <p className="text-sm font-medium text-[#434656]">
               Already have an account? 
-              <Link href="/" className="text-[#003ec7] font-black hover:text-[#0052ff] hover:underline transition-colors ml-2 underline underline-offset-4">
+              <Link href="/login" className="text-[#003ec7] font-black hover:text-[#0052ff] hover:underline transition-colors ml-2 underline underline-offset-4">
                 Login
               </Link>
             </p>

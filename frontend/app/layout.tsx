@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "Hệ thống đặt sân thể thao thông minh",
 };
 
+import AuthGuard from "../components/AuthGuard";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -23,7 +25,9 @@ export default function RootLayout({
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet" />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <AuthGuard>{children}</AuthGuard>
+      </body>
     </html>
   );
 }

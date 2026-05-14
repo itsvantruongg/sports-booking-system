@@ -10,7 +10,7 @@ const bookingSchema = new mongoose.Schema({
   subtotal: { type: Number, required: true },
   platform_fee: { type: Number, required: true },
   total_price: { type: Number, required: true },
-  payment_method: { type: String, enum: ['TRANSFER', 'CASH'], required: true },
+  payment_method: { type: String, enum: ['TRANSFER', 'CASH', 'VNPAY', 'MOMO', 'BANKING'], required: true },
   payment_status: { type: String, enum: ['PENDING', 'PAID', 'REFUNDED'], default: 'PENDING' },
   status: { type: String, enum: ['CONFIRMED', 'CANCELLED', 'COMPLETED', 'PENDING'], default: 'PENDING' },
   expires_at: { type: Date, required: true },

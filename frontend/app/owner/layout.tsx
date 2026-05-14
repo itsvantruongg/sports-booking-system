@@ -4,7 +4,9 @@ import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/owner",           label: "Dashboard",  icon: "dashboard" },
+  { href: "/owner/bookings",  label: "Bookings",   icon: "book_online" },
   { href: "/owner/courts",    label: "Management", icon: "stadium" },
+  { href: "/owner/pricing",   label: "Pricing",    icon: "price_change" },
   { href: "/owner/timeline",  label: "Calendar",   icon: "calendar_today" },
   { href: "/owner/revenue",   label: "Revenue",    icon: "payments" },
   { href: "/owner/customers", label: "Users",      icon: "group" },
@@ -16,6 +18,12 @@ export default function OwnerLayout({ children }: { children: React.ReactNode })
   if (pathname === '/owner/change-password') {
     return <>{children}</>;
   }
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user_role");
+    window.location.href = "/";
+  };
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#fbf8ff]">
@@ -42,9 +50,12 @@ export default function OwnerLayout({ children }: { children: React.ReactNode })
           <Link href="/owner/courts" className="w-full bg-[#003ec7] text-white font-bold py-3 px-4 rounded-full hover:bg-[#0052ff] transition-colors shadow-md text-sm mb-4 text-center block" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
             Add New Court
           </Link>
-          <Link href="/" className="flex items-center gap-3 px-4 py-3 text-[#434656] hover:bg-[#e7e7f5] rounded-full font-semibold text-sm transition-colors">
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-4 py-3 text-[#434656] hover:bg-[#e7e7f5] rounded-full font-semibold text-sm transition-colors w-full text-left"
+          >
             <span className="material-symbols-outlined">logout</span>Sign Out
-          </Link>
+          </button>
         </div>
       </nav>
       <main className="ml-72 flex-1 overflow-y-auto bg-[#fbf8ff]">{children}</main>

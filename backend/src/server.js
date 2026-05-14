@@ -3,16 +3,23 @@ const http = require('http');
 const { Server } = require('socket.io');
 const app = require('./app');
 const connectDB = require('./config/db');
+const { initCronJobs } = require('./utils/cronJobs');
 
+console.log('--- Server Starting ---');
 // Connect to Database
-connectDB();
+console.log('Connecting to MongoDB...');
+connectDB().then(() => {
+  console.log('connectDB() call finished (async)');
+  initCronJobs();
+});
 
 const server = http.createServer(app);
+console.log('Server object created');
 
 // Initialize Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "*", // Adjust this in production for security
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
@@ -37,6 +44,8 @@ app.set('io', io);
 
 const PORT = process.env.PORT || 5000;
 
+console.log(`Attempting to listen on port ${PORT}...`);
 server.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  console.log(`👉 API Docs: http://localhost:${PORT}/api-docs`);
 });

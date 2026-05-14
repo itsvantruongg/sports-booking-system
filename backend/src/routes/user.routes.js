@@ -3,7 +3,9 @@ const router = express.Router();
 const {
   getMe, updateMe,
   createBooking, getMyBookings, getBookingById, cancelBooking,
-  createReview
+  createReview,
+  getFavorites, addFavorite, removeFavorite,
+  processPayment
 } = require('../controllers/user.controller');
 const { protect, checkMustChangePassword } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
@@ -132,6 +134,7 @@ router.get('/bookings/:id', getBookingById);
  *         description: Hủy thành công
  */
 router.post('/bookings/:id/cancel', cancelBooking);
+router.post('/bookings/:id/payment', processPayment);
 
 /**
  * @swagger
@@ -157,5 +160,56 @@ router.post('/bookings/:id/cancel', cancelBooking);
  *         description: Gửi đánh giá thành công
  */
 router.post('/reviews', createReview);
+
+/**
+ * @swagger
+ * /api/users/favorites:
+ *   get:
+ *     summary: Lấy danh sách sân yêu thích
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách sân
+ *   post:
+ *     summary: Thêm sân vào danh sách yêu thích
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [venue_id]
+ *             properties:
+ *               venue_id: { type: string }
+ *     responses:
+ *       200:
+ *         description: Thêm thành công
+ */
+router.get('/favorites', getFavorites);
+router.post('/favorites', addFavorite);
+
+/**
+ * @swagger
+ * /api/users/favorites/{id}:
+ *   delete:
+ *     summary: Xóa sân khỏi danh sách yêu thích
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Xóa thành công
+ */
+router.delete('/favorites/:id', removeFavorite);
 
 module.exports = router;
