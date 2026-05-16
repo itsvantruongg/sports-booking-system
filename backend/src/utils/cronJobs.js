@@ -49,8 +49,6 @@ const generateSlotsForCourt = async (courtId, startDate, endDate) => {
       });
 
       const existing = existingSlots.find(s => s.start_time === target.start);
-      const status = existing ? existing.status : 'AVAILABLE';
-
       ops.push({
         updateOne: {
           filter: { court_id: courtId, slot_date: slotDate, start_time: target.start },
@@ -59,8 +57,8 @@ const generateSlotsForCourt = async (courtId, startDate, endDate) => {
               end_time: rule ? rule.slot_end : target.end,
               price: rule ? rule.price_per_slot : 100000,
               label: rule ? rule.label : 'Giá mặc định',
-              status
-            }
+            },
+            $setOnInsert: { status: 'AVAILABLE' }
           },
           upsert: true
         }
@@ -150,7 +148,11 @@ const autoCompleteBookings = async () => {
       const isOverTime = now > bookingStartTime;
       const isExpired = booking.expires_at && now > booking.expires_at;
 
-      if (isOverTime || isExpired) {
+      // Không tự động hủy đơn BANKING do quá giờ (vì chủ sân cần thời gian duyệt)
+      // Chỉ hủy nếu nó thực sự hết hạn 10p (nếu chưa chọn phương thức) hoặc quá giờ mà chưa chọn gì
+      const isManualPayment = ['BANKING', 'CASH'].includes(booking.payment_method);
+      
+      if ((isOverTime && !isManualPayment) || isExpired) {
         booking.status = 'CANCELLED';
         booking.cancel_reason = isOverTime
           ? 'Hệ thống tự động hủy do quá giờ xác nhận'

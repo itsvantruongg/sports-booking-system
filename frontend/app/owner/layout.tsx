@@ -1,15 +1,17 @@
 "use client";
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { href: "/owner", label: "Dashboard", icon: "dashboard" },
-  { href: "/owner/bookings", label: "Bookings", icon: "book_online" },
-  { href: "/owner/courts", label: "Management", icon: "stadium" },
-  { href: "/owner/pricing", label: "Pricing", icon: "price_change" },
-  { href: "/owner/timeline", label: "Calendar", icon: "calendar_today" },
-  { href: "/owner/revenue", label: "Revenue", icon: "payments" },
-  { href: "/owner/customers", label: "Users", icon: "group" },
+  { href: "/owner", label: "Bảng điều khiển", icon: "dashboard" },
+  { href: "/owner/bookings", label: "Đơn đặt sân", icon: "book_online" },
+  { href: "/owner/courts", label: "Quản lý sân", icon: "stadium" },
+  { href: "/owner/pricing", label: "Quản lý giá", icon: "price_change" },
+  { href: "/owner/timeline", label: "Lịch trình", icon: "calendar_today" },
+  { href: "/owner/revenue", label: "Doanh thu", icon: "payments" },
+  { href: "/owner/customers", label: "Khách hàng", icon: "group" },
+  { href: "/owner/payment-settings", label: "Cài đặt thanh toán", icon: "settings_suggest" },
 ];
 
 export default function OwnerLayout({ children }: { children: React.ReactNode }) {
@@ -19,10 +21,20 @@ export default function OwnerLayout({ children }: { children: React.ReactNode })
     return <>{children}</>;
   }
 
+  // Role Guard: Đảm bảo chỉ Owner mới được vào trang này
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    const role = localStorage.getItem("user_role");
+    
+    if (!token || (role && role !== 'OWNER')) {
+      localStorage.clear();
+      window.location.replace("/login");
+    }
+  }, [pathname]);
+
   const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user_role");
-    window.location.href = "/";
+    localStorage.clear();
+    window.location.replace("/");
   };
 
   return (
@@ -31,7 +43,7 @@ export default function OwnerLayout({ children }: { children: React.ReactNode })
         <div className="mb-8">
           <Link href="/owner">
             <p className="text-xl font-black text-[#003ec7] tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>Kinetic HQ</p>
-            <p className="text-sm text-[#434656]">Partner Dashboard</p>
+            <p className="text-sm text-[#434656]">Dành cho Đối tác</p>
           </Link>
         </div>
         <ul className="flex flex-col gap-2 flex-grow">
@@ -48,13 +60,13 @@ export default function OwnerLayout({ children }: { children: React.ReactNode })
         </ul>
         <div className="mt-auto pt-6 flex flex-col gap-2">
           <Link href="/owner/courts" className="w-full bg-[#003ec7] text-white font-bold py-3 px-4 rounded-full hover:bg-[#0052ff] transition-colors shadow-md text-sm mb-4 text-center block" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
-            Add New Court
+            Thêm sân mới
           </Link>
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-3 text-[#434656] hover:bg-[#e7e7f5] rounded-full font-semibold text-sm transition-colors w-full text-left"
           >
-            <span className="material-symbols-outlined">logout</span>Sign Out
+            <span className="material-symbols-outlined">logout</span>Đăng xuất
           </button>
         </div>
       </nav>

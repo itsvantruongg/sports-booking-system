@@ -9,6 +9,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,19 +20,19 @@ export default function RegisterPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, phone, password }),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        alert(data.message || "Registration failed");
+        alert(data.message || "Đăng ký thất bại");
         return;
       }
 
-      alert("Registration successful! Please login.");
+      alert("Đăng ký thành công! Vui lòng đăng nhập.");
       router.push("/login");
     } catch (error) {
-      alert("Error connecting to server");
+      alert("Lỗi kết nối đến máy chủ");
       console.error(error);
     }
   };
@@ -59,21 +60,21 @@ export default function RegisterPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-[#001452]/80 to-transparent"></div>
           <div className="absolute bottom-0 left-0 p-10 w-full">
             <span className="font-black text-4xl tracking-tighter text-white mb-2 block" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>KINETIC</span>
-            <p className="text-[#b7c4ff] text-lg font-medium">Join the elite. Elevate your game today.</p>
+            <p className="text-[#b7c4ff] text-lg font-medium">Tham gia cộng đồng tinh hoa. Nâng tầm cuộc chơi ngay hôm nay.</p>
           </div>
         </div>
 
         {/* Right Side: Form */}
         <div className="w-full md:w-3/5 p-8 md:p-14 bg-white/50">
           <div className="mb-10">
-            <h1 className="text-4xl font-bold tracking-tight text-[#191b25] mb-3" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Create Account</h1>
-            <p className="text-[#434656] text-lg font-medium">Enter your details to get started.</p>
+            <h1 className="text-4xl font-bold tracking-tight text-[#191b25] mb-3" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Đăng ký Tài khoản</h1>
+            <p className="text-[#434656] text-lg font-medium">Nhập thông tin của bạn để bắt đầu.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Full Name */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-bold text-[#191b25] ml-1" htmlFor="fullName">Full Name</label>
+              <label className="block text-sm font-bold text-[#191b25] ml-1" htmlFor="fullName">Họ và Tên</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-[#737688] group-focus-within:text-[#003ec7] transition-colors">
                   <span className="material-symbols-outlined text-xl">person</span>
@@ -82,7 +83,7 @@ export default function RegisterPage() {
                   className="w-full pl-14 pr-5 py-4 bg-[#f3f2ff] rounded-2xl border-none text-[#191b25] placeholder:text-[#737688] focus:ring-2 focus:ring-[#003ec7] focus:bg-white transition-all font-medium outline-none" 
                   id="fullName" 
                   name="fullName" 
-                  placeholder="John Doe" 
+                  placeholder="Nguyễn Văn A" 
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -93,7 +94,7 @@ export default function RegisterPage() {
 
             {/* Email */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-bold text-[#191b25] ml-1" htmlFor="email">Email Address</label>
+              <label className="block text-sm font-bold text-[#191b25] ml-1" htmlFor="email">Địa chỉ Email</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-[#737688] group-focus-within:text-[#003ec7] transition-colors">
                   <span className="material-symbols-outlined text-xl">mail</span>
@@ -102,7 +103,7 @@ export default function RegisterPage() {
                   className="w-full pl-14 pr-5 py-4 bg-[#f3f2ff] rounded-2xl border-none text-[#191b25] placeholder:text-[#737688] focus:ring-2 focus:ring-[#003ec7] focus:bg-white transition-all font-medium outline-none" 
                   id="email" 
                   name="email" 
-                  placeholder="john@example.com" 
+                  placeholder="nguyenvana@example.com" 
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -111,9 +112,29 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            {/* Phone Number */}
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-[#191b25] ml-1" htmlFor="phone">Số điện thoại</label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-[#737688] group-focus-within:text-[#003ec7] transition-colors">
+                  <span className="material-symbols-outlined text-xl">call</span>
+                </div>
+                <input 
+                  className="w-full pl-14 pr-5 py-4 bg-[#f3f2ff] rounded-2xl border-none text-[#191b25] placeholder:text-[#737688] focus:ring-2 focus:ring-[#003ec7] focus:bg-white transition-all font-medium outline-none" 
+                  id="phone" 
+                  name="phone" 
+                  placeholder="03xxxxxxxx" 
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
             {/* Password */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-bold text-[#191b25] ml-1" htmlFor="password">Password</label>
+              <label className="block text-sm font-bold text-[#191b25] ml-1" htmlFor="password">Mật khẩu</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-[#737688] group-focus-within:text-[#003ec7] transition-colors">
                   <span className="material-symbols-outlined text-xl">lock</span>
@@ -147,7 +168,7 @@ export default function RegisterPage() {
               </div>
               <div className="ml-3 text-sm">
                 <label className="font-medium text-[#434656] cursor-pointer" htmlFor="terms">
-                  I agree to the <span className="text-[#003ec7] font-bold hover:underline">Terms</span> and <span className="text-[#003ec7] font-bold hover:underline">Privacy Policy</span>.
+                  Tôi đồng ý với các <span className="text-[#003ec7] font-bold hover:underline">Điều khoản</span> và <span className="text-[#003ec7] font-bold hover:underline">Chính sách bảo mật</span>.
                 </label>
               </div>
             </div>
@@ -158,7 +179,7 @@ export default function RegisterPage() {
                 className="w-full bg-gradient-to-r from-[#003ec7] to-[#0052ff] text-white font-bold text-lg py-5 px-6 rounded-full flex items-center justify-center gap-3 transition-all duration-300 shadow-[0_12px_24px_rgba(0,62,199,0.2)] hover:shadow-[0_16px_32px_rgba(0,62,199,0.3)] hover:-translate-y-1 active:translate-y-0 active:shadow-none group" 
                 type="submit"
               >
-                Create Account
+                Đăng ký Tài khoản
                 <span className="material-symbols-outlined text-2xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
               </button>
             </div>
@@ -167,9 +188,9 @@ export default function RegisterPage() {
           {/* Login Link */}
           <div className="mt-10 text-center">
             <p className="text-sm font-medium text-[#434656]">
-              Already have an account? 
+              Bạn đã có tài khoản? 
               <Link href="/login" className="text-[#003ec7] font-black hover:text-[#0052ff] hover:underline transition-colors ml-2 underline underline-offset-4">
-                Login
+                Đăng nhập
               </Link>
             </p>
           </div>

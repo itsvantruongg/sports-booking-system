@@ -11,7 +11,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Ngăn chặn hành vi mặc định (thêm query vào URL)
+    e.preventDefault();
 
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
@@ -23,13 +23,19 @@ export default function LoginPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        alert(data.message || "Login failed");
+        alert(data.message || "Đăng nhập thất bại");
         return;
       }
 
       // Lưu trữ token và role
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("user_role", data.role);
+      localStorage.setItem("must_change_password", data.must_change_password ? "true" : "false");
+
+      if (data.must_change_password) {
+        router.push("/owner/change-password");
+        return;
+      }
 
       if (data.role === "ADMIN") {
         router.push("/admin");
@@ -39,7 +45,7 @@ export default function LoginPage() {
         router.push("/user");
       }
     } catch (error) {
-      alert("Error connecting to server");
+      alert("Lỗi kết nối đến máy chủ");
       console.error(error);
     }
   };
@@ -64,14 +70,14 @@ export default function LoginPage() {
               KINETIC
             </h1>
           </Link>
-          <p className="text-[#434656] mt-2 text-sm font-bold tracking-widest uppercase">Platform Portal</p>
+          <p className="text-[#434656] mt-2 text-sm font-bold tracking-widest uppercase">Cổng thông tin Hệ thống</p>
         </div>
 
         <div className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] shadow-[0_24px_60px_rgba(25,27,37,0.08)] p-8 md:p-12 relative overflow-hidden border border-white/50">
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#003ec7] to-[#0052ff]"></div>
 
           <h2 className="text-3xl font-bold tracking-tight text-[#191b25] mb-8 text-center" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-            Welcome Back
+            Chào mừng Trở lại
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -85,7 +91,7 @@ export default function LoginPage() {
                   className="block w-full pl-14 pr-5 py-4 bg-[#f3f2ff] border-0 outline-none rounded-2xl text-[#191b25] placeholder:text-[#737688] focus:ring-2 focus:ring-[#003ec7]/20 focus:bg-white transition-all duration-300"
                   id="email"
                   name="email"
-                  placeholder="Enter your email"
+                  placeholder="Nhập email của bạn"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -96,7 +102,7 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <div className="ml-1 mr-1">
-                <label className="block text-sm font-semibold text-[#434656]" htmlFor="password">Password</label>
+                <label className="block text-sm font-semibold text-[#434656]" htmlFor="password">Mật khẩu</label>
               </div>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none transition-colors group-focus-within:text-[#003ec7]">
@@ -106,7 +112,7 @@ export default function LoginPage() {
                   className="block w-full pl-14 pr-14 py-4 bg-[#f3f2ff] border-0 outline-none rounded-2xl text-[#191b25] placeholder:text-[#737688] focus:ring-2 focus:ring-[#003ec7]/20 focus:bg-white transition-all duration-300"
                   id="password"
                   name="password"
-                  placeholder="Enter your password"
+                  placeholder="Nhập mật khẩu của bạn"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -123,7 +129,7 @@ export default function LoginPage() {
                 </button>
               </div>
               <div className="flex justify-end pt-1 pr-2">
-                <a className="text-sm font-bold text-[#003ec7] hover:text-[#0052ff] transition-colors" href="#">Forgot?</a>
+                <a className="text-sm font-bold text-[#003ec7] hover:text-[#0052ff] transition-colors" href="#">Quên mật khẩu?</a>
               </div>
             </div>
 
@@ -132,7 +138,7 @@ export default function LoginPage() {
                 className="w-full flex justify-center items-center py-4 px-6 rounded-full shadow-[0_12px_24px_rgba(0,62,199,0.2)] text-white bg-gradient-to-r from-[#003ec7] to-[#0052ff] hover:from-[#0052ff] hover:to-[#003ec7] font-bold text-lg transition-all duration-300 transform active:scale-95 group"
                 type="submit"
               >
-                Login
+                Đăng nhập
                 <span className="material-symbols-outlined ml-2 text-2xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
               </button>
             </div>
@@ -140,9 +146,9 @@ export default function LoginPage() {
 
           <div className="mt-8 text-center">
             <p className="text-sm text-[#434656] font-medium">
-              Don't have an account?
+              Chưa có tài khoản?
               <Link href="/register" className="font-bold text-[#003ec7] hover:text-[#0052ff] transition-colors ml-2 underline underline-offset-4">
-                Register Now
+                Đăng ký ngay
               </Link>
             </p>
           </div>

@@ -20,6 +20,7 @@ interface Notification {
 export default function Navbar({ searchText, onSearchChange, onSearchSubmit }: NavbarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -29,6 +30,7 @@ export default function Navbar({ searchText, onSearchChange, onSearchSubmit }: N
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMounted(true);
     const token = localStorage.getItem("access_token");
     setIsLoggedIn(!!token);
     if (token) fetchNotifications();
@@ -59,10 +61,9 @@ export default function Navbar({ searchText, onSearchChange, onSearchSubmit }: N
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user_role");
+    localStorage.clear(); // Xóa sạch mọi dữ liệu phiên
     setIsLoggedIn(false);
-    router.push("/");
+    window.location.replace("/"); // Chuyển hướng và xóa lịch sử
   };
 
   const markAllRead = async () => {
@@ -87,13 +88,14 @@ export default function Navbar({ searchText, onSearchChange, onSearchSubmit }: N
           </Link>
           
           <nav className="hidden lg:flex items-center gap-6">
-            <Link href="/fields" className={`text-sm font-bold transition-colors ${pathname === '/fields' ? 'text-primary' : 'text-on-surface-variant hover:text-primary'}`}>Sân bãi</Link>
+            <Link href="/fields" className={`text-sm font-bold transition-colors ${mounted && pathname === '/fields' ? 'text-primary' : 'text-on-surface-variant hover:text-primary'}`}>Sân bãi</Link>
             {isLoggedIn && (
               <>
-                <Link href="/user/history" className={`text-sm font-bold transition-colors ${pathname === '/user/history' ? 'text-primary' : 'text-on-surface-variant hover:text-primary'}`}>Lịch đặt</Link>
-                <Link href="/user/favorites" className={`text-sm font-bold transition-colors ${pathname === '/user/favorites' ? 'text-primary' : 'text-on-surface-variant hover:text-primary'}`}>Yêu thích</Link>
+                <Link href="/user/history" className={`text-sm font-bold transition-colors ${mounted && pathname === '/user/history' ? 'text-primary' : 'text-on-surface-variant hover:text-primary'}`}>Lịch đặt</Link>
+                <Link href="/user/favorites" className={`text-sm font-bold transition-colors ${mounted && pathname === '/user/favorites' ? 'text-primary' : 'text-on-surface-variant hover:text-primary'}`}>Yêu thích</Link>
               </>
             )}
+            <Link href="/partnership" className={`text-sm font-bold transition-colors ${mounted && pathname === '/partnership' ? 'text-primary' : 'text-on-surface-variant hover:text-primary'}`}>Hợp tác</Link>
           </nav>
         </div>
 

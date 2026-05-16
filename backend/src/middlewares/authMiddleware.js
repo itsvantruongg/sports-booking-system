@@ -19,7 +19,8 @@ const protect = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Token không hợp lệ hoặc đã hết hạn' });
+    console.error('[AuthMiddleware Error]', error.message);
+    return res.status(401).json({ message: 'Token không hợp lệ hoặc đã hết hạn' });
   }
 };
 

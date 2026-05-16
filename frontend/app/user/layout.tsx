@@ -1,11 +1,21 @@
 "use client";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      window.location.replace("/login");
+    }
+  }, [pathname]);
 
   // Certain pages might want to hide the global navbar/footer if they handle it themselves
   // But for now, we want a consistent experience.
@@ -36,7 +46,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
             { href: "/user/history",   icon: "receipt_long",  label: "Đơn đặt" },
             { href: "/user/profile",   icon: "person",        label: "Hồ sơ" },
           ].map(({ href, icon, label }) => {
-            const isActive = pathname === href || (href !== "/user" && pathname.startsWith(href));
+            const isActive = mounted && (pathname === href || (href !== "/user" && pathname.startsWith(href)));
             return (
               <Link key={href} href={href} className={`flex flex-col items-center gap-1 px-3 transition-all ${isActive ? "text-primary" : "text-on-surface-variant/60"}`}>
                 <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>{icon}</span>

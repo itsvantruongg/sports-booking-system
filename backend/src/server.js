@@ -9,8 +9,10 @@ console.log('--- Server Starting ---');
 // Connect to Database
 console.log('Connecting to MongoDB...');
 connectDB().then(() => {
-  console.log('connectDB() call finished (async)');
+  console.log('✅ Database connected successfully');
   initCronJobs();
+}).catch(err => {
+  console.error('❌ Database connection failed at server.js:', err.message);
 });
 
 const server = http.createServer(app);

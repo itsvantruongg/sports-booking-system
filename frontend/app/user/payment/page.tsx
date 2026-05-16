@@ -10,6 +10,37 @@ const PAYMENT_METHODS = [
   { id: "CASH",     label: "Tiền mặt", icon: "payments", desc: "Thanh toán tại quầy khi đến sân" },
 ];
 
+const BANK_FULL_NAMES: Record<string, string> = {
+  "mb": "Ngân hàng TMCP Quân đội (MB)",
+  "vcb": "Ngân hàng TMCP Ngoại thương (Vietcombank)",
+  "vietcombank": "Ngân hàng TMCP Ngoại thương (Vietcombank)",
+  "tcb": "Ngân hàng TMCP Kỹ thương (Techcombank)",
+  "techcombank": "Ngân hàng TMCP Kỹ thương (Techcombank)",
+  "vbi": "Ngân hàng TMCP Công thương (VietinBank)",
+  "vietinbank": "Ngân hàng TMCP Công thương (VietinBank)",
+  "bidv": "Ngân hàng TMCP Đầu tư và Phát triển VN (BIDV)",
+  "acb": "Ngân hàng TMCP Á Châu (ACB)",
+  "vp": "Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank)",
+  "vpbank": "Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank)",
+  "stb": "Ngân hàng TMCP Sài Gòn Thương Tín (Sacombank)",
+  "sacombank": "Ngân hàng TMCP Sài Gòn Thương Tín (Sacombank)",
+  "hdb": "Ngân hàng TMCP Phát triển TP.HCM (HDBank)",
+  "shb": "Ngân hàng TMCP Sài Gòn - Hà Nội (SHB)",
+  "tp": "Ngân hàng TMCP Tiên Phong (TPBank)",
+  "tpbank": "Ngân hàng TMCP Tiên Phong (TPBank)",
+  "vab": "Ngân hàng TMCP Việt Á",
+  "agribank": "Ngân hàng Nông nghiệp & Phát triển Nông thôn",
+  "msb": "Ngân hàng TMCP Hàng Hải Việt Nam",
+  "ocb": "Ngân hàng TMCP Phương Đông",
+  "vib": "Ngân hàng TMCP Quốc tế Việt Nam",
+};
+
+const getBankDisplayName = (name: string) => {
+  if (!name) return "N/A";
+  const lower = name.toLowerCase().replace(/bank/g, '').trim();
+  return BANK_FULL_NAMES[lower] || name.toUpperCase();
+};
+
 function PaymentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -18,10 +49,37 @@ function PaymentContent() {
 
   const [booking, setBooking] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedMethod, setSelectedMethod] = useState("VNPAY");
+  const [availableMethods, setAvailableMethods] = useState<any[]>([]);
+  const [selectedMethod, setSelectedMethod] = useState("CASH");
   const [paying, setPaying] = useState(false);
   const [step, setStep] = useState<"select" | "processing" | "success" | "failed">("select");
   const [countdown, setCountdown] = useState(5);
+  const [backCount, setBackCount] = useState(0);
+
+  // Chặn nút Back khi đang xử lý hoặc thành công
+  useEffect(() => {
+    if (step !== "select") {
+      // Đẩy thêm 1 state vào history để "bẫy" nút back
+      window.history.pushState(null, "", window.location.href);
+
+      const handlePopState = () => {
+        // Nếu người dùng ấn back, lại đẩy họ quay lại trang hiện tại
+        window.history.pushState(null, "", window.location.href);
+        
+        setBackCount(prev => {
+          const newCount = prev + 1;
+          if (newCount >= 3) {
+            // Nếu spam quá 3 lần -> Đẩy về trang chủ của trình duyệt hoặc web
+            window.location.href = "/";
+          }
+          return newCount;
+        });
+      };
+
+      window.addEventListener("popstate", handlePopState);
+      return () => window.removeEventListener("popstate", handlePopState);
+    }
+  }, [step]);
 
   useEffect(() => {
     if (!bookingId || bookingId === "undefined") { 
@@ -31,20 +89,42 @@ function PaymentContent() {
     const token = localStorage.getItem("access_token");
     if (!token) { router.push("/login"); return; }
 
+    // Fetch booking
     fetch(`http://localhost:5000/api/users/bookings/${bookingId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.ok ? r.json() : null)
       .then(d => { 
         if (d) {
-          // Prevent paying twice for the same booking
+          // Nếu đơn đã thanh toán hoặc đã xác nhận thành công
           if (d.status === 'CONFIRMED' || d.status === 'COMPLETED' || d.payment_status === 'PAID') {
             router.push(`/user/booking-confirmation?bookingId=${bookingId}`);
             return;
           }
+          // Nếu đơn đang chờ chủ sân duyệt (Chuyển khoản thủ công)
+          if (d.status === 'PENDING' && d.payment_method === 'BANKING') {
+            router.push(`/user/waiting-confirmation?bookingId=${bookingId}`);
+            return;
+          }
           setBooking(d); 
         }
-        setLoading(false); 
+      });
+
+    // Fetch available methods
+    fetch(`http://localhost:5000/api/payments/methods/${bookingId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then(methods => {
+        if (Array.isArray(methods)) {
+          setAvailableMethods(methods);
+          const active = methods.find((m: any) => m.is_active);
+          if (active) setSelectedMethod(active.id);
+        } else {
+          console.error("Invalid methods data:", methods);
+          setAvailableMethods([{ id: 'CASH', label: 'Tiền mặt', is_active: true, icon: 'payments', desc: 'Thanh toán tại sân' }]);
+        }
+        setLoading(false);
       })
       .catch(() => setLoading(false));
   }, [bookingId, router]);
@@ -58,49 +138,93 @@ function PaymentContent() {
     return () => clearInterval(timer);
   }, [step]);
 
+  // Polling check for automated payments (VNPay/PayOS)
+  useEffect(() => {
+    if (step !== "success") return;
+    
+    // Nếu là Tiền mặt thì cứ đếm ngược rồi đi tiếp
+    if (selectedMethod === 'CASH') return;
+
+    // Nếu là Online, cứ 2s check xem đã PAID chưa
+    const interval = setInterval(() => {
+      const token = localStorage.getItem("access_token");
+      fetch(`http://localhost:5000/api/users/bookings/${bookingId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(r => r.json())
+        .then(d => {
+          if (d.payment_status === 'PAID') {
+            router.push(`/user/booking-confirmation?bookingId=${bookingId}`);
+          }
+        });
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [step, bookingId, router, selectedMethod]);
+
   useEffect(() => {
     if (step === "success" && countdown <= 0) {
-      router.push(`/user/booking-confirmation?bookingId=${bookingId}`);
+        // Hết 5s, nếu là tiền mặt thì auto đi tiếp
+        if (selectedMethod === 'CASH') {
+            router.push(`/user/booking-confirmation?bookingId=${bookingId}`);
+        } else {
+            // Nếu là online mà vẫn chưa thấy tiền thì có thể báo lỗi hoặc cho user chờ thêm
+            // Ở đây mình cứ để user ở lại trang success hoặc về lịch sử
+            // router.push("/user/history"); 
+        }
     }
-  }, [step, countdown, router, bookingId]);
+  }, [step, countdown, router, bookingId, selectedMethod]);
 
   const handlePay = async () => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
+
+    const method = availableMethods.find(m => m.id === selectedMethod);
+    if (method && !method.is_active && method.id !== 'CASH') {
+      alert("Doanh nghiệp chưa liên kết nền tảng này.");
+      return;
+    }
+
     setPaying(true);
     setStep("processing");
 
-    // Simulate payment processing delay
-    await new Promise(r => setTimeout(r, 2000));
-
     try {
-      // Try to call payment endpoint; fallback to CASH confirmation
-      const res = await fetch(`http://localhost:5000/api/users/bookings/${bookingId}/payment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ method: selectedMethod, amount }),
-      });
-
-      if (res.ok) {
-        setStep("success");
-      } else if (res.status === 404) {
-        // Payment endpoint not implemented yet — simulate success for CASH
-        if (selectedMethod === "CASH") {
-          setStep("success");
+      if (selectedMethod === "VNPAY") {
+        const res = await fetch(`http://localhost:5000/api/payments/create-vnpay-url`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ booking_id: bookingId }),
+        });
+        const data = await res.json();
+        if (data.paymentUrl) {
+          window.location.href = data.paymentUrl;
+          return;
         } else {
-          // Simulate redirect to payment gateway
-          setStep("success"); // In production: redirect to VNPay/MoMo URL
+          setStep("failed");
         }
       } else {
-        setStep("failed");
+        const res = await fetch(`http://localhost:5000/api/users/bookings/${bookingId}/payment`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ method: selectedMethod }),
+        });
+
+        if (res.ok) {
+          if (selectedMethod === 'BANKING') {
+            router.push(`/user/waiting-confirmation?bookingId=${bookingId}`);
+          } else {
+            setStep("success");
+          }
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          alert("Lỗi: " + (errData.message || "Giao dịch không thành công"));
+          setStep("failed");
+        }
       }
-    } catch {
-      // Network error — for demo, treat CASH as success
-      if (selectedMethod === "CASH") {
-        setStep("success");
-      } else {
-        setStep("failed");
-      }
+    } catch (error: any) {
+      console.error("Payment error:", error);
+      alert("Lỗi kết nối: " + error.message);
+      setStep("failed");
     } finally {
       setPaying(false);
     }
@@ -277,39 +401,87 @@ function PaymentContent() {
             Chọn phương thức thanh toán
           </h2>
           <div className="flex flex-col gap-3">
-            {PAYMENT_METHODS.map(m => (
-              <button
-                key={m.id}
-                onClick={() => setSelectedMethod(m.id)}
-                className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${
-                  selectedMethod === m.id ? "border-primary bg-primary/5 shadow-md" : "border-gray-100 hover:border-primary/30"
-                }`}
-              >
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${selectedMethod === m.id ? "bg-primary text-white" : "bg-gray-100 text-gray-500"}`}>
-                  <span className="material-symbols-outlined text-2xl">{m.icon}</span>
-                </div>
-                <div className="flex-grow">
-                  <p className="font-bold text-gray-900">{m.label}</p>
-                  <p className="text-xs text-gray-500">{m.desc}</p>
-                </div>
-                {selectedMethod === m.id && (
-                  <span className="material-symbols-outlined text-primary text-[24px]">check_circle</span>
-                )}
-              </button>
-            ))}
+            {availableMethods.map(m => {
+              const isActive = m.is_active || m.id === 'CASH';
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => isActive && setSelectedMethod(m.id)}
+                  className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${
+                    selectedMethod === m.id ? "border-primary bg-primary/5 shadow-md" : "border-gray-100 hover:border-primary/30"
+                  } ${!isActive ? "opacity-50 grayscale" : ""}`}
+                >
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${selectedMethod === m.id ? "bg-primary text-white" : "bg-gray-100 text-gray-500"}`}>
+                    <span className="material-symbols-outlined text-2xl">{m.icon}</span>
+                  </div>
+                  <div className="flex-grow">
+                    <p className="font-bold text-gray-900">{m.label}</p>
+                    <p className="text-xs text-gray-500">
+                      {isActive ? m.desc : "Doanh nghiệp chưa liên kết nền tảng này"}
+                    </p>
+                  </div>
+                  {selectedMethod === m.id && (
+                    <span className="material-symbols-outlined text-primary text-[24px]">check_circle</span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Bank info for BANKING */}
         {selectedMethod === "BANKING" && (
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-6">
-            <h3 className="font-black text-blue-900 mb-3 text-sm">Thông tin chuyển khoản</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between"><span className="text-blue-700">Ngân hàng</span><span className="font-bold text-blue-900">Vietcombank</span></div>
-              <div className="flex justify-between"><span className="text-blue-700">STK</span><span className="font-bold font-mono text-blue-900">0123456789</span></div>
-              <div className="flex justify-between"><span className="text-blue-700">Chủ TK</span><span className="font-bold text-blue-900">KINETIC SPORTS</span></div>
-              <div className="flex justify-between"><span className="text-blue-700">Nội dung</span><span className="font-bold font-mono text-blue-900">BOOKING {bookingId?.slice(-8).toUpperCase()}</span></div>
+            <h3 className="font-black text-blue-900 mb-3 text-sm flex items-center justify-between">
+              Thông tin chuyển khoản
+              <span className="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full uppercase tracking-tighter">VietQR</span>
+            </h3>
+            
+            <div className="flex flex-col md:flex-row gap-6 items-center">
+              <div className="bg-white p-2 rounded-xl shadow-sm border border-blue-100 shrink-0">
+                {(() => {
+                  const bankInfo = availableMethods.find(m => m.id === 'BANKING')?.info;
+                  if (!bankInfo) return null;
+                  
+                  // Chuẩn hóa mã ngân hàng cho VietQR (VD: MBBank -> mb, Techcombank -> tcb)
+                  const getVietQRBankId = (name: string) => {
+                    const n = name.toLowerCase().replace(/bank/g, '').trim();
+                    if (n.includes('quân đội') || n === 'm' || n === 'mb') return 'mb';
+                    if (n.includes('ngoại thương') || n === 'vcb') return 'vcb';
+                    if (n.includes('kỹ thương') || n === 'tcb') return 'tcb';
+                    if (n.includes('công thương') || n === 'vbi' || n === 'vietin') return 'vietinbank';
+                    if (n.includes('đầu tư') || n === 'bidv') return 'bidv';
+                    if (n.includes('á châu') || n === 'acb') return 'acb';
+                    if (n.includes('thịnh vượng') || n === 'vp') return 'vpbank';
+                    if (n.includes('sài gòn thương tín') || n === 'stb' || n === 'sacom') return 'sacombank';
+                    if (n.includes('tiên phong') || n === 'tp') return 'tpbank';
+                    return n;
+                  };
+
+                  const bankId = getVietQRBankId(bankInfo.bank_name || 'vcb');
+                  const qrUrl = `https://img.vietqr.io/image/${bankId}-${bankInfo.account_number}-compact2.jpg?amount=${amount}&addInfo=KINETIC%20${bookingId?.slice(-6).toUpperCase()}&accountName=${encodeURIComponent(bankInfo.account_name)}`;
+                  
+                  return (
+                    <img 
+                      src={qrUrl}
+                      alt="VietQR Payment"
+                      className="w-40 h-40 object-contain"
+                    />
+                  );
+                })()}
+              </div>
+
+              <div className="flex-grow space-y-2 text-sm w-full">
+                <div className="flex justify-between"><span className="text-blue-700">Ngân hàng</span><span className="font-bold text-blue-900">{getBankDisplayName(availableMethods.find(m => m.id === 'BANKING')?.info?.bank_name)}</span></div>
+                <div className="flex justify-between"><span className="text-blue-700">STK</span><span className="font-bold font-mono text-blue-900">{availableMethods.find(m => m.id === 'BANKING')?.info?.account_number || 'N/A'}</span></div>
+                <div className="flex justify-between"><span className="text-blue-700">Chủ TK</span><span className="font-bold text-blue-900">{availableMethods.find(m => m.id === 'BANKING')?.info?.account_name || 'N/A'}</span></div>
+                <div className="flex justify-between pt-2 border-t border-blue-100"><span className="text-blue-700">Nội dung</span><span className="font-bold font-mono text-blue-900">KINETIC {bookingId?.slice(-6).toUpperCase()}</span></div>
+              </div>
             </div>
+            
+            <p className="text-[11px] text-blue-600 mt-4 italic text-center">
+              * Quét mã QR bằng ứng dụng ngân hàng để tự động điền thông tin.
+            </p>
           </div>
         )}
 

@@ -3,7 +3,7 @@ const User = require('../models/User');
 
 // Tạo access token ngắn hạn (15 phút)
 const generateAccessToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '15m' });
+  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE || '24h' });
 
 // Tạo refresh token dài hạn (7 ngày)
 const generateRefreshToken = (id) =>

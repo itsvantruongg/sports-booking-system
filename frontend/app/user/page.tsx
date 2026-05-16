@@ -12,7 +12,10 @@ export default function UserDashboardPage() {
 
   useEffect(() => {
     fetch("http://localhost:5000/api/public/venues?limit=6")
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
       .then(data => {
         if (data.data) setVenues(data.data);
         setLoading(false);

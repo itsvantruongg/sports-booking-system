@@ -5,6 +5,7 @@ const VenueCluster = require('../models/VenueCluster');
 const PricingRule = require('../models/PricingRule');
 const SlotGenerationLog = require('../models/SlotGenerationLog');
 const Notification = require('../models/Notification');
+const { sendZaloNotification } = require('../utils/zaloService');
 
 // POST /api/webhooks/payment — Nhận IPN từ MoMo/VNPay
 const handlePaymentWebhook = async (req, res) => {
@@ -18,10 +19,16 @@ const handlePaymentWebhook = async (req, res) => {
       return res.status(400).json({ message: 'Thiếu dữ liệu webhook' });
     }
 
-    const booking = await Booking.findById(booking_id).populate({
-      path: 'court_id',
-      populate: { path: 'cluster_id', select: 'owner_id name' }
-    });
+    const booking = await Booking.findById(booking_id)
+      .populate({
+        path: 'court_id',
+        populate: { 
+          path: 'cluster_id', 
+          populate: { path: 'owner_id', select: 'name phone email' }
+        }
+      })
+      .populate('user_id', 'name phone');
+
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
     if (payment_status === 'SUCCESS' && booking.payment_status === 'PENDING') {
@@ -31,17 +38,39 @@ const handlePaymentWebhook = async (req, res) => {
 
       // Tạo thông báo cho chủ sân
       const ownerId = booking.court_id?.cluster_id?.owner_id;
-      if (ownerId) {
-        await Notification.create({
-          user_id: ownerId,
-          actor_id: booking.user_id,
-          type: 'NEW_BOOKING',
-          title: 'Đơn đặt sân mới!',
-          body: `Sân "${booking.court_id.name}" có khách đặt vào ${booking.booking_date.toLocaleDateString('vi-VN')}`,
-          payload: { booking_id: booking._id },
-        });
-      }
-    } else if (payment_status === 'FAILED') {
+        if (ownerId) {
+          await Notification.create({
+            user_id: ownerId,
+            actor_id: booking.user_id,
+            type: 'NEW_BOOKING',
+            title: 'Đơn đặt sân mới!',
+            body: `Sân "${booking.court_id.name}" có khách đặt vào ${booking.booking_date.toLocaleDateString('vi-VN')}`,
+            payload: { booking_id: booking._id },
+          });
+
+          // 1b. Thông báo Real-time qua Socket.io
+          const io = req.app.get('io');
+          if (io) {
+            io.to(ownerId.toString()).emit('new_notification', {
+              title: 'Đơn đặt sân mới!',
+              message: `Sân "${booking.court_id.name}" có khách vừa thanh toán thành công.`
+            });
+          }
+        }
+   // 2. Thông báo qua Zalo (Gửi cho Chủ sân)
+        const owner = booking.court_id.cluster_id.owner_id;
+        if (owner && owner.phone) {
+          sendZaloNotification(owner.phone, {
+            text: `[KINETIC] Thanh toán thành công: Khách ${booking.user_id.name} đã thanh toán đơn ${booking._id.toString().slice(-6)}. Tổng tiền: ${booking.total_price.toLocaleString('vi-VN')}đ.`
+          }).catch(err => console.error('[Zalo Notify Owner Error]', err));
+        }
+
+        if (booking.user_id.phone) {
+          sendZaloNotification(booking.user_id.phone, {
+            text: `[KINETIC] Thanh toán đơn đặt sân ${booking._id.toString().slice(-6)} thành công. Hẹn gặp bạn tại ${booking.court_id.name}!`
+          }).catch(err => console.error('[Zalo Notify User Error]', err));
+        }
+      } else if (payment_status === 'FAILED') {
       // Nhả slot nếu thanh toán thất bại
       const slotIds = booking.booked_slots.map(s => s.time_slot_id);
       await TimeSlot.updateMany({ _id: { $in: slotIds } }, { status: 'AVAILABLE' });

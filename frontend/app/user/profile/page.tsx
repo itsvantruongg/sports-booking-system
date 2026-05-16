@@ -9,8 +9,11 @@ export default function UserProfilePage() {
   // Profile State
   const [profile, setProfile] = useState({ name: "", email: "", phone: "", role: "" });
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'overview' | 'vouchers'>('overview');
+  const [showEditModal, setShowEditModal] = useState(false);
   
-  // Password State
+  // Edit State
+  const [editData, setEditData] = useState({ name: "", email: "", phone: "" });
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -31,12 +34,14 @@ export default function UserProfilePage() {
         });
         if (res.ok) {
           const data = await res.json();
-          setProfile({
+          const p = {
             name: data.name || "",
             email: data.email || "",
             phone: data.phone || "",
             role: data.role || "USER"
-          });
+          };
+          setProfile(p);
+          setEditData({ name: p.name, email: p.email, phone: p.phone });
         } else {
           localStorage.removeItem("access_token");
           router.push("/login");
@@ -61,12 +66,15 @@ export default function UserProfilePage() {
           "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
-          name: profile.name,
-          phone: profile.phone
+          name: editData.name,
+          phone: editData.phone,
+          email: editData.email // Assuming backend allows email update or handles it
         })
       });
       if (res.ok) {
+        setProfile({ ...profile, ...editData });
         alert("Cập nhật thông tin thành công!");
+        if (!newPassword) setShowEditModal(false);
       } else {
         const data = await res.json();
         alert(data.message || "Cập nhật thất bại");
@@ -77,6 +85,7 @@ export default function UserProfilePage() {
   };
 
   const handleUpdatePassword = async () => {
+    if (!newPassword) return;
     if (newPassword !== confirmPassword) {
       alert("Mật khẩu xác nhận không khớp!");
       return;
@@ -100,6 +109,7 @@ export default function UserProfilePage() {
         setOldPassword("");
         setNewPassword("");
         setConfirmPassword("");
+        setShowEditModal(false);
       } else {
         const data = await res.json();
         alert(data.message || "Đổi mật khẩu thất bại");
@@ -111,9 +121,8 @@ export default function UserProfilePage() {
 
   const handleSignOut = (e: React.MouseEvent) => {
     e.preventDefault();
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user_role");
-    router.push("/login");
+    localStorage.clear();
+    window.location.replace("/login");
   };
 
   if (loading) {
@@ -123,109 +132,174 @@ export default function UserProfilePage() {
   return (
     <>
       <main className="flex-grow w-full max-w-[1440px] mx-auto px-4 md:px-8 py-12">
-<div className="mb-12">
-<h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface font-display mb-2">Your Profile</h1>
-<p className="text-lg text-on-surface-variant font-body">Manage your personal details and security preferences.</p>
-</div>
-<div className="flex flex-col lg:flex-row gap-12 items-start">
-{/* Left Side: Profile Card (Asymmetric Layout Focus) */}
-<div className="w-full lg:w-1/3 flex flex-col gap-8">
-{/* User Identity Card */}
-<div className="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.06)] relative overflow-hidden group">
-<div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110 duration-500"></div>
-<div className="flex flex-col items-center text-center relative z-10">
-<div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center text-on-primary text-5xl font-bold mb-6 border-4 border-surface-container-low shadow-sm">
-  {profile.name.charAt(0).toUpperCase()}
-</div>
-<h2 className="text-2xl font-bold font-display text-on-surface mb-1">{profile.name}</h2>
-<div className="flex items-center gap-2 mb-6">
-<span className="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-sm font-semibold font-body flex items-center gap-1 uppercase">
-<span className="material-symbols-outlined text-sm" data-icon="verified">verified</span>
-                                {profile.role}
-                            </span>
-</div>
-<div className="w-full pt-6 border-t border-surface-container-low flex flex-col gap-3">
-<a className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors group/link" href="#">
-<span className="font-body font-medium text-on-surface group-hover/link:text-primary transition-colors">Booking History</span>
-<span className="material-symbols-outlined text-on-surface-variant group-hover/link:text-primary transition-colors" data-icon="history">history</span>
-</a>
-<a className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors group/link" href="#">
-<span className="font-body font-medium text-on-surface group-hover/link:text-primary transition-colors">Payment Methods</span>
-<span className="material-symbols-outlined text-on-surface-variant group-hover/link:text-primary transition-colors" data-icon="credit_card">credit_card</span>
-</a>
-<a className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors group/link" href="#">
-<span className="font-body font-medium text-on-surface group-hover/link:text-primary transition-colors">Preferences</span>
-<span className="material-symbols-outlined text-on-surface-variant group-hover/link:text-primary transition-colors" data-icon="tune">tune</span>
-</a>
-<a className="flex items-center justify-between p-3 rounded-lg hover:bg-red-50 transition-colors group/link mt-2 cursor-pointer" onClick={handleSignOut}>
-<span className="font-body font-medium text-red-600 group-hover/link:text-red-700 transition-colors">Sign Out</span>
-<span className="material-symbols-outlined text-red-500 group-hover/link:text-red-700 transition-colors">logout</span>
-</a>
-</div>
-</div>
-</div>
-</div>
-{/* Right Side: Forms Container */}
-<div className="w-full lg:w-2/3 flex flex-col gap-8">
-{/* Personal Details Form */}
-<div className="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.06)]">
-<h3 className="text-xl font-bold font-display text-on-surface mb-6 flex items-center gap-2">
-<span className="material-symbols-outlined text-primary" data-icon="person">person</span>
-                        Personal Details
-                    </h3>
-<div className="space-y-6">
-<div className="grid grid-cols-1 gap-6">
-<div className="space-y-2">
-<label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="fullName">Full Name</label>
-<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="fullName" type="text" value={profile.name} onChange={(e) => setProfile({...profile, name: e.target.value})} />
-</div>
-</div>
-<div className="space-y-2">
-<label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="email">Email Address</label>
-<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface-variant font-body p-4" id="email" type="email" value={profile.email} disabled />
-</div>
-<div className="space-y-2">
-<label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="phone">Phone Number</label>
-<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="phone" type="tel" value={profile.phone} onChange={(e) => setProfile({...profile, phone: e.target.value})} placeholder="+84 987 654 321" />
-</div>
-<div className="pt-4 flex justify-end">
-<button onClick={handleUpdateProfile} className="px-8 py-3 rounded-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-body font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300" type="button">
-                                Save Changes
-                            </button>
-</div>
-</div>
-</div>
-{/* Security Form */}
-<div className="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.06)]">
-<h3 className="text-xl font-bold font-display text-on-surface mb-6 flex items-center gap-2">
-<span className="material-symbols-outlined text-primary" data-icon="lock">lock</span>
-                        Security
-                    </h3>
-<div className="space-y-6">
-<div className="space-y-2">
-<label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="currentPassword">Current Password</label>
-<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="currentPassword" type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
-</div>
-<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div className="space-y-2">
-<label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="newPassword">New Password</label>
-<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-</div>
-<div className="space-y-2">
-<label className="block text-sm font-medium text-on-surface-variant font-body" htmlFor="confirmPassword">Confirm New Password</label>
-<input className="w-full rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all text-on-surface font-body p-4" id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-</div>
-</div>
-<div className="pt-4 flex justify-end">
-<button onClick={handleUpdatePassword} className="px-8 py-3 rounded-full bg-surface-container-high text-on-surface font-body font-semibold hover:bg-surface-container-highest transition-colors duration-300" type="button">
-                                Update Password
-                            </button>
-</div>
-</div>
-</div>
-</div>
-</div>
-</main>
+        <div className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface font-display mb-2">
+            {activeTab === 'overview' ? 'Your Profile' : 'Offers & Vouchers'}
+          </h1>
+          <p className="text-lg text-on-surface-variant font-body">
+            {activeTab === 'overview' ? 'Manage your personal details and view your account status.' : 'View available discounts and rewards for your next booking.'}
+          </p>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-12 items-start">
+          {/* Left Side: Profile Card */}
+          <div className="w-full lg:w-1/3 flex flex-col gap-8">
+            <div className="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.06)] relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110 duration-500"></div>
+              <div className="flex flex-col items-center text-center relative z-10">
+                <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center text-on-primary text-5xl font-bold mb-6 border-4 border-surface-container-low shadow-sm">
+                  {profile.name.charAt(0).toUpperCase()}
+                </div>
+                <h2 className="text-2xl font-bold font-display text-on-surface mb-1">{profile.name}</h2>
+                <div className="flex items-center gap-2 mb-6">
+                  <span className="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-sm font-semibold font-body flex items-center gap-1 uppercase">
+                    <span className="material-symbols-outlined text-sm" data-icon="verified">verified</span>
+                    {profile.role}
+                  </span>
+                </div>
+                <div className="w-full pt-6 border-t border-surface-container-low flex flex-col gap-3">
+                  <button 
+                    onClick={() => setActiveTab('overview')}
+                    className={`flex items-center justify-between p-3 rounded-lg transition-colors group/link ${activeTab === 'overview' ? 'bg-primary/5' : 'hover:bg-surface-container-low'}`}
+                  >
+                    <span className={`font-body font-medium ${activeTab === 'overview' ? 'text-primary' : 'text-on-surface group-hover/link:text-primary'}`}>Overview</span>
+                    <span className={`material-symbols-outlined ${activeTab === 'overview' ? 'text-primary' : 'text-on-surface-variant group-hover/link:text-primary'}`} data-icon="person">person</span>
+                  </button>
+
+                  <Link className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors group/link" href="/user/history">
+                    <span className="font-body font-medium text-on-surface group-hover/link:text-primary transition-colors">Booking History</span>
+                    <span className="material-symbols-outlined text-on-surface-variant group-hover/link:text-primary transition-colors" data-icon="history">history</span>
+                  </Link>
+
+                  <button 
+                    onClick={() => setActiveTab('vouchers')}
+                    className={`flex items-center justify-between p-3 rounded-lg transition-colors group/link ${activeTab === 'vouchers' ? 'bg-primary/5' : 'hover:bg-surface-container-low'}`}
+                  >
+                    <span className={`font-body font-medium ${activeTab === 'vouchers' ? 'text-primary' : 'text-on-surface group-hover/link:text-primary'}`}>Offers & Vouchers</span>
+                    <span className={`material-symbols-outlined ${activeTab === 'vouchers' ? 'text-primary' : 'text-on-surface-variant group-hover/link:text-primary'}`} data-icon="sell">sell</span>
+                  </button>
+
+                  <button 
+                    onClick={() => setShowEditModal(true)}
+                    className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors group/link"
+                  >
+                    <span className="font-body font-medium text-on-surface group-hover/link:text-primary transition-colors">Preferences</span>
+                    <span className="material-symbols-outlined text-on-surface-variant group-hover/link:text-primary transition-colors" data-icon="tune">tune</span>
+                  </button>
+
+                  <a className="flex items-center justify-between p-3 rounded-lg hover:bg-red-50 transition-colors group/link mt-2 cursor-pointer" onClick={handleSignOut}>
+                    <span className="font-body font-medium text-red-600 group-hover/link:text-red-700 transition-colors">Sign Out</span>
+                    <span className="material-symbols-outlined text-red-500 group-hover/link:text-red-700 transition-colors">logout</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side: Content Area */}
+          <div className="w-full lg:w-2/3 flex flex-col gap-8 animate-in slide-in-from-right-4 duration-500">
+            {activeTab === 'overview' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-surface-container-low">
+                  <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Full Name</p>
+                  <p className="text-xl font-bold text-on-surface">{profile.name}</p>
+                </div>
+                <div className="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-surface-container-low">
+                  <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Email Address</p>
+                  <p className="text-xl font-bold text-on-surface">{profile.email}</p>
+                </div>
+                <div className="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-surface-container-low">
+                  <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Phone Number</p>
+                  <p className="text-xl font-bold text-on-surface">{profile.phone || 'Not updated'}</p>
+                </div>
+                <div className="bg-primary/5 p-8 rounded-xl shadow-sm border border-primary/10">
+                  <p className="text-xs font-bold text-primary uppercase tracking-wider mb-2">Account Role</p>
+                  <p className="text-xl font-bold text-primary">{profile.role}</p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center min-h-[300px] bg-surface-container-lowest rounded-xl border-2 border-dashed border-outline-variant p-12 text-center">
+                <span className="material-symbols-outlined text-6xl text-outline-variant mb-4">confirmation_number</span>
+                <h3 className="text-xl font-bold text-on-surface mb-2">Không có voucher khả dụng</h3>
+                <p className="text-on-surface-variant">Hiện tại bạn chưa có mã giảm giá nào. Hãy quay lại sau nhé!</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Preferences Modal (UI nhỏ) */}
+        {showEditModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="bg-surface-container-lowest w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+              <div className="p-6 border-b border-outline-variant/10 flex justify-between items-center bg-primary/5">
+                <h3 className="text-xl font-black font-display text-on-surface">Preferences</h3>
+                <button onClick={() => setShowEditModal(false)} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-low transition-colors">
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+              <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <div className="space-y-4">
+                  <p className="text-xs font-black text-primary uppercase tracking-widest">Personal Info</p>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-on-surface-variant uppercase ml-1">Full Name</label>
+                    <input 
+                      className="w-full px-4 py-3 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 outline-none font-bold" 
+                      type="text" value={editData.name} onChange={(e) => setEditData({...editData, name: e.target.value})} 
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-on-surface-variant uppercase ml-1">Email</label>
+                    <input 
+                      className="w-full px-4 py-3 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 outline-none font-bold" 
+                      type="email" value={editData.email} onChange={(e) => setEditData({...editData, email: e.target.value})} 
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-on-surface-variant uppercase ml-1">Phone</label>
+                    <input 
+                      className="w-full px-4 py-3 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 outline-none font-bold" 
+                      type="tel" value={editData.phone} onChange={(e) => setEditData({...editData, phone: e.target.value})} 
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-4 border-t border-outline-variant/10">
+                  <p className="text-xs font-black text-primary uppercase tracking-widest">Security</p>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-on-surface-variant uppercase ml-1">Current Password</label>
+                    <input className="w-full px-4 py-3 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 outline-none" type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-on-surface-variant uppercase ml-1">New Password</label>
+                    <input className="w-full px-4 py-3 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 outline-none" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-on-surface-variant uppercase ml-1">Confirm Password</label>
+                    <input className="w-full px-4 py-3 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 outline-none" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                  </div>
+                </div>
+              </div>
+              <div className="p-6 bg-surface-container-low/50 flex gap-3">
+                <button 
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 py-3 rounded-xl font-bold text-on-surface-variant hover:bg-surface-container-high transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={async () => {
+                    await handleUpdateProfile();
+                    if (newPassword) await handleUpdatePassword();
+                  }}
+                  className="flex-1 py-3 rounded-xl bg-primary text-on-primary font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
     </>
   );
 }

@@ -63,24 +63,30 @@ export default function LandingPage() {
       <main className="w-full">
         {/* Hero Section */}
         <section className="relative w-full max-w-[1440px] mx-auto px-4 sm:px-8 py-12 lg:py-24">
-          <div className="bg-surface-container-low rounded-3xl overflow-hidden relative min-h-[550px] flex items-center shadow-sm border border-outline-variant/10">
-            <img 
-              className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-80" 
-              src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=2069&auto=format&fit=crop" 
-              alt="Athletes playing"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-surface-container-low/95 via-surface-container-low/70 to-transparent"></div>
+          <div className="bg-neutral-900 rounded-3xl overflow-hidden relative min-h-[550px] flex items-center shadow-xl border border-white/10">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              poster="https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2069&auto=format&fit=crop"
+              className="absolute inset-0 w-full h-full object-cover opacity-80"
+            >
+              <source src="https://res.cloudinary.com/dtsf98n7p/video/upload/v1715872856/football_training_xh0qjx.mp4" type="video/mp4" />
+            </video>
+            {/* Lớp phủ mờ và tối hơn để nổi bật chữ */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent backdrop-blur-[2px]"></div>
             <div className="relative z-10 p-8 lg:p-20 w-full max-w-5xl">
               <div className="max-w-2xl">
-                <h1 className="text-5xl lg:text-7xl font-display font-extrabold text-on-surface tracking-tight leading-[1.1] mb-8">
-                  Đặt sân thể thao <br/>
-                  <span className="text-primary underline decoration-primary/20">nhanh chóng</span> và <span className="text-primary underline decoration-primary/20">tiện lợi</span>
+                <h1 className="text-5xl lg:text-7xl font-display font-extrabold text-white tracking-tight leading-[1.1] mb-8">
+                  Đặt sân thể thao <br />
+                  <span className="text-primary underline decoration-primary/40">nhanh chóng</span> và <span className="text-primary underline decoration-primary/40">tiện lợi</span>
                 </h1>
-                <p className="text-lg text-on-surface-variant mb-12 font-body max-w-lg leading-relaxed">
+                <p className="text-lg text-white/80 mb-12 font-body max-w-lg leading-relaxed">
                   Tìm kiếm, đặt chỗ và thanh toán trong vài giây. Bắt đầu trận đấu của bạn ngay hôm nay tại các sân thể thao hàng đầu.
                 </p>
               </div>
-              
+
               {/* Search Bar Glassmorphism */}
               <div className="bg-surface-container-lowest/80 backdrop-blur-md p-5 rounded-2xl shadow-[0_20px_60px_rgba(25,27,37,0.1)] max-w-4xl border border-white/20 relative">
                 <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4 items-end">
@@ -88,7 +94,7 @@ export default function LandingPage() {
                     <label className="block text-xs font-black text-on-surface-variant mb-2 ml-1 uppercase tracking-wider">Môn thể thao</label>
                     <div className="relative">
                       <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary">sports_soccer</span>
-                      <select 
+                      <select
                         value={selectedSport}
                         onChange={(e) => setSelectedSport(e.target.value)}
                         className="w-full pl-12 pr-10 py-3.5 bg-surface-container border-none rounded-xl focus:ring-2 focus:ring-primary text-on-surface font-body cursor-pointer appearance-none"
@@ -104,13 +110,13 @@ export default function LandingPage() {
                     <label className="block text-xs font-black text-on-surface-variant mb-2 ml-1 uppercase tracking-wider">Địa điểm / Khu vực</label>
                     <div className="relative">
                       <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary">location_on</span>
-                      <input 
+                      <input
                         value={locationText}
                         onChange={(e) => setLocationText(e.target.value)}
                         onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-                        className="w-full pl-12 pr-4 py-3.5 bg-surface-container border-none rounded-xl focus:ring-2 focus:ring-primary text-on-surface font-body" 
-                        placeholder="Thành phố, Quận, Tên sân..." 
-                        type="text" 
+                        className="w-full pl-12 pr-4 py-3.5 bg-surface-container border-none rounded-xl focus:ring-2 focus:ring-primary text-on-surface font-body"
+                        placeholder="Thành phố, Quận, Tên sân..."
+                        type="text"
                       />
                     </div>
 
@@ -140,7 +146,7 @@ export default function LandingPage() {
                             </div>
                           </button>
                         ))}
-                        <button 
+                        <button
                           type="submit"
                           className="w-full p-3 text-center text-xs font-black text-primary hover:bg-primary/5 transition-colors"
                         >
@@ -169,7 +175,7 @@ export default function LandingPage() {
               Xem tất cả <span className="material-symbols-outlined text-sm">arrow_forward</span>
             </Link>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {venues.length === 0 ? (
               <p className="text-on-surface-variant col-span-3 text-center py-12 bg-surface-container-low rounded-3xl border border-dashed border-outline-variant">

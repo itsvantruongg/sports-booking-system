@@ -3,9 +3,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { href: "/admin",              label: "Dashboard",   icon: "dashboard" },
-  { href: "/admin/users",        label: "Users",       icon: "group" },
-  { href: "/admin/settings",     label: "Sport Types", icon: "sports" },
+  { href: "/admin",              label: "Bảng điều khiển",   icon: "dashboard" },
+  { href: "/admin/users",        label: "Người dùng",       icon: "group" },
+  { href: "/admin/settings",     label: "Môn thể thao", icon: "sports" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -24,12 +24,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div>
             <Link href="/admin">
               <p className="text-xl font-black text-[#191b25] tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>Kinetic HQ</p>
-              <p className="text-xs text-[#434656]">Admin Portal</p>
+              <p className="text-xs text-[#434656]">Cổng Quản trị</p>
             </Link>
           </div>
         </div>
         <Link href="/admin/add-partner" className="w-full bg-[#003ec7] text-white font-bold py-3 px-4 rounded-full hover:bg-[#0052ff] transition-colors shadow-md text-sm mb-6 flex items-center justify-center gap-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
-          <span className="material-symbols-outlined text-sm">add</span>Add Partner
+          <span className="material-symbols-outlined text-sm">add</span>Thêm Đối tác
         </Link>
         <ul className="flex flex-col gap-2 flex-grow">
           {navItems.map(({ href, label, icon }) => {
@@ -48,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-3 text-[#434656] hover:bg-[#e7e7f5] rounded-full font-semibold text-sm transition-colors w-full text-left"
           >
-            <span className="material-symbols-outlined">logout</span>Sign Out
+            <span className="material-symbols-outlined">logout</span>Đăng xuất
           </button>
         </div>
       </nav>

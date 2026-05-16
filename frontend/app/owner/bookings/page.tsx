@@ -27,7 +27,7 @@ export default function OwnerBookingsPage() {
     if (!token) { router.push("/login"); return; }
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/owner/bookings?status=${activeTab}`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/owner/bookings?status=${activeTab}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -45,7 +45,7 @@ export default function OwnerBookingsPage() {
     if (!token) return;
     setActionLoading(bookingId + newStatus);
     try {
-      const res = await fetch(`http://localhost:5000/api/owner/bookings/${bookingId}/status`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/owner/bookings/${bookingId}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: newStatus }),
@@ -68,7 +68,7 @@ export default function OwnerBookingsPage() {
 
     setActionLoading(bookingId + "PAY");
     try {
-      const res = await fetch(`http://localhost:5000/api/owner/bookings/${bookingId}/confirm-payment`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/owner/bookings/${bookingId}/confirm-payment`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -197,8 +197,8 @@ export default function OwnerBookingsPage() {
                         disabled={!!actionLoading}
                         className="px-5 py-2.5 rounded-full bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-all flex items-center gap-2 justify-center"
                       >
-                        {actionLoading === booking._id + "PAY" ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <span className="material-symbols-outlined text-[18px]">payments</span>}
-                        Thu tiền mặt
+                        {actionLoading === booking._id + "PAY" ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <span className="material-symbols-outlined text-[18px]">check_circle</span>}
+                        Xác nhận thanh toán
                       </button>
                     )}
                     {isPending && (

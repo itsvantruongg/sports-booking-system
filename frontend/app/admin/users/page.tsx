@@ -72,7 +72,7 @@ export default function AdminUsersPage() {
       });
 
       if (res.ok) {
-        setToast({ msg: `Đã cập nhật trạng thái user thành ${newStatus}`, type: "success" });
+        setToast({ msg: `Đã cập nhật trạng thái người dùng thành ${newStatus === 'ACTIVE' ? 'Hoạt động' : 'Đã khóa'}`, type: "success" });
         fetchUsers();
       } else {
         setToast({ msg: "Lỗi khi cập nhật trạng thái", type: "error" });
@@ -82,8 +82,6 @@ export default function AdminUsersPage() {
     }
     setTimeout(() => setToast(null), 3000);
   };
-
-  const bannedCount = users.filter(u => u.status === 'BANNED').length; // This is only for current page, ideally should come from backend
 
   return (
     <div className="p-6 md:p-12 max-w-[1600px] mx-auto">
@@ -96,7 +94,7 @@ export default function AdminUsersPage() {
       {/* Header Section */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div>
-          <h1 className="text-4xl md:text-5xl font-display font-extrabold text-on-surface tracking-tight mb-2">User Management</h1>
+          <h1 className="text-4xl md:text-5xl font-display font-extrabold text-on-surface tracking-tight mb-2">Quản lý Người dùng</h1>
           <p className="text-on-surface-variant text-lg">Quản lý người dùng, chủ sân và quyền truy cập hệ thống.</p>
         </div>
         
@@ -116,7 +114,7 @@ export default function AdminUsersPage() {
         </form>
       </header>
 
-      {/* Metric Bento Grid (Simplified for real data) */}
+      {/* Metric Bento Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
         <div className="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.04)] relative overflow-hidden group">
           <div className="flex justify-between items-start mb-6">
@@ -124,7 +122,7 @@ export default function AdminUsersPage() {
               <span className="material-symbols-outlined text-3xl">groups</span>
             </div>
           </div>
-          <h3 className="text-on-surface-variant font-medium mb-1">Total Users</h3>
+          <h3 className="text-on-surface-variant font-medium mb-1">Tổng người dùng</h3>
           <div className="text-4xl font-display font-bold text-on-surface">{total}</div>
         </div>
 
@@ -138,15 +136,15 @@ export default function AdminUsersPage() {
               value={roleFilter}
               onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}
             >
-              <option value="">All Roles</option>
-              <option value="USER">Athletes</option>
-              <option value="OWNER">Partners</option>
-              <option value="ADMIN">Admins</option>
+              <option value="">Tất cả vai trò</option>
+              <option value="USER">Người chơi</option>
+              <option value="OWNER">Đối tác/Chủ sân</option>
+              <option value="ADMIN">Quản trị viên</option>
             </select>
           </div>
-          <h3 className="text-on-surface-variant font-medium mb-1">Filtered Group</h3>
+          <h3 className="text-on-surface-variant font-medium mb-1">Nhóm đã lọc</h3>
           <div className="text-4xl font-display font-bold text-on-surface">{loading ? "..." : users.length}</div>
-          <p className="text-xs text-on-surface-variant mt-2">Showing results for current page</p>
+          <p className="text-xs text-on-surface-variant mt-2">Đang hiển thị kết quả trang hiện tại</p>
         </div>
 
         <div className="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.04)] relative overflow-hidden group border-l-4 border-error/20">
@@ -155,19 +153,19 @@ export default function AdminUsersPage() {
               <span className="material-symbols-outlined text-3xl">block</span>
             </div>
           </div>
-          <h3 className="text-on-surface-variant font-medium mb-1">Restricted Accounts</h3>
-          <div className="text-4xl font-display font-bold text-on-surface">Live Data</div>
-          <p className="text-xs text-error font-medium mt-2">Check details in table below</p>
+          <h3 className="text-on-surface-variant font-medium mb-1">Tài khoản bị hạn chế</h3>
+          <div className="text-4xl font-display font-bold text-on-surface">Trực tuyến</div>
+          <p className="text-xs text-error font-medium mt-2">Xem chi tiết trong bảng dưới đây</p>
         </div>
       </div>
 
       {/* User Table Section */}
       <div className="bg-surface-container-lowest rounded-xl shadow-[0_12px_60px_rgba(25,27,37,0.06)] overflow-hidden">
         <div className="p-6 border-b border-surface-container-low flex justify-between items-center bg-surface-container-lowest">
-          <h2 className="text-2xl font-display font-bold text-on-surface">Athlete & Partner Directory</h2>
+          <h2 className="text-2xl font-display font-bold text-on-surface">Danh mục Người chơi & Đối tác</h2>
           <div className="flex gap-2">
             <button className="px-4 py-2 bg-surface-container text-on-surface rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-surface-container-high transition-colors">
-              <span className="material-symbols-outlined text-sm">download</span> Export
+              <span className="material-symbols-outlined text-sm">download</span> Xuất file
             </button>
           </div>
         </div>
@@ -176,11 +174,11 @@ export default function AdminUsersPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-surface-container-low text-on-surface-variant text-sm font-semibold uppercase tracking-wider">
-                <th className="p-6 font-body">User Info</th>
-                <th className="p-6 font-body">Role</th>
-                <th className="p-6 font-body">Joined Date</th>
-                <th className="p-6 font-body">Status</th>
-                <th className="p-6 font-body text-right">Actions</th>
+                <th className="p-6 font-body">Thông tin người dùng</th>
+                <th className="p-6 font-body">Vai trò</th>
+                <th className="p-6 font-body">Ngày tham gia</th>
+                <th className="p-6 font-body">Trạng thái</th>
+                <th className="p-6 font-body text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-container-low">
@@ -228,14 +226,14 @@ export default function AdminUsersPage() {
                         user.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-error-container text-error'
                       }`}>
                         <span className={`w-2 h-2 rounded-full ${user.status === 'ACTIVE' ? 'bg-green-600' : 'bg-error'}`}></span>
-                        {user.status}
+                        {user.status === 'ACTIVE' ? 'Hoạt động' : 'Đã khóa'}
                       </span>
                     </td>
                     <td className="p-6 text-right">
                       <button 
                         onClick={() => toggleUserStatus(user._id, user.status)}
                         className={`p-2 rounded-full transition-colors ${user.status === 'ACTIVE' ? 'text-on-surface-variant hover:text-error hover:bg-error/10' : 'text-primary hover:bg-primary/10'}`} 
-                        title={user.status === 'ACTIVE' ? "Ban User" : "Unban User"}
+                        title={user.status === 'ACTIVE' ? "Khóa người dùng" : "Mở khóa người dùng"}
                       >
                         <span className="material-symbols-outlined">{user.status === 'ACTIVE' ? 'block' : 'undo'}</span>
                       </button>
@@ -250,7 +248,7 @@ export default function AdminUsersPage() {
         {/* Pagination */}
         <div className="p-6 border-t border-surface-container-low flex justify-between items-center bg-surface-container-lowest">
           <div className="text-sm text-on-surface-variant font-medium">
-            Showing {(page - 1) * 10 + 1} to {Math.min(page * 10, total)} of {total} entries
+            Đang hiển thị {Math.min((page - 1) * 10 + 1, total)} đến {Math.min(page * 10, total)} của {total} mục
           </div>
           <div className="flex gap-2">
             <button 
@@ -260,7 +258,7 @@ export default function AdminUsersPage() {
             >
               <span className="material-symbols-outlined">chevron_left</span>
             </button>
-            <div className="flex items-center px-4 font-bold text-primary">Page {page}</div>
+            <div className="flex items-center px-4 font-bold text-primary">Trang {page}</div>
             <button 
               className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors disabled:opacity-50" 
               disabled={page * 10 >= total}

@@ -37,6 +37,22 @@ export default function UserHistoryPage() {
     fetchBookings();
   }, [router]);
 
+  useEffect(() => {
+    const status = new URLSearchParams(window.location.search).get('status');
+    const bookingId = new URLSearchParams(window.location.search).get('bookingId');
+    if (status === 'success') {
+      setToast({ message: `Thanh toán đơn hàng #${bookingId?.slice(-6).toUpperCase()} thành công!`, type: 'success' });
+      // Xóa query params sau khi đã hiện toast
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (status === 'failed') {
+      setToast({ message: 'Thanh toán không thành công. Vui lòng thử lại.', type: 'error' });
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (status === 'error') {
+      setToast({ message: 'Có lỗi xảy ra trong quá trình thanh toán.', type: 'error' });
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
   const filteredBookings = bookings.filter((b) => {
     if (activeTab === 'Upcoming') return ['PENDING', 'CONFIRMED'].includes(b.status);
     if (activeTab === 'Completed') return b.status === 'COMPLETED';
@@ -92,24 +108,41 @@ export default function UserHistoryPage() {
 
   return (
     <main className="w-full max-w-[1440px] mx-auto px-4 md:px-8 py-12 flex flex-col lg:flex-row gap-12">
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {toast && <Toast msg={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       
-      {/* Cancel Dialog */}
+      {/* Contact Owner Dialog (Previously Cancel Dialog) */}
       {confirmCancelId && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-surface-container-lowest/80 backdrop-blur-xl animate-in fade-in">
           <div className="bg-surface-container-low rounded-[2rem] p-10 max-w-sm w-full mx-4 shadow-2xl border border-outline-variant/20">
             <div className="flex flex-col items-center text-center mb-8">
-              <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mb-6">
-                <span className="material-symbols-outlined text-4xl text-red-500">warning</span>
+              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                <span className="material-symbols-outlined text-4xl text-primary">support_agent</span>
               </div>
-              <h3 className="text-2xl font-black text-on-surface mb-2">Xác nhận hủy?</h3>
-              <p className="text-on-surface-variant font-bold opacity-60">Bạn có chắc chắn muốn hủy lịch đặt sân này không? Hành động này không thể hoàn tác.</p>
+              <h3 className="text-2xl font-black text-on-surface mb-2">Thông tin liên hệ</h3>
+              <p className="text-on-surface-variant font-bold opacity-60 mb-6">
+                Để thực hiện hủy lịch, vui lòng liên hệ trực tiếp với chủ sân để được hỗ trợ và hoàn tiền (nếu có).
+              </p>
+              
+              <div className="w-full space-y-3">
+                <div className="p-4 rounded-2xl bg-surface-container-highest/30 border border-outline-variant/10 flex flex-col items-center">
+                  <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1">Chủ sân</p>
+                  <p className="font-black text-on-surface">
+                    {bookings.find(b => b._id === confirmCancelId)?.court_id?.cluster_id?.owner_id?.name || 'Đang cập nhật...'}
+                  </p>
+                </div>
+                <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 flex flex-col items-center">
+                  <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">Số điện thoại</p>
+                  <a 
+                    href={`tel:${bookings.find(b => b._id === confirmCancelId)?.court_id?.cluster_id?.owner_id?.phone}`}
+                    className="text-2xl font-black text-primary hover:underline"
+                  >
+                    {bookings.find(b => b._id === confirmCancelId)?.court_id?.cluster_id?.owner_id?.phone || 'Chưa có SĐT'}
+                  </a>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <button onClick={() => setConfirmCancelId(null)} className="py-4 rounded-2xl font-black text-sm border border-outline-variant/30 text-on-surface hover:bg-surface-container-highest transition-all">Quay lại</button>
-              <button onClick={() => handleCancel(confirmCancelId)} disabled={cancellingId === confirmCancelId} className="py-4 rounded-2xl bg-red-500 text-white font-black text-sm hover:shadow-xl hover:shadow-red-500/20 transition-all disabled:opacity-40">
-                {cancellingId === confirmCancelId ? 'Đang xử lý...' : 'Đồng ý hủy'}
-              </button>
+            <div className="grid grid-cols-1 gap-4">
+              <button onClick={() => setConfirmCancelId(null)} className="w-full py-4 rounded-2xl font-black text-sm bg-surface-container-highest text-on-surface hover:bg-primary/10 hover:text-primary transition-all">Đã hiểu</button>
             </div>
           </div>
         </div>
@@ -167,7 +200,9 @@ export default function UserHistoryPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-2xl font-black text-primary">{booking.total_price?.toLocaleString('vi-VN')} ₫</p>
-                      <p className="text-[10px] font-black text-outline uppercase tracking-widest">Đã thanh toán</p>
+                      <p className={`text-[10px] font-black uppercase tracking-widest ${booking.payment_status === 'PAID' ? 'text-green-500' : 'text-amber-500'}`}>
+                        {booking.payment_status === 'PAID' ? 'Đã thanh toán' : 'Chờ thanh toán'}
+                      </p>
                     </div>
                   </div>
 

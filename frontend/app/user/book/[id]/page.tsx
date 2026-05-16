@@ -23,7 +23,7 @@ export default function UserBookDynamicPage() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/public/venues/${id}`)
+    fetch(`http://127.0.0.1:5000/api/public/venues/${id}`)
       .then(res => res.json())
       .then(data => {
         setVenue(data);
@@ -42,7 +42,7 @@ export default function UserBookDynamicPage() {
   useEffect(() => {
     if (selectedCourt && date) {
       setSlotsLoading(true);
-      fetch(`http://localhost:5000/api/public/courts/${selectedCourt}/time-slots?date=${date}`)
+      fetch(`http://127.0.0.1:5000/api/public/courts/${selectedCourt}/time-slots?date=${date}`)
         .then(res => res.json())
         .then(data => {
           setTimeSlots(data);
@@ -76,7 +76,7 @@ export default function UserBookDynamicPage() {
 
     setBooking(true);
     try {
-      const res = await fetch("http://localhost:5000/api/users/bookings", {
+      const res = await fetch("http://127.0.0.1:5000/api/users/bookings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

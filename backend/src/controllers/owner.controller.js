@@ -4,6 +4,7 @@ const TimeSlot = require('../models/TimeSlot');
 const Booking = require('../models/Booking');
 const PricingRule = require('../models/PricingRule');
 const Notification = require('../models/Notification');
+const { sendZaloNotification } = require('../utils/zaloService');
 
 // GET /api/owner/dashboard?range=today|week
 const getOwnerDashboard = async (req, res) => {
@@ -36,27 +37,35 @@ const getOwnerDashboard = async (req, res) => {
       status: { $ne: 'CANCELLED' }
     });
 
-    // Doanh thu (Đã thu tiền): Các đơn ĐÃ THANH TOÁN (PAID)
-    const revenue = bookings
+    // 1. Tổng doanh thu (Tất cả đơn đã PAID)
+    const total_revenue = bookings
       .filter(b => b.payment_status === 'PAID')
       .reduce((sum, b) => sum + b.total_price, 0);
 
-    // Treo nợ (Chưa thu tiền): Các đơn ĐÃ XÁC NHẬN hoặc HOÀN THÀNH nhưng THANH TOÁN CHƯA XONG (PENDING)
-    const debt = bookings
-      .filter(b => b.payment_status === 'PENDING' && (b.status === 'CONFIRMED' || b.status === 'COMPLETED'))
+    // 2. Chuyển khoản (PAID qua các kênh online/banking)
+    const digital_revenue = bookings
+      .filter(b => b.payment_status === 'PAID' && b.payment_method !== 'CASH')
       .reduce((sum, b) => sum + b.total_price, 0);
 
-    // Công suất (Occupancy): Tổng số SLOTS đã được đặt (CONFIRMED hoặc COMPLETED)
-    const occupancy = bookings
-      .filter(b => b.status === 'CONFIRMED' || b.status === 'COMPLETED')
-      .reduce((sum, b) => sum + (b.slot_count || 0), 0);
+    // 3. Tiền mặt (Đã thu: PAID + CASH)
+    const cash_revenue = bookings
+      .filter(b => b.payment_status === 'PAID' && b.payment_method === 'CASH')
+      .reduce((sum, b) => sum + b.total_price, 0);
+
+    // 4. Treo nợ (Chưa thu: PENDING + CASH)
+    const debt = bookings
+      .filter(b => b.payment_status === 'PENDING' && b.payment_method === 'CASH' && (b.status === 'CONFIRMED' || b.status === 'COMPLETED'))
+      .reduce((sum, b) => sum + b.total_price, 0);
+
+    // 5. Số lượng đặt sân hôm nay
+    const booking_count = bookings.length;
 
     res.status(200).json({ 
-      revenue, 
-      debt, 
-      occupancy, 
-      booking_count: bookings.length,
-      total_bookings_count: bookings.length // Đã bao gồm cả Pending
+      total_revenue,
+      digital_revenue,
+      cash_revenue,
+      debt,
+      booking_count
     });
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
@@ -358,7 +367,10 @@ const getOwnerReport = async (req, res) => {
 // PUT /api/owner/bookings/:id/confirm-payment
 const confirmBookingPayment = async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id).populate('court_id');
+    const booking = await Booking.findById(req.params.id)
+      .populate('court_id')
+      .populate('user_id', 'name phone');
+
     if (!booking) return res.status(404).json({ message: 'Không tìm thấy đơn đặt sân' });
 
     // Kiểm tra quyền sở hữu
@@ -375,6 +387,32 @@ const confirmBookingPayment = async (req, res) => {
     if (booking.status === 'PENDING') booking.status = 'CONFIRMED';
     
     await booking.save();
+
+    // 1. Tạo thông báo trong DB cho User
+    await Notification.create({
+      user_id: booking.user_id._id,
+      title: 'Thanh toán thành công',
+      body: `Đơn đặt sân ${booking.court_id.name} ngày ${new Date(booking.booking_date).toLocaleDateString()} đã được xác nhận.`,
+      type: 'BOOKING_CONFIRMED',
+      payload: { booking_id: booking._id }
+    });
+
+    // 2. Bắn Socket.io thông báo cho User (nếu đang online)
+    const io = req.app.get('io');
+    if (io) {
+      io.to(booking.user_id._id.toString()).emit('new_notification', {
+        title: 'Thanh toán thành công',
+        message: `Đơn đặt sân ${booking.court_id.name} đã được chủ sân xác nhận.`
+      });
+    }
+
+    // 3. Thông báo qua Zalo (Gửi cho Khách hàng)
+    if (booking.user_id?.phone) {
+      sendZaloNotification(booking.user_id.phone, {
+        text: `[KINETIC] Đơn đặt sân ${booking.court_id.name} của bạn đã được chủ sân xác nhận thanh toán thành công. Hẹn gặp bạn tại sân!`
+      }).catch(err => console.error('[Zalo Notify User Error]', err));
+    }
+
     res.status(200).json({ message: 'Xác nhận thanh toán thành công', booking });
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
@@ -419,7 +457,7 @@ const updateBookingStatus = async (req, res) => {
       return res.status(400).json({ message: 'Trạng thái không hợp lệ' });
     }
 
-    const booking = await Booking.findById(req.params.id).populate('court_id');
+    const booking = await Booking.findById(req.params.id).populate('court_id').populate('user_id', 'name phone');
     if (!booking) return res.status(404).json({ message: 'Không tìm thấy đơn đặt sân' });
 
     // Kiểm tra quyền sở hữu
@@ -429,14 +467,51 @@ const updateBookingStatus = async (req, res) => {
     }
 
     booking.status = status;
+    
+    // TỰ ĐỘNG DUYỆT TIỀN: Nếu là chuyển khoản mà được xác nhận -> Coi như đã nhận tiền
+    if (status === 'CONFIRMED' && booking.payment_method === 'BANKING') {
+      booking.payment_status = 'PAID';
+    }
+
+    let notiTitle = 'Trạng thái đơn đặt sân';
+    let notiContent = `Đơn đặt sân của bạn đã chuyển sang trạng thái: ${status === 'CONFIRMED' ? 'Đã xác nhận' : status === 'CANCELLED' ? 'Đã hủy' : status}.`;
+
     if (status === 'CANCELLED') {
       booking.cancelled_at = new Date();
       // Nhả slot nếu hủy
       const slotIds = booking.booked_slots.map(s => s.time_slot_id);
       await TimeSlot.updateMany({ _id: { $in: slotIds } }, { status: 'AVAILABLE' });
+      notiTitle = 'Đơn đặt sân đã bị hủy';
+    } else if (status === 'CONFIRMED') {
+      notiTitle = 'Đơn đặt sân đã được xác nhận';
     }
     
     await booking.save();
+
+    // Thông báo cho User qua Zalo
+    if (booking.user_id?.phone) {
+      let zaloText = `[KINETIC] Đơn đặt sân ${booking._id.toString().slice(-6)} của bạn đã chuyển sang trạng thái: ${status === 'CONFIRMED' ? 'Đã xác nhận' : status === 'CANCELLED' ? 'Đã hủy' : status}.`;
+      if (status === 'CONFIRMED') zaloText += ' Hẹn gặp bạn tại sân!';
+      
+      sendZaloNotification(booking.user_id.phone, { text: zaloText })
+        .catch(err => console.error('[Zalo Notify User Error]', err));
+    }
+    await Notification.create({
+      user_id: booking.user_id,
+      title: notiTitle,
+      body: notiContent,
+      type: `BOOKING_${status}`,
+      payload: { booking_id: booking._id }
+    });
+
+    const io = req.app.get('io');
+    if (io) {
+      io.to(booking.user_id.toString()).emit('new_notification', {
+        title: notiTitle,
+        message: notiContent
+      });
+    }
+
     res.status(200).json({ message: `Đã cập nhật trạng thái đơn thành ${status}`, booking });
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
@@ -501,10 +576,37 @@ const generateSlots = async (req, res) => {
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
+const PaymentConfig = require('../models/PaymentConfig');
+
+// GET /api/owner/payment-config
+const getPaymentConfig = async (req, res) => {
+  try {
+    let config = await PaymentConfig.findOne({ owner_id: req.user._id });
+    if (!config) {
+      config = await PaymentConfig.create({ owner_id: req.user._id });
+    }
+    res.status(200).json(config);
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+// PUT /api/owner/payment-config
+const updatePaymentConfig = async (req, res) => {
+  try {
+    const { vnpay, momo, payos, banking } = req.body;
+    const config = await PaymentConfig.findOneAndUpdate(
+      { owner_id: req.user._id },
+      { vnpay, momo, payos, banking },
+      { new: true, upsert: true }
+    );
+    res.status(200).json(config);
+  } catch (error) { res.status(400).json({ message: error.message }); }
+};
+
 module.exports = {
   getOwnerDashboard, getOwnerVenues, updateVenue, getOwnerCourts,
   createPricingRule, getOwnerTimeSlots, blockSlots,
   getOwnerBookings, updateBookingStatus, getOwnerReport, getOwnerCustomers,
   generateSlots, getPricingRules, deletePricingRule, confirmBookingPayment,
-  updatePricingRule, bulkCreatePricingRules, unblockSlots
+  updatePricingRule, bulkCreatePricingRules, unblockSlots,
+  getPaymentConfig, updatePaymentConfig
 };

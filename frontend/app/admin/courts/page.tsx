@@ -69,7 +69,7 @@ export default function AdminCourtsPage() {
       if (res.ok) {
         setVenues(prev => prev.map(v => v._id === venueId ? { ...v, status: newStatus } : v));
         const label = STATUS_CONFIG[newStatus].label;
-        showToast(`✅ Đã cập nhật trạng thái venue thành "${label}"`, "success");
+        showToast(`✅ Đã cập nhật trạng thái cụm sân thành "${label}"`, "success");
       } else {
         const err = await res.json();
         showToast(err.message || "Cập nhật thất bại.", "error");
@@ -102,7 +102,7 @@ export default function AdminCourtsPage() {
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
         <div>
           <h2 className="text-4xl md:text-5xl font-black text-on-surface tracking-tight mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
-            Quản lý Venues
+            Quản lý Cụm sân
           </h2>
           <p className="text-on-surface-variant">Giám sát và quản lý tất cả cụm sân trên nền tảng.</p>
         </div>
@@ -168,7 +168,7 @@ export default function AdminCourtsPage() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-20 text-on-surface-variant">
           <span className="material-symbols-outlined text-6xl mb-4 block opacity-30">search_off</span>
-          <p className="text-lg font-bold">Không tìm thấy venue nào.</p>
+          <p className="text-lg font-bold">Không tìm thấy cụm sân nào.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -211,7 +211,7 @@ export default function AdminCourtsPage() {
                     {venue.owner_id?.name && (
                       <div className="flex items-center gap-1.5">
                         <span className="material-symbols-outlined text-[14px]">badge</span>
-                        <span className="line-clamp-1">Owner: {venue.owner_id.name}</span>
+                        <span className="line-clamp-1">Chủ sở hữu: {venue.owner_id.name}</span>
                       </div>
                     )}
                   </div>
@@ -235,7 +235,7 @@ export default function AdminCourtsPage() {
                         className="w-full py-2 rounded-full border border-error/40 text-error font-black text-xs hover:bg-error/5 transition-all disabled:opacity-60 flex items-center justify-center gap-1"
                       >
                         {isLoading ? <span className="w-3 h-3 border-2 border-error border-t-transparent rounded-full animate-spin" /> : <span className="material-symbols-outlined text-[14px]">lock</span>}
-                        Khóa venue
+                        Khóa cụm sân
                       </button>
                     )}
                     {venue.status === "ACTIVE" && (

@@ -5,6 +5,7 @@ const Review = require('../models/Review');
 const VenueCluster = require('../models/VenueCluster');
 const Court = require('../models/Court');
 const Notification = require('../models/Notification');
+const { sendZaloNotification } = require('../utils/zaloService');
 
 // GET /api/users/me
 const getMe = async (req, res) => {
@@ -81,6 +82,20 @@ const createBooking = async (req, res) => {
       booked_slots: slots.map(s => ({ time_slot_id: s._id, slot_price: s.price })),
     });
 
+    // 3. Thông báo qua Zalo (Gửi cho Chủ sân)
+    const populatedBooking = await Booking.findById(booking._id).populate({
+      path: 'court_id',
+      populate: { path: 'cluster_id', populate: { path: 'owner_id', select: 'name phone' } }
+    });
+    
+    const owner = populatedBooking?.court_id?.cluster_id?.owner_id;
+
+    if (owner && owner.phone) {
+      sendZaloNotification(owner.phone, {
+        text: `[KINETIC] Đơn đặt sân mới: Khách ${req.user.name} vừa đặt sân ${populatedBooking.court_id.name} vào ngày ${new Date(booking_date).toLocaleDateString('vi-VN')}. Vui lòng kiểm tra hệ thống.`
+      }).catch(err => console.error('[Zalo Notify Error]', err));
+    }
+
     // Khóa các slot lại
     await TimeSlot.updateMany({ _id: { $in: time_slot_ids } }, { status: 'BOOKED' });
 
@@ -90,7 +105,10 @@ const createBooking = async (req, res) => {
       expires_at,
       // payment_url sẽ thêm sau khi tích hợp cổng thanh toán
     });
-  } catch (error) { res.status(500).json({ message: error.message }); }
+  } catch (error) { 
+    console.error('[Create Booking Error]', error);
+    res.status(500).json({ message: error.message }); 
+  }
 };
 
 // GET /api/users/bookings?status=UPCOMING|COMPLETED
@@ -106,7 +124,11 @@ const getMyBookings = async (req, res) => {
       .populate({
         path: 'court_id',
         select: 'name cluster_id',
-        populate: { path: 'cluster_id', select: 'name address district city' }
+        populate: { 
+          path: 'cluster_id', 
+          select: 'name address district city owner_id',
+          populate: { path: 'owner_id', select: 'name phone' }
+        }
       })
       .sort('-created_at');
     res.status(200).json(bookings);
@@ -266,37 +288,86 @@ const processPayment = async (req, res) => {
     booking.payment_method = method;
 
     // Tìm chủ sân để gửi thông báo
-    const court = await Court.findById(booking.court_id).populate('cluster_id');
-    const ownerId = court.cluster_id.owner_id;
+    const court = await Court.findById(booking.court_id).populate({
+      path: 'cluster_id',
+      populate: { path: 'owner_id', select: 'name phone email' }
+    });
+    const owner = court?.cluster_id?.owner_id;
+    const ownerId = owner?._id;
 
     let notiTitle = 'Đơn đặt sân mới';
-    let notiBody = `Bạn có đơn đặt sân mới tại ${court.name}`;
+    let notiBody = `Bạn có đơn đặt sân mới tại ${court?.name || 'sân'}`;
 
-    if (['VNPAY', 'MOMO', 'BANKING', 'TRANSFER'].includes(method)) {
+    if (['VNPAY', 'MOMO', 'PAYOS'].includes(method)) {
       booking.payment_status = 'PAID';
       booking.status = 'CONFIRMED';
-      notiTitle = 'Thanh toán mới';
+      notiTitle = 'Thanh toán thành công';
       notiBody = `Đơn đặt sân ${booking._id.toString().slice(-6)} đã được thanh toán online.`;
+    } else if (['BANKING', 'TRANSFER'].includes(method)) {
+      booking.payment_status = 'PENDING';
+      booking.status = 'PENDING'; 
+      notiTitle = 'Yêu cầu đặt sân (Chuyển khoản)';
+      notiBody = `Khách hàng đã chuyển khoản và đang chờ bạn xác nhận đơn ${booking._id.toString().slice(-6)}.`;
     } else {
-      // Thanh toán tại sân (CASH) -> Tính là treo nợ (payment_status: PENDING)
       booking.payment_status = 'PENDING';
       booking.payment_method = 'CASH';
-      booking.status = 'CONFIRMED'; // Tự động duyệt đơn theo yêu cầu
-      notiTitle = 'Đặt sân thanh toán tại chỗ';
-      notiBody = `Người dùng đặt sân và sẽ thanh toán ${booking.total_price.toLocaleString('vi-VN')}đ tại sân.`;
+      booking.status = 'CONFIRMED'; 
+      notiTitle = 'Đơn đặt sân mới (Tiền mặt)';
+      notiBody = `Khách hàng ${req.user.name} đã đặt sân và sẽ trả tiền mặt tại chỗ.`;
     }
 
+    booking.expires_at = null;
     await booking.save();
 
-    // Tạo thông báo cho chủ sân
-    await Notification.create({
-      user_id: ownerId,
-      actor_id: req.user._id,
-      type: method === 'CASH' ? 'NEW_BOOKING_CASH' : 'NEW_BOOKING_PAID',
-      title: notiTitle,
-      body: notiBody,
-      payload: { booking_id: booking._id }
-    });
+    // Cập nhật trạng thái cho các TimeSlot sang BOOKED nếu đơn được xác nhận
+    if (booking.status === 'CONFIRMED') {
+      const slotIds = booking.booked_slots.map(s => s.time_slot_id);
+      await TimeSlot.updateMany(
+        { _id: { $in: slotIds } },
+        { $set: { status: 'BOOKED' } }
+      );
+    }
+
+    // Tạo thông báo cho chủ sân (Bọc trong try-catch để không làm hỏng luồng chính)
+    try {
+      if (ownerId) {
+        await Notification.create({
+          user_id: ownerId,
+          actor_id: req.user._id,
+          type: method === 'CASH' ? 'NEW_BOOKING_CASH' : 'NEW_BOOKING_PAID',
+          title: notiTitle,
+          body: notiBody,
+          payload: { booking_id: booking._id }
+        });
+
+        const io = req.app.get('io');
+        if (io) {
+          io.to(ownerId.toString()).emit('new_notification', {
+            title: notiTitle,
+            message: notiBody
+          });
+        }
+
+          // 3. Thông báo qua Zalo (Gửi cho Chủ sân)
+          if (owner && owner.phone) {
+            sendZaloNotification(owner.phone, {
+              text: `[KINETIC] ${notiTitle}: ${notiBody}. Tổng tiền: ${booking.total_price.toLocaleString('vi-VN')}đ.`
+            }).catch(err => console.error('[Zalo Notify Owner Error]', err));
+          }
+
+          // 4. Thông báo qua Zalo (Gửi cho Khách hàng)
+          if (req.user.phone) {
+            let userMsg = `[KINETIC] Đơn hàng ${booking._id.toString().slice(-6)} của bạn đã được ghi nhận (${method}).`;
+            if (method === 'CASH') userMsg += ' Vui lòng thanh toán tại sân khi đến nhận sân.';
+            else if (['BANKING', 'TRANSFER'].includes(method)) userMsg += ' Vui lòng đợi chủ sân xác nhận thanh toán.';
+            
+            sendZaloNotification(req.user.phone, { text: userMsg })
+              .catch(err => console.error('[Zalo Notify User Error]', err));
+          }
+        }
+    } catch (notiError) {
+      console.error('[Notification Error] Failed to send notification:', notiError);
+    }
 
     res.status(200).json({ message: 'Cập nhật thanh toán thành công', booking });
   } catch (error) { res.status(500).json({ message: error.message }); }

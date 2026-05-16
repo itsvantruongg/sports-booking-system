@@ -5,7 +5,8 @@ const {
   createPricingRule, getOwnerTimeSlots, blockSlots,
   getOwnerBookings, updateBookingStatus, getOwnerReport, getOwnerCustomers,
   generateSlots, getPricingRules, deletePricingRule, confirmBookingPayment,
-  updatePricingRule, bulkCreatePricingRules, unblockSlots
+  updatePricingRule, bulkCreatePricingRules, unblockSlots,
+  getPaymentConfig, updatePaymentConfig
 } = require('../controllers/owner.controller');
 const { protect, checkMustChangePassword } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
@@ -236,5 +237,23 @@ router.get('/reports', getOwnerReport);
  *         description: Danh sách khách hàng
  */
 router.get('/customers', getOwnerCustomers);
+
+/**
+ * @swagger
+ * /api/owner/payment-config:
+ *   get:
+ *     summary: Lấy cấu hình thanh toán của Owner
+ *     tags: [Owner]
+ */
+router.get('/payment-config', getPaymentConfig);
+
+/**
+ * @swagger
+ * /api/owner/payment-config:
+ *   put:
+ *     summary: Cập nhật cấu hình thanh toán
+ *     tags: [Owner]
+ */
+router.put('/payment-config', updatePaymentConfig);
 
 module.exports = router;

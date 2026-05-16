@@ -44,11 +44,24 @@ const createOwner = async (req, res) => {
       role: 'OWNER', must_change_password: true,
     });
 
-    // Gửi email (bất đồng bộ, không chặn response)
+    // Gửi email chào mừng kèm thông tin đăng nhập
     sendEmail({
       to: email,
-      subject: `[Kinetic Sports] Tài khoản đối tác của bạn đã sẵn sàng`,
-      text: `Chào ${name},\n\nMật khẩu tạm thời: ${tempPassword}\nVui lòng đổi mật khẩu sau khi đăng nhập.\n\nKinetic Sports Team`,
+      subject: `[KINETIC] Tài khoản đối tác của bạn đã sẵn sàng`,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; color: #333;">
+          <h2 style="color: #003ec7;">Chào mừng đối tác mới!</h2>
+          <p>Chào <strong>${name}</strong>,</p>
+          <p>Tài khoản quản lý sân của bạn trên hệ thống KINETIC đã được khởi tạo thành công.</p>
+          <div style="background-color: #f3f2ff; padding: 15px; border-radius: 10px; margin: 20px 0;">
+            <p style="margin: 0;"><strong>Email đăng nhập:</strong> ${email}</p>
+            <p style="margin: 5px 0 0 0;"><strong>Mật khẩu tạm thời:</strong> <span style="color: #003ec7; font-size: 1.2em; font-weight: bold;">${tempPassword}</span></p>
+          </div>
+          <p>Vì lý do bảo mật, bạn sẽ được yêu cầu <strong>thay đổi mật khẩu</strong> ngay trong lần đăng nhập đầu tiên.</p>
+          <a href="http://localhost:3000/login" style="display: inline-block; background-color: #003ec7; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 10px;">Đăng nhập ngay</a>
+          <p style="margin-top: 30px; font-size: 0.8em; color: #666;">Trân trọng,<br />Đội ngũ KINETIC Platform</p>
+        </div>
+      `,
     }).catch(err => console.error('[Email Error]', err));
 
     res.status(201).json({

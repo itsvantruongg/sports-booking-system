@@ -10,8 +10,8 @@ const {
 const { protect, checkMustChangePassword } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
 
-// Tất cả routes đều cần đăng nhập và không phải trạng thái must_change_password
-router.use(protect, checkMustChangePassword);
+// Tất cả routes đều cần đăng nhập
+router.use(protect);
 
 /**
  * @swagger
@@ -51,6 +51,9 @@ router.use(protect, checkMustChangePassword);
  */
 router.get('/me', getMe);
 router.put('/me', updateMe);
+
+// Các route bên dưới yêu cầu đã đổi mật khẩu
+router.use(checkMustChangePassword);
 
 /**
  * @swagger

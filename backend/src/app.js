@@ -39,5 +39,8 @@ app.use('/api/admin', require('./routes/admin.routes'));
 // Webhooks & Cron Jobs
 app.use('/api', require('./routes/cron.routes'));
 
+// Payments
+app.use('/api/payments', require('./routes/payment.routes'));
+
 
 module.exports = app;

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getSportTypes, getPublicVenues, getVenueDetail, getCourtTimeSlots } = require('../controllers/public.controller');
+const { submitPartnership } = require('../controllers/partnership.controller');
 
 /**
  * @swagger
@@ -8,6 +9,33 @@ const { getSportTypes, getPublicVenues, getVenueDetail, getCourtTimeSlots } = re
  *   name: Public
  *   description: Publicly accessible endpoints (No Auth)
  */
+
+/**
+ * @swagger
+ * /api/public/partnerships:
+ *   post:
+ *     summary: Gửi yêu cầu hợp tác dành cho chủ sân
+ *     tags: [Public]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, phone, fieldName, email]
+ *             properties:
+ *               name: { type: string }
+ *               phone: { type: string }
+ *               fieldName: { type: string }
+ *               email: { type: string }
+ *               message: { type: string }
+ *     responses:
+ *       201:
+ *         description: Gửi yêu cầu thành công
+ *       500:
+ *         description: Lỗi hệ thống
+ */
+router.post('/partnerships', submitPartnership);
 
 /**
  * @swagger
