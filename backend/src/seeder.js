@@ -13,7 +13,7 @@ const importUsers = async () => {
   try {
     // Xóa tất cả user cũ để test (tuỳ chọn, nhưng tiện để làm mới)
     await User.deleteMany({});
-    
+
     // 1. Kiểm tra Admin
     const adminExists = await User.findOne({ role: 'ADMIN' });
     if (!adminExists) {

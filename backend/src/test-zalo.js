@@ -11,9 +11,13 @@ async function testZalo() {
 
     console.log('--- Đang bắt đầu gửi tin nhắn Zalo thử nghiệm ---');
     
-    // Bạn hãy thay số điện thoại thật của bạn vào đây khi muốn test thực tế
-    const testPhone = '0397263588'; 
+    // Đọc từ .env để bảo mật
+    const testPhone = process.env.TEST_PHONE; 
     
+    if (!testPhone) {
+      throw new Error('Vui lòng cấu hình TEST_PHONE trong file .env');
+    }
+
     console.log(`Đang gửi thử tới số: ${testPhone}`);
 
     const result = await sendZaloNotification(testPhone, {
