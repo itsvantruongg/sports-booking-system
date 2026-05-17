@@ -107,66 +107,116 @@ export default function UserProfilePage() {
     finally { setClaiming(false); }
   };
 
-  const handleUpdateProfile = async () => {
-    const token = localStorage.getItem("access_token");
-    try {
-      const res = await fetch("http://localhost:5000/api/users/me", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: editData.name,
-          phone: editData.phone,
-          email: editData.email
-        })
-      });
-      if (res.ok) {
-        setProfile({ ...profile, ...editData });
-        alert("Cập nhật thông tin thành công!");
-        if (!newPassword) setShowEditModal(false);
-      } else {
-        const data = await res.json();
-        alert(data.message || "Cập nhật thất bại");
-      }
-    } catch (error) {
-      alert("Lỗi kết nối");
-    }
+  const handleCloseModal = () => {
+    // Reset editData to current profile
+    setEditData({
+      name: profile.name,
+      email: profile.email,
+      phone: profile.phone
+    });
+    // Reset password fields
+    setOldPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setShowEditModal(false);
   };
 
-  const handleUpdatePassword = async () => {
-    if (!newPassword) return;
-    if (newPassword !== confirmPassword) {
-      alert("Mật khẩu xác nhận không khớp!");
-      return;
+  const handleSaveAll = async () => {
+    // 1. Validations for password fields
+    if (newPassword || oldPassword || confirmPassword) {
+      if (!oldPassword) {
+        alert("Vui lòng nhập mật khẩu hiện tại!");
+        return;
+      }
+      if (!newPassword) {
+        alert("Vui lòng nhập mật khẩu mới!");
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        alert("Mật khẩu xác nhận không khớp!");
+        return;
+      }
+      if (newPassword.length < 6) {
+        alert("Mật khẩu mới phải từ 6 ký tự trở lên!");
+        return;
+      }
     }
 
     const token = localStorage.getItem("access_token");
+    let profileUpdated = false;
+    let passwordUpdated = false;
+
+    // Check if profile fields actually changed
+    const isProfileChanged = editData.name !== profile.name || 
+                             editData.email !== profile.email || 
+                             editData.phone !== profile.phone;
+
     try {
-      const res = await fetch("http://localhost:5000/api/auth/force-change", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          old_password: oldPassword,
-          new_password: newPassword
-        })
-      });
-      if (res.ok) {
-        alert("Đổi mật khẩu thành công!");
-        setOldPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
-        setShowEditModal(false);
-      } else {
-        const data = await res.json();
-        alert(data.message || "Đổi mật khẩu thất bại");
+      // 2. Perform Profile Update
+      if (isProfileChanged) {
+        const resProfile = await fetch("http://localhost:5000/api/users/me", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name: editData.name,
+            phone: editData.phone,
+            email: editData.email
+          })
+        });
+
+        if (resProfile.ok) {
+          setProfile({ ...profile, ...editData });
+          profileUpdated = true;
+        } else {
+          const data = await resProfile.json();
+          alert(data.message || "Cập nhật thông tin thất bại");
+          return; // Stop if profile update fails
+        }
       }
+
+      // 3. Perform Password Change
+      if (newPassword) {
+        const resPassword = await fetch("http://localhost:5000/api/auth/force-change", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            old_password: oldPassword,
+            new_password: newPassword
+          })
+        });
+
+        if (resPassword.ok) {
+          passwordUpdated = true;
+          setOldPassword("");
+          setNewPassword("");
+          setConfirmPassword("");
+        } else {
+          const data = await resPassword.json();
+          alert(data.message || "Đổi mật khẩu thất bại");
+          return; // Stop execution
+        }
+      }
+
+      // 4. Show unified alert and close
+      if (profileUpdated && passwordUpdated) {
+        alert("Cập nhật thông tin và đổi mật khẩu thành công!");
+      } else if (profileUpdated) {
+        alert("Cập nhật thông tin cá nhân thành công!");
+      } else if (passwordUpdated) {
+        alert("Đổi mật khẩu thành công!");
+      } else {
+        alert("Không có thay đổi nào được thực hiện.");
+      }
+
+      setShowEditModal(false);
     } catch (error) {
-      alert("Lỗi kết nối");
+      alert("Lỗi kết nối máy chủ");
     }
   };
 
@@ -238,7 +288,10 @@ export default function UserProfilePage() {
                   </button>
 
                   <button
-                    onClick={() => setShowEditModal(true)}
+                    onClick={() => {
+                      setEditData({ name: profile.name, email: profile.email, phone: profile.phone });
+                      setShowEditModal(true);
+                    }}
                     className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors group/link"
                   >
                     <span className="font-body font-medium text-on-surface group-hover/link:text-primary transition-colors">Cài đặt hồ sơ</span>
@@ -334,15 +387,15 @@ export default function UserProfilePage() {
 
         {/* Preferences Modal */}
         {showEditModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-            <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-              <div className="p-6 border-b border-outline-variant/10 flex justify-between items-center bg-primary/5">
+          <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-300 flex flex-col max-h-[85vh] sm:max-h-[80vh]">
+              <div className="p-6 border-b border-outline-variant/10 flex justify-between items-center bg-primary/5 shrink-0">
                 <h3 className="text-xl font-black text-on-surface">Cài đặt tài khoản</h3>
-                <button onClick={() => setShowEditModal(false)} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-low transition-colors">
+                <button onClick={handleCloseModal} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-low transition-colors">
                   <span className="material-symbols-outlined">close</span>
                 </button>
               </div>
-              <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto no-scrollbar">
+              <div className="p-6 space-y-6 overflow-y-auto no-scrollbar flex-1">
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-on-surface-variant uppercase ml-1">Họ và tên</label>
@@ -383,13 +436,10 @@ export default function UserProfilePage() {
                   </div>
                 </div>
               </div>
-              <div className="p-6 bg-surface-container-low flex gap-3">
-                <button onClick={() => setShowEditModal(false)} className="flex-1 py-3 rounded-xl font-bold text-on-surface-variant">Hủy</button>
+              <div className="p-6 bg-surface-container-low flex gap-3 shrink-0 pb-8 sm:pb-6">
+                <button onClick={handleCloseModal} className="flex-1 py-3 rounded-xl font-bold text-on-surface-variant">Hủy</button>
                 <button
-                  onClick={async () => {
-                    await handleUpdateProfile();
-                    if (newPassword) await handleUpdatePassword();
-                  }}
+                  onClick={handleSaveAll}
                   className="flex-1 py-3 rounded-xl bg-primary text-on-primary font-bold"
                 >
                   Lưu thay đổi

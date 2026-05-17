@@ -216,7 +216,7 @@ export default function UserHistoryPage() {
       {/* Review Dialog */}
       {showReviewForm && selectedBookingForReview && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-surface-container-lowest/80 backdrop-blur-xl animate-in fade-in">
-          <div className="bg-surface-container-low rounded-[2rem] p-10 max-w-md w-full mx-4 shadow-2xl border border-outline-variant/20">
+          <div className="bg-surface-container-low rounded-[2rem] p-8 sm:p-10 max-w-md w-full mx-4 shadow-2xl border border-outline-variant/20 max-h-[90vh] overflow-y-auto no-scrollbar">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
                 <span className="material-symbols-outlined text-yellow-500" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>

@@ -73,11 +73,19 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           // Check permissions (skip if on force-change page)
           if (!isForceChangePage) {
             if (isAdminRoute && userRole !== "ADMIN") {
-              router.push("/admin"); 
+              if (userRole === "OWNER") router.push("/owner");
+              else router.push("/user");
               return;
             }
             if (isOwnerRoute && userRole !== "OWNER") {
-              router.push("/owner");
+              if (userRole === "ADMIN") router.push("/admin");
+              else router.push("/user");
+              return;
+            }
+            if (isUserRoute && userRole !== "USER") {
+              if (userRole === "ADMIN") router.push("/admin");
+              else if (userRole === "OWNER") router.push("/owner");
+              else router.push("/login");
               return;
             }
           }
