@@ -129,7 +129,7 @@ export default function LoginPage() {
                 </button>
               </div>
               <div className="flex justify-end pt-1 pr-2">
-                <a className="text-sm font-bold text-[#003ec7] hover:text-[#0052ff] transition-colors" href="#">Quên mật khẩu?</a>
+                <Link className="text-sm font-bold text-[#003ec7] hover:text-[#0052ff] transition-colors" href="/forgot-password">Quên mật khẩu?</Link>
               </div>
             </div>
 

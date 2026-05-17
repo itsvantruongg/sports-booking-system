@@ -11,6 +11,7 @@ const navItems = [
   { href: "/owner/timeline", label: "Lịch trình", icon: "calendar_today" },
   { href: "/owner/revenue", label: "Doanh thu", icon: "payments" },
   { href: "/owner/customers", label: "Khách hàng", icon: "group" },
+  { href: "/owner/vouchers", label: "Voucher", icon: "confirmation_number" },
   { href: "/owner/payment-settings", label: "Cài đặt thanh toán", icon: "settings_suggest" },
 ];
 
@@ -46,13 +47,14 @@ export default function OwnerLayout({ children }: { children: React.ReactNode })
             <p className="text-sm text-[#434656]">Dành cho Đối tác</p>
           </Link>
         </div>
-        <ul className="flex flex-col gap-2 flex-grow">
+        <ul className="flex flex-col gap-1.5 flex-grow overflow-y-auto no-scrollbar pr-2">
           {navItems.map(({ href, label, icon }) => {
             const active = pathname === href;
             return (
               <li key={href}>
-                <Link href={href} className={`flex items-center gap-3 px-4 py-3 rounded-full font-semibold text-sm transition-all duration-200 ${active ? "bg-gradient-to-br from-[#003ec7] to-[#0052ff] text-white shadow-lg" : "text-[#434656] hover:bg-[#e7e7f5] hover:translate-x-1"}`} style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
-                  <span className="material-symbols-outlined">{icon}</span>{label}
+                <Link href={href} className={`flex items-center gap-3.5 px-4 py-2.5 rounded-2xl font-bold text-[13px] transition-all duration-300 ${active ? "bg-[#003ec7] text-white shadow-[0_10px_25px_-5px_rgba(0,62,199,0.3)]" : "text-[#434656] hover:bg-[#e7e7f5] hover:text-[#003ec7]"}`} style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+                  <span className="material-symbols-outlined text-[20px] shrink-0">{icon}</span>
+                  <span className="truncate">{label}</span>
                 </Link>
               </li>
             );

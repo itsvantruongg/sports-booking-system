@@ -5,7 +5,8 @@ const {
   createBooking, getMyBookings, getBookingById, cancelBooking,
   createReview,
   getFavorites, addFavorite, removeFavorite,
-  processPayment
+  processPayment, getVenueVouchers, validateVoucher,
+  claimVoucher, getMyVouchers, applyVoucherToBooking
 } = require('../controllers/user.controller');
 const { protect, checkMustChangePassword } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
@@ -138,6 +139,7 @@ router.get('/bookings/:id', getBookingById);
  */
 router.post('/bookings/:id/cancel', cancelBooking);
 router.post('/bookings/:id/payment', processPayment);
+router.put('/bookings/:id/apply-voucher', applyVoucherToBooking);
 
 /**
  * @swagger
@@ -214,5 +216,11 @@ router.post('/favorites', addFavorite);
  *         description: Xóa thành công
  */
 router.delete('/favorites/:id', removeFavorite);
+
+// Vouchers
+router.get('/vouchers/venue/:venueId', getVenueVouchers);
+router.post('/vouchers/validate', validateVoucher);
+router.post('/vouchers/claim', claimVoucher);
+router.get('/vouchers/my', getMyVouchers);
 
 module.exports = router;

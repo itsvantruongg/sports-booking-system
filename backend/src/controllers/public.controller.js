@@ -101,6 +101,33 @@ const getCourtTimeSlots = async (req, res) => {
 
     console.log(`[PublicAPI] Fetching slots for court ${req.params.id} on ${date} (UTC: ${startOfDay.toISOString()} - ${endOfDay.toISOString()})`);
 
+    // --- XỬ LÝ NHẢ SLOT QUÁ HẠN 5 PHÚT ---
+    const Booking = require('../models/Booking');
+    const nowTime = new Date();
+    
+    // Tìm các booking bị quá hạn (5 phút chưa xác nhận)
+    const expiredBookings = await Booking.find({
+      court_id: req.params.id,
+      status: 'PENDING',
+      expires_at: { $lt: nowTime, $ne: null }
+    });
+
+    if (expiredBookings.length > 0) {
+      console.log(`[PublicAPI] Found ${expiredBookings.length} expired bookings. Cleaning up...`);
+      for (const b of expiredBookings) {
+        b.status = 'CANCELLED';
+        b.cancel_reason = 'Hết thời gian thanh toán 5 phút';
+        b.payment_status = 'REFUNDED';
+        b.expires_at = null;
+        b.cancelled_at = new Date();
+        await b.save();
+
+        const slotIds = b.booked_slots.map(s => s.time_slot_id);
+        await TimeSlot.updateMany({ _id: { $in: slotIds } }, { status: 'AVAILABLE' });
+      }
+    }
+    // ------------------------------------
+
     let slots = await TimeSlot.find({
       court_id: req.params.id,
       slot_date: { $gte: startOfDay, $lte: endOfDay },

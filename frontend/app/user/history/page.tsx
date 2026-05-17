@@ -6,12 +6,18 @@ import Toast from "@/components/ui/Toast";
 
 export default function UserHistoryPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'Upcoming' | 'Completed' | 'Cancelled'>('Upcoming');
+  const [activeTab, setActiveTab] = useState<'UNPAID' | 'Upcoming' | 'Completed' | 'Cancelled'>('Upcoming');
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -54,9 +60,29 @@ export default function UserHistoryPage() {
   }, []);
 
   const filteredBookings = bookings.filter((b) => {
-    if (activeTab === 'Upcoming') return ['PENDING', 'CONFIRMED'].includes(b.status);
-    if (activeTab === 'Completed') return b.status === 'COMPLETED';
-    if (activeTab === 'Cancelled') return b.status === 'CANCELLED';
+    // Determine effective status for local filtering
+    let effectiveStatus = b.status;
+    let isUnpaid = false;
+
+    if (b.status === 'PENDING') {
+      if (b.payment_method === 'BANKING') {
+        // Already selected banking and waiting for owner confirmation -> Upcoming
+        isUnpaid = false;
+      } else {
+        // Waiting for payment method selection
+        if (b.expires_at && new Date(b.expires_at).getTime() > now) {
+          isUnpaid = true;
+        } else {
+          // Expired or old broken booking without expires_at -> treat as Cancelled locally
+          effectiveStatus = 'CANCELLED';
+        }
+      }
+    }
+
+    if (activeTab === 'UNPAID') return isUnpaid;
+    if (activeTab === 'Upcoming') return ['PENDING', 'CONFIRMED'].includes(effectiveStatus) && !isUnpaid;
+    if (activeTab === 'Completed') return effectiveStatus === 'COMPLETED';
+    if (activeTab === 'Cancelled') return effectiveStatus === 'CANCELLED';
     return true;
   });
 
@@ -156,13 +182,13 @@ export default function UserHistoryPage() {
         </header>
 
         <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar border-b border-outline-variant/10">
-          {(['Upcoming', 'Completed', 'Cancelled'] as const).map(tab => (
+          {(['UNPAID', 'Upcoming', 'Completed', 'Cancelled'] as const).map(tab => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' : 'text-on-surface-variant hover:bg-primary/5'}`}
             >
-              {tab === 'Upcoming' ? 'Sắp diễn ra' : tab === 'Completed' ? 'Đã hoàn thành' : 'Đã hủy'}
+              {tab === 'UNPAID' ? 'Đơn treo' : tab === 'Upcoming' ? 'Sắp diễn ra' : tab === 'Completed' ? 'Đã hoàn thành' : 'Đã hủy'}
             </button>
           ))}
         </div>
@@ -195,7 +221,7 @@ export default function UserHistoryPage() {
                       <h3 className="text-2xl font-black text-on-surface mb-2">{booking.court_id?.name || 'Sân thể thao'}</h3>
                       <p className="text-xs font-black text-on-surface-variant opacity-60 uppercase tracking-widest flex items-center gap-1.5">
                         <span className="material-symbols-outlined text-sm">location_on</span>
-                        {booking.court_id?.cluster_id?.name || booking.court_id?.cluster_id?.address || 'Địa điểm chưa xác định'}
+                        {booking.court_id?.cluster_id?.address || booking.court_id?.cluster_id?.name || 'Địa điểm chưa xác định'}
                       </p>
                     </div>
                     <div className="text-right">
@@ -224,13 +250,30 @@ export default function UserHistoryPage() {
                   <div className="flex justify-between items-center mt-auto pt-6 border-t border-outline-variant/10">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                      <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Sân đã sẵn sàng</span>
+                      <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">
+                        {activeTab === 'UNPAID' ? 'Đang chờ thanh toán' : 'Sân đã sẵn sàng'}
+                      </span>
                     </div>
                     <div className="flex gap-3">
-                      {['PENDING', 'CONFIRMED'].includes(booking.status) && (
+                      {activeTab === 'UNPAID' && (() => {
+                        const diff = Math.max(0, Math.floor((new Date(booking.expires_at).getTime() - now) / 1000));
+                        const m = Math.floor(diff / 60);
+                        const s = diff % 60;
+                        const timeString = `${m}:${s.toString().padStart(2, '0')}`;
+                        return (
+                          <button onClick={() => router.push(`/user/payment?bookingId=${booking._id}&amount=${booking.total_price}`)} className="px-6 py-2.5 rounded-xl bg-primary text-white font-black text-xs shadow-lg shadow-primary/20 flex items-center gap-2 hover:bg-primary/90 transition-all">
+                            Thanh toán ngay <span className="bg-white/20 px-2 py-0.5 rounded-md text-[10px]">{timeString}</span>
+                          </button>
+                        );
+                      })()}
+                      
+                      {['PENDING', 'CONFIRMED'].includes(booking.status) && activeTab !== 'UNPAID' && (
                         <button onClick={() => setConfirmCancelId(booking._id)} className="px-6 py-2.5 rounded-xl font-black text-xs text-red-500 hover:bg-red-500/5 transition-all">Hủy đặt sân</button>
                       )}
-                      <Link href={`/user/history/${booking._id}`} className="px-6 py-2.5 rounded-xl bg-surface-container-highest text-on-surface font-black text-xs hover:bg-primary/10 hover:text-primary transition-all">Chi tiết hóa đơn</Link>
+                      
+                      {activeTab !== 'UNPAID' && (
+                        <Link href={`/user/history/${booking._id}`} className="px-6 py-2.5 rounded-xl bg-surface-container-highest text-on-surface font-black text-xs hover:bg-primary/10 hover:text-primary transition-all">Chi tiết hóa đơn</Link>
+                      )}
                     </div>
                   </div>
                 </div>

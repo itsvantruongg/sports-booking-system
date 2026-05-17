@@ -16,9 +16,12 @@ export default function OwnerPage() {
   const router = useRouter();
   const [stats, setStats] = useState({ 
     total_revenue: 0, 
+    total_platform_fee: 0,
+    net_revenue: 0,
     digital_revenue: 0, 
     cash_revenue: 0, 
     debt: 0, 
+    commission_debt: 0,
     booking_count: 0 
   });
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -193,57 +196,71 @@ export default function OwnerPage() {
         </h2>
       </header>
 
-      {/* Quick Stats Bento Grid - 5 Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-12">
+      {/* Quick Stats Bento Grid - 6 Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
         {/* Card 1: Tổng doanh thu */}
         <div className="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border-b-4 border-primary relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform duration-500">
             <span className="material-symbols-outlined text-5xl text-primary">analytics</span>
           </div>
-          <h3 className="text-on-surface-variant font-bold mb-2 text-[10px] uppercase tracking-widest">Tổng doanh thu</h3>
+          <h3 className="text-on-surface-variant font-bold mb-2 text-[10px] uppercase tracking-widest">Doanh thu gộp</h3>
           <div className="flex items-baseline gap-1">
             <span className="text-2xl font-black text-on-surface">{(stats.total_revenue || 0).toLocaleString('vi-VN')}</span>
             <span className="text-xs font-bold text-on-surface-variant">₫</span>
           </div>
+          <p className="text-[10px] text-on-surface-variant mt-1">Chưa trừ phí sàn</p>
         </div>
 
-        {/* Card 2: Chuyển khoản */}
-        <div className="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border-b-4 border-blue-500 relative overflow-hidden group">
+        {/* Card 2: Phí sàn (5%) */}
+        <div className="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border-b-4 border-red-400 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform duration-500">
-            <span className="material-symbols-outlined text-5xl text-blue-500">account_balance</span>
+            <span className="material-symbols-outlined text-5xl text-red-400">percent</span>
           </div>
-          <h3 className="text-on-surface-variant font-bold mb-2 text-[10px] uppercase tracking-widest">Chuyển khoản</h3>
+          <h3 className="text-on-surface-variant font-bold mb-2 text-[10px] uppercase tracking-widest">Phí sàn (5%)</h3>
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-black text-on-surface">{(stats.digital_revenue || 0).toLocaleString('vi-VN')}</span>
-            <span className="text-xs font-bold text-on-surface-variant">₫</span>
+            <span className="text-2xl font-black text-red-600">{(stats.total_platform_fee || 0).toLocaleString('vi-VN')}</span>
+            <span className="text-xs font-bold text-red-500">₫</span>
           </div>
         </div>
 
-        {/* Card 3: Tiền mặt */}
-        <div className="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border-b-4 border-green-500 relative overflow-hidden group">
+        {/* Card 3: Doanh thu thực nhận */}
+        <div className="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border-b-4 border-green-600 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform duration-500">
-            <span className="material-symbols-outlined text-5xl text-green-500">payments</span>
+            <span className="material-symbols-outlined text-5xl text-green-600">account_balance_wallet</span>
           </div>
-          <h3 className="text-on-surface-variant font-bold mb-2 text-[10px] uppercase tracking-widest">Tiền mặt</h3>
+          <h3 className="text-on-surface-variant font-bold mb-2 text-[10px] uppercase tracking-widest">Thực nhận</h3>
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-black text-on-surface">{(stats.cash_revenue || 0).toLocaleString('vi-VN')}</span>
-            <span className="text-xs font-bold text-on-surface-variant">₫</span>
+            <span className="text-2xl font-black text-green-700">{(stats.net_revenue || 0).toLocaleString('vi-VN')}</span>
+            <span className="text-xs font-bold text-green-600">₫</span>
           </div>
         </div>
 
-        {/* Card 4: Treo nợ */}
+        {/* Card 4: Nợ Admin */}
+        <div className="bg-[#fff4f4] p-5 rounded-2xl shadow-sm border-b-4 border-red-500 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform duration-500">
+            <span className="material-symbols-outlined text-5xl text-red-500">error</span>
+          </div>
+          <h3 className="text-red-800 font-bold mb-2 text-[10px] uppercase tracking-widest">Nợ hoa hồng</h3>
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-black text-red-700">{(stats.commission_debt || 0).toLocaleString('vi-VN')}</span>
+            <span className="text-xs font-bold text-red-600">₫</span>
+          </div>
+          <p className="text-[10px] text-red-600 mt-1">Cần trả Admin</p>
+        </div>
+
+        {/* Card 5: Khách nợ */}
         <div className="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border-b-4 border-yellow-500 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform duration-500">
             <span className="material-symbols-outlined text-5xl text-yellow-500">pending_actions</span>
           </div>
-          <h3 className="text-on-surface-variant font-bold mb-2 text-[10px] uppercase tracking-widest">Treo nợ</h3>
+          <h3 className="text-on-surface-variant font-bold mb-2 text-[10px] uppercase tracking-widest">Khách nợ</h3>
           <div className="flex items-baseline gap-1">
             <span className="text-2xl font-black text-yellow-700">{(stats.debt || 0).toLocaleString('vi-VN')}</span>
             <span className="text-xs font-bold text-yellow-600">₫</span>
           </div>
         </div>
 
-        {/* Card 5: Đơn đặt hôm nay */}
+        {/* Card 6: Đơn đặt hôm nay */}
         <div className="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border-b-4 border-purple-500 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform duration-500">
             <span className="material-symbols-outlined text-5xl text-purple-500">confirmation_number</span>

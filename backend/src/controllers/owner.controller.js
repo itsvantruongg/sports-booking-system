@@ -1,3 +1,4 @@
+const User = require('../models/User');
 const VenueCluster = require('../models/VenueCluster');
 const Court = require('../models/Court');
 const TimeSlot = require('../models/TimeSlot');
@@ -37,35 +38,46 @@ const getOwnerDashboard = async (req, res) => {
       status: { $ne: 'CANCELLED' }
     });
 
-    // 1. Tổng doanh thu (Tất cả đơn đã PAID)
+    // 1. Tổng doanh thu gộp (Tất cả đơn đã PAID)
     const total_revenue = bookings
       .filter(b => b.payment_status === 'PAID')
       .reduce((sum, b) => sum + b.total_price, 0);
 
-    // 2. Chuyển khoản (PAID qua các kênh online/banking)
+    // 2. Tổng phí sàn (5%)
+    const total_platform_fee = bookings
+      .filter(b => b.payment_status === 'PAID')
+      .reduce((sum, b) => sum + b.platform_fee, 0);
+
+    // 3. Doanh thu thực nhận
+    const net_revenue = total_revenue - total_platform_fee;
+
+    // 4. Chuyển khoản (PAID qua các kênh online/banking)
     const digital_revenue = bookings
       .filter(b => b.payment_status === 'PAID' && b.payment_method !== 'CASH')
       .reduce((sum, b) => sum + b.total_price, 0);
 
-    // 3. Tiền mặt (Đã thu: PAID + CASH)
+    // 5. Tiền mặt (Đã thu: PAID + CASH)
     const cash_revenue = bookings
       .filter(b => b.payment_status === 'PAID' && b.payment_method === 'CASH')
       .reduce((sum, b) => sum + b.total_price, 0);
 
-    // 4. Treo nợ (Chưa thu: PENDING + CASH)
+    // 6. Treo nợ (Chưa thu: PENDING + CASH)
     const debt = bookings
       .filter(b => b.payment_status === 'PENDING' && b.payment_method === 'CASH' && (b.status === 'CONFIRMED' || b.status === 'COMPLETED'))
       .reduce((sum, b) => sum + b.total_price, 0);
 
-    // 5. Số lượng đặt sân hôm nay
-    const booking_count = bookings.length;
+    // 7. Công nợ hoa hồng hiện tại (Lấy từ User model)
+    const currentUser = await User.findById(req.user._id).select('commission_debt');
 
     res.status(200).json({ 
       total_revenue,
+      total_platform_fee,
+      net_revenue,
       digital_revenue,
       cash_revenue,
       debt,
-      booking_count
+      commission_debt: currentUser.commission_debt,
+      booking_count: bookings.length
     });
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
@@ -109,6 +121,64 @@ const getOwnerCourts = async (req, res) => {
     const courts = await Court.find(query).populate('sport_type_id', 'name');
     res.status(200).json(courts);
   } catch (error) { res.status(500).json({ message: error.message }); }
+};
+// POST /api/owner/courts
+const createCourt = async (req, res) => {
+  try {
+    let { name, cluster_id, new_cluster_name, sport_type_id, description, status, image_url } = req.body;
+    
+    // Nếu chọn tạo cụm sân mới
+    if (cluster_id === 'NEW' && new_cluster_name) {
+      const slug = new_cluster_name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '-') + '-' + Date.now();
+      const newCluster = await VenueCluster.create({
+        owner_id: req.user._id,
+        name: new_cluster_name,
+        slug: slug
+      });
+      cluster_id = newCluster._id.toString();
+    } else {
+      // Kiểm tra cluster_id thuộc quyền sở hữu của owner
+      const cluster = await VenueCluster.findOne({ _id: cluster_id, owner_id: req.user._id });
+      if (!cluster) {
+        return res.status(403).json({ message: 'Không có quyền tạo sân cho cụm sân này' });
+      }
+    }
+
+    const court = await Court.create({
+      name, cluster_id, sport_type_id, description, status, image_url
+    });
+
+    res.status(201).json(court);
+  } catch (error) { res.status(400).json({ message: error.message }); }
+};
+
+// PUT /api/owner/courts/:id
+const updateCourt = async (req, res) => {
+  try {
+    const { name, cluster_id, sport_type_id, description, status, image_url } = req.body;
+    
+    const court = await Court.findById(req.params.id).populate('cluster_id');
+    if (!court || court.cluster_id.owner_id.toString() !== req.user._id.toString()) {
+      return res.status(404).json({ message: 'Không tìm thấy sân hoặc không có quyền' });
+    }
+
+    if (cluster_id && cluster_id !== court.cluster_id._id.toString()) {
+      const newCluster = await VenueCluster.findOne({ _id: cluster_id, owner_id: req.user._id });
+      if (!newCluster) {
+        return res.status(403).json({ message: 'Cụm sân mới không thuộc quyền sở hữu của bạn' });
+      }
+      court.cluster_id = cluster_id;
+    }
+
+    if (name) court.name = name;
+    if (sport_type_id) court.sport_type_id = sport_type_id;
+    if (description !== undefined) court.description = description;
+    if (status) court.status = status;
+    if (image_url !== undefined) court.image_url = image_url;
+
+    await court.save();
+    res.status(200).json(court);
+  } catch (error) { res.status(400).json({ message: error.message }); }
 };
 
 // POST /api/owner/pricing-rules
@@ -340,6 +410,7 @@ const getOwnerReport = async (req, res) => {
       { $group: {
         _id: { $dateToString: { format: '%Y-%m-%d', date: '$booking_date' } },
         daily_revenue: { $sum: { $cond: [{ $eq: ["$payment_status", "PAID"] }, "$total_price", 0] } },
+        daily_fee: { $sum: { $cond: [{ $eq: ["$payment_status", "PAID"] }, "$platform_fee", 0] } },
         daily_debt: { $sum: { $cond: [
           { $and: [
             { $eq: ["$payment_status", "PENDING"] },
@@ -354,10 +425,13 @@ const getOwnerReport = async (req, res) => {
     ]);
 
     const totalRevenue = report.reduce((sum, r) => sum + r.daily_revenue, 0);
+    const totalFee = report.reduce((sum, r) => sum + r.daily_fee, 0);
     const totalDebt = report.reduce((sum, r) => sum + r.daily_debt, 0);
     
     res.status(200).json({ 
       total_revenue: totalRevenue, 
+      total_platform_fee: totalFee,
+      net_revenue: totalRevenue - totalFee,
       total_debt: totalDebt,
       daily: report 
     });
@@ -386,6 +460,11 @@ const confirmBookingPayment = async (req, res) => {
     booking.payment_status = 'PAID';
     if (booking.status === 'PENDING') booking.status = 'CONFIRMED';
     
+    // Cập nhật công nợ hoa hồng cho chủ sân
+    await User.findByIdAndUpdate(req.user._id, {
+      $inc: { commission_debt: booking.platform_fee }
+    });
+
     await booking.save();
 
     // 1. Tạo thông báo trong DB cho User
@@ -486,6 +565,13 @@ const updateBookingStatus = async (req, res) => {
       notiTitle = 'Đơn đặt sân đã được xác nhận';
     }
     
+    // Nếu tự động duyệt tiền, cập nhật công nợ
+    if (booking.isModified('payment_status') && booking.payment_status === 'PAID') {
+      await User.findByIdAndUpdate(req.user._id, {
+        $inc: { commission_debt: booking.platform_fee }
+      });
+    }
+
     await booking.save();
 
     // Thông báo cho User qua Zalo
@@ -602,11 +688,53 @@ const updatePaymentConfig = async (req, res) => {
   } catch (error) { res.status(400).json({ message: error.message }); }
 };
 
+// --- VOUCHER MANAGEMENT ---
+const Voucher = require('../models/Voucher');
+
+// POST /api/owner/vouchers
+const createVoucher = async (req, res) => {
+  try {
+    const { code, discount_type, discount_value, min_booking_amount, max_discount_amount, start_date, end_date, usage_limit, target_cluster_id, target_court_id } = req.body;
+    const voucher = await Voucher.create({
+      owner_id: req.user._id,
+      code: code.toUpperCase(),
+      discount_type,
+      discount_value,
+      min_booking_amount,
+      max_discount_amount,
+      start_date,
+      end_date,
+      usage_limit,
+      target_cluster_id,
+      target_court_id
+    });
+    res.status(201).json(voucher);
+  } catch (error) { res.status(400).json({ message: error.message }); }
+};
+
+// GET /api/owner/vouchers
+const getVouchers = async (req, res) => {
+  try {
+    const vouchers = await Voucher.find({ owner_id: req.user._id }).sort('-created_at');
+    res.status(200).json(vouchers);
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+// DELETE /api/owner/vouchers/:id
+const deleteVoucher = async (req, res) => {
+  try {
+    const voucher = await Voucher.findOneAndDelete({ _id: req.params.id, owner_id: req.user._id });
+    if (!voucher) return res.status(404).json({ message: 'Không tìm thấy voucher' });
+    res.status(200).json({ message: 'Xóa voucher thành công' });
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
 module.exports = {
-  getOwnerDashboard, getOwnerVenues, updateVenue, getOwnerCourts,
+  getOwnerDashboard, getOwnerVenues, updateVenue, getOwnerCourts, createCourt, updateCourt,
   createPricingRule, getOwnerTimeSlots, blockSlots,
   getOwnerBookings, updateBookingStatus, getOwnerReport, getOwnerCustomers,
   generateSlots, getPricingRules, deletePricingRule, confirmBookingPayment,
   updatePricingRule, bulkCreatePricingRules, unblockSlots,
-  getPaymentConfig, updatePaymentConfig
+  getPaymentConfig, updatePaymentConfig,
+  createVoucher, getVouchers, deleteVoucher
 };

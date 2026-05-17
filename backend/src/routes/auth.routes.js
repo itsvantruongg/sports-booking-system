@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, refresh, forceChangePassword } = require('../controllers/auth.controller');
+const { register, login, refresh, forceChangePassword, forgotPassword, resetPassword } = require('../controllers/auth.controller');
 const { protect } = require('../middlewares/authMiddleware');
 
 /**
@@ -91,5 +91,52 @@ router.post('/refresh', refresh);
  *         description: Đổi mật khẩu thành công
  */
 router.post('/force-change', protect, forceChangePassword);
+
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Yêu cầu đặt lại mật khẩu (Gửi email)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email: { type: string }
+ *     responses:
+ *       200:
+ *         description: Email đã được gửi
+ *       404:
+ *         description: Không tìm thấy email
+ */
+router.post('/forgot-password', forgotPassword);
+
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: Đặt lại mật khẩu bằng token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [token, password]
+ *             properties:
+ *               token: { type: string }
+ *               password: { type: string, minLength: 8 }
+ *     responses:
+ *       200:
+ *         description: Đặt lại mật khẩu thành công
+ *       400:
+ *         description: Token không hợp lệ hoặc hết hạn
+ */
+router.post('/reset-password', resetPassword);
 
 module.exports = router;

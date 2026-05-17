@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
   getAdminDashboard, createOwner, getAllUsers,
-  updateUserStatus, getAllVenues, createSportType, updateVenueStatus
+  updateUserStatus, getAllVenues, createSportType, updateVenueStatus, clearOwnerDebt
 } = require('../controllers/admin.controller');
 const { protect } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
@@ -100,6 +100,24 @@ router.get('/users', getAllUsers);
  *         description: Cập nhật thành công
  */
 router.put('/users/:id/status', updateUserStatus);
+
+/**
+ * @swagger
+ * /api/admin/users/{id}/clear-debt:
+ *   post:
+ *     summary: "[User] Thanh toán (Xóa) công nợ của Chủ sân"
+ *     tags: [Admin]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Đã thanh toán công nợ thành công
+ */
+router.post('/users/:id/clear-debt', clearOwnerDebt);
 
 /**
  * @swagger

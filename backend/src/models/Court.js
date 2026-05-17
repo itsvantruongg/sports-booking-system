@@ -5,6 +5,7 @@ const courtSchema = new mongoose.Schema({
   sport_type_id: { type: mongoose.Schema.Types.ObjectId, ref: 'SportType', required: true },
   name: { type: String, required: true },
   description: { type: String },
+  image_url: { type: String },
   status: { type: String, enum: ['ACTIVE', 'BLOCKED', 'MAINTENANCE'], default: 'ACTIVE' },
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 

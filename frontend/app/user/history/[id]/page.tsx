@@ -268,7 +268,7 @@ export default function BookingDetailPage() {
                 </h1>
                 <p className="text-on-surface-variant font-body flex items-center gap-2">
                   <span className="material-symbols-outlined text-[18px]">location_on</span>
-                  {booking.court_id?.description || "Không có địa chỉ"}
+                  {booking.court_id?.cluster_id?.address || "Không có địa chỉ"}
                 </p>
               </div>
             </div>
@@ -349,27 +349,52 @@ export default function BookingDetailPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 sticky top-32 self-start">
             {/* Price Summary */}
-            <div className="bg-surface-container-lowest rounded-2xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.06)] sticky top-32">
+            <div className="bg-surface-container-lowest rounded-2xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.06)]">
               <h2 className="text-xl font-display font-black text-on-surface mb-6">Tổng thanh toán</h2>
               <div className="flex flex-col gap-4 mb-6">
                 <div className="flex justify-between items-center">
-                  <span className="text-on-surface-variant font-body">Đơn giá / slot</span>
+                  <span className="text-on-surface-variant font-body">Tạm tính</span>
                   <span className="font-bold text-on-surface">
-                    {booking.slot_count > 0
-                      ? (booking.total_price / booking.slot_count).toLocaleString("vi-VN")
-                      : "—"} ₫
+                    {(booking.subtotal || booking.total_price)?.toLocaleString("vi-VN")} ₫
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-on-surface-variant font-body">Số lượng slot</span>
-                  <span className="font-bold text-on-surface">{booking.slot_count}</span>
-                </div>
+                {booking.discount_amount > 0 && (
+                  <div className="flex justify-between items-center text-green-600">
+                    <span className="font-body text-sm">Giảm giá {booking.voucher_code ? `(${booking.voucher_code})` : ""}</span>
+                    <span className="font-bold">- {booking.discount_amount.toLocaleString("vi-VN")} ₫</span>
+                  </div>
+                )}
                 <div className="border-t border-outline-variant/30 pt-4 flex justify-between items-center">
                   <span className="text-lg font-headline font-bold text-on-surface">Tổng cộng</span>
                   <span className="text-2xl font-display font-black text-primary">
                     {booking.total_price?.toLocaleString("vi-VN")} ₫
+                  </span>
+                </div>
+              </div>
+
+              {/* Payment Details */}
+              <div className="bg-surface-container border border-outline-variant/20 rounded-xl p-4 mb-6 flex flex-col gap-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-on-surface-variant font-medium">Phương thức</span>
+                  <span className="text-sm font-bold text-on-surface">
+                    {booking.payment_method === 'CASH' ? 'Tiền mặt' : 
+                     booking.payment_method === 'TRANSFER' ? 'Chuyển khoản' :
+                     booking.payment_method === 'VNPAY' ? 'VNPay' :
+                     booking.payment_method === 'MOMO' ? 'Ví Momo' :
+                     booking.payment_method === 'PAYOS' ? 'PayOS' : booking.payment_method}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-on-surface-variant font-medium">Trạng thái</span>
+                  <span className={`text-xs font-bold px-2.5 py-1 rounded-md uppercase tracking-wider ${
+                    booking.payment_status === 'PAID' ? 'bg-green-100 text-green-700' :
+                    booking.payment_status === 'REFUNDED' ? 'bg-orange-100 text-orange-700' :
+                    'bg-yellow-100 text-yellow-700'
+                  }`}>
+                    {booking.payment_status === 'PAID' ? 'Đã thanh toán' :
+                     booking.payment_status === 'REFUNDED' ? 'Đã hoàn tiền' : 'Chưa thanh toán'}
                   </span>
                 </div>
               </div>

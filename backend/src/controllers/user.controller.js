@@ -31,7 +31,7 @@ const updateMe = async (req, res) => {
 // POST /api/users/bookings — Giữ chỗ & Tạo bill
 const createBooking = async (req, res) => {
   try {
-    const { court_id, booking_date, time_slot_ids } = req.body;
+    const { court_id, booking_date, time_slot_ids, voucher_code } = req.body;
     if (!court_id || !booking_date || !time_slot_ids?.length) {
       return res.status(400).json({ message: 'Thiếu thông tin đặt sân' });
     }
@@ -59,11 +59,40 @@ const createBooking = async (req, res) => {
       }
     }
 
-    // Tính tiền
+    // 1. Tính tiền gốc
     const subtotal = slots.reduce((sum, s) => sum + s.price, 0);
-    const platform_fee = Math.round(subtotal * 0.05);
-    const total_price = subtotal + platform_fee;
-    const expires_at = new Date(Date.now() + 10 * 60 * 1000); // 10 phút
+    
+    // 2. Xử lý Voucher (nếu có)
+    let discount_amount = 0;
+    let appliedVoucher = null;
+
+    if (voucher_code) {
+      const Voucher = require('../models/Voucher');
+      appliedVoucher = await Voucher.findOne({ 
+        code: voucher_code.toUpperCase(), 
+        is_active: true,
+        start_date: { $lte: now },
+        end_date: { $gte: now }
+      });
+
+      if (appliedVoucher) {
+        if (subtotal >= appliedVoucher.min_booking_amount && appliedVoucher.used_count < appliedVoucher.usage_limit) {
+          if (appliedVoucher.discount_type === 'PERCENT') {
+            discount_amount = Math.round(subtotal * (appliedVoucher.discount_value / 100));
+            if (appliedVoucher.max_discount_amount && discount_amount > appliedVoucher.max_discount_amount) {
+              discount_amount = appliedVoucher.max_discount_amount;
+            }
+          } else {
+            discount_amount = appliedVoucher.discount_value;
+          }
+        }
+      }
+    }
+
+    // 3. Tính toán tiền cuối cùng & Phí sàn (5%)
+    const total_price = Math.max(0, subtotal - discount_amount);
+    const platform_fee = Math.round(total_price * 0.05); // 5% phí sàn
+    const expires_at = new Date(Date.now() + 5 * 60 * 1000); // 5 phút
 
     const booking = await Booking.create({
       user_id: req.user._id,
@@ -73,16 +102,25 @@ const createBooking = async (req, res) => {
       end_time: slots[slots.length - 1].end_time,
       slot_count: slots.length,
       subtotal,
+      discount_amount,
+      voucher_code: appliedVoucher ? appliedVoucher.code : null,
       platform_fee,
       total_price,
-      payment_method: 'TRANSFER', // Mặc định chuyển khoản cho online booking
+      payment_method: 'TRANSFER', 
       payment_status: 'PENDING',
       status: 'PENDING',
       expires_at,
       booked_slots: slots.map(s => ({ time_slot_id: s._id, slot_price: s.price })),
     });
 
-    // 3. Thông báo qua Zalo (Gửi cho Chủ sân)
+    // Cập nhật số lần dùng voucher
+    if (appliedVoucher) {
+      appliedVoucher.used_count += 1;
+      await appliedVoucher.save();
+    }
+
+    // 4. Thông báo qua Zalo (Gửi cho Chủ sân) - Chỉ là thông báo có người đang quan tâm hoặc khởi tạo (tuy nhu cầu, ở đây ta có thể bỏ qua nếu muốn chỉ báo khi đã trả tiền)
+    /* 
     const populatedBooking = await Booking.findById(booking._id).populate({
       path: 'court_id',
       populate: { path: 'cluster_id', populate: { path: 'owner_id', select: 'name phone' } }
@@ -92,18 +130,19 @@ const createBooking = async (req, res) => {
 
     if (owner && owner.phone) {
       sendZaloNotification(owner.phone, {
-        text: `[KINETIC] Đơn đặt sân mới: Khách ${req.user.name} vừa đặt sân ${populatedBooking.court_id.name} vào ngày ${new Date(booking_date).toLocaleDateString('vi-VN')}. Vui lòng kiểm tra hệ thống.`
+        text: `[KINETIC] Đang có khách khởi tạo đơn đặt sân ${populatedBooking.court_id.name}...`
       }).catch(err => console.error('[Zalo Notify Error]', err));
     }
+    */
 
-    // Khóa các slot lại
+    // Khóa các slot lại tạm thời
     await TimeSlot.updateMany({ _id: { $in: time_slot_ids } }, { status: 'BOOKED' });
 
     res.status(201).json({
       booking_id: booking._id,
       total_price,
+      discount_amount,
       expires_at,
-      // payment_url sẽ thêm sau khi tích hợp cổng thanh toán
     });
   } catch (error) { 
     console.error('[Create Booking Error]', error);
@@ -117,8 +156,17 @@ const getMyBookings = async (req, res) => {
     const { status } = req.query;
     const query = { user_id: req.user._id };
 
-    if (status === 'UPCOMING') query.status = { $in: ['PENDING', 'CONFIRMED'] };
-    else if (status === 'COMPLETED') query.status = { $in: ['COMPLETED', 'CANCELLED'] };
+    if (status === 'UPCOMING') {
+      query.$or = [
+        { status: 'CONFIRMED' },
+        { status: 'PENDING', payment_method: 'BANKING' } // Đang chờ xác nhận chuyển khoản
+      ];
+    }
+    else if (status === 'COMPLETED') query.status = 'COMPLETED';
+    else if (status === 'UNPAID') {
+      query.status = 'PENDING';
+      query.expires_at = { $gt: new Date() };
+    }
 
     const bookings = await Booking.find(query)
       .populate({
@@ -285,6 +333,25 @@ const processPayment = async (req, res) => {
       return res.status(403).json({ message: 'Bạn không có quyền thanh toán đơn này' });
     }
 
+    if (booking.status === 'CANCELLED') {
+      return res.status(400).json({ message: 'Đơn đặt sân này đã bị hủy (có thể do quá thời gian giữ chỗ 5 phút).' });
+    }
+
+    // KIỂM TRA LẠI SLOT CÒN TRỐNG KHÔNG (Vì lúc tạo đơn ta khóa slot = BOOKED)
+    // Nếu slot là AVAILABLE hoặc BOOKED (do chính đơn này khóa) thì hợp lệ
+    const slotIds = booking.booked_slots.map(s => s.time_slot_id);
+    const validSlots = await TimeSlot.find({
+      _id: { $in: slotIds },
+      status: { $in: ['AVAILABLE', 'BOOKED'] }
+    });
+
+    if (validSlots.length !== slotIds.length) {
+      booking.status = 'CANCELLED';
+      booking.cancel_reason = 'Khung giờ đã bị người khác đặt mất trước khi bạn hoàn tất thanh toán';
+      await booking.save();
+      return res.status(409).json({ message: 'Rất tiếc, một số khung giờ bạn chọn không còn trống. Vui lòng chọn ca khác.' });
+    }
+
     booking.payment_method = method;
 
     // Tìm chủ sân để gửi thông báo
@@ -314,6 +381,13 @@ const processPayment = async (req, res) => {
       booking.status = 'CONFIRMED'; 
       notiTitle = 'Đơn đặt sân mới (Tiền mặt)';
       notiBody = `Khách hàng ${req.user.name} đã đặt sân và sẽ trả tiền mặt tại chỗ.`;
+    }
+
+    // Cập nhật công nợ hoa hồng nếu thanh toán thành công
+    if (booking.payment_status === 'PAID' && ownerId) {
+      await User.findByIdAndUpdate(ownerId, {
+        $inc: { commission_debt: booking.platform_fee }
+      });
     }
 
     booking.expires_at = null;
@@ -373,8 +447,200 @@ const processPayment = async (req, res) => {
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
+// GET /api/users/vouchers/venue/:venueId
+const getVenueVouchers = async (req, res) => {
+  try {
+    const Voucher = require('../models/Voucher');
+    const { venueId } = req.params;
+    const now = new Date();
+    
+    const venue = await VenueCluster.findById(venueId);
+    if (!venue) return res.status(404).json({ message: 'Không tìm thấy sân' });
+
+    const vouchers = await Voucher.find({
+      owner_id: venue.owner_id,
+      is_active: true,
+      start_date: { $lte: now },
+      end_date: { $gte: now },
+      $expr: { $lt: ["$used_count", "$usage_limit"] }
+    }).select('code discount_type discount_value min_booking_amount');
+
+    res.status(200).json(vouchers);
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+// POST /api/users/vouchers/validate
+const validateVoucher = async (req, res) => {
+  try {
+    const { code, subtotal } = req.body;
+    const Voucher = require('../models/Voucher');
+    const now = new Date();
+
+    const voucher = await Voucher.findOne({
+      code: code.toUpperCase(),
+      is_active: true,
+      start_date: { $lte: now },
+      end_date: { $gte: now }
+    });
+
+    if (!voucher) return res.status(404).json({ message: 'Mã giảm giá không tồn tại hoặc đã hết hạn' });
+    if (voucher.used_count >= voucher.usage_limit) return res.status(400).json({ message: 'Mã giảm giá đã hết lượt sử dụng' });
+    if (subtotal < voucher.min_booking_amount) return res.status(400).json({ 
+      message: `Đơn hàng tối thiểu ${voucher.min_booking_amount.toLocaleString()}₫ để áp dụng mã này` 
+    });
+
+    let discount_amount = 0;
+    if (voucher.discount_type === 'PERCENT') {
+      discount_amount = Math.round(subtotal * (voucher.discount_value / 100));
+      if (voucher.max_discount_amount && discount_amount > voucher.max_discount_amount) {
+        discount_amount = voucher.max_discount_amount;
+      }
+    } else {
+      discount_amount = voucher.discount_value;
+    }
+
+    res.status(200).json({
+      code: voucher.code,
+      discount_amount,
+      total_price: Math.max(0, subtotal - discount_amount)
+    });
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+// POST /api/users/vouchers/claim
+const claimVoucher = async (req, res) => {
+  try {
+    const { code } = req.body;
+    const Voucher = require('../models/Voucher');
+    const VoucherClaim = require('../models/VoucherClaim');
+    const now = new Date();
+
+    const voucher = await Voucher.findOne({
+      code: code.toUpperCase(),
+      is_active: true,
+      start_date: { $lte: now },
+      end_date: { $gte: now }
+    });
+
+    if (!voucher) return res.status(404).json({ message: 'Mã giảm giá không tồn tại hoặc đã hết hạn' });
+    if (voucher.used_count >= voucher.usage_limit) return res.status(400).json({ message: 'Mã giảm giá đã hết lượt sử dụng' });
+
+    // Kiểm tra xem đã claim chưa
+    const existingClaim = await VoucherClaim.findOne({ user_id: req.user._id, voucher_id: voucher._id });
+    if (existingClaim) return res.status(400).json({ message: 'Bạn đã lưu mã giảm giá này rồi' });
+
+    await VoucherClaim.create({
+      user_id: req.user._id,
+      voucher_id: voucher._id
+    });
+
+    res.status(201).json({ message: 'Lưu voucher thành công', voucher });
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+// GET /api/users/vouchers/my
+const getMyVouchers = async (req, res) => {
+  try {
+    const VoucherClaim = require('../models/VoucherClaim');
+    const claims = await VoucherClaim.find({ user_id: req.user._id })
+      .populate('voucher_id')
+      .sort('-claimed_at');
+
+    // Chỉ trả về các voucher còn hiệu lực
+    const now = new Date();
+    const activeVouchers = claims
+      .map(c => c.voucher_id)
+      .filter(v => v && v.is_active && v.end_date >= now);
+
+    res.status(200).json(activeVouchers);
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+// PUT /api/users/bookings/:id/apply-voucher
+const applyVoucherToBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { voucher_code } = req.body;
+    const Voucher = require('../models/Voucher');
+    
+    const booking = await Booking.findById(id);
+    if (!booking) return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+    if (booking.user_id.toString() !== req.user._id.toString()) return res.status(403).json({ message: 'Không có quyền' });
+    if (booking.payment_status === 'PAID') return res.status(400).json({ message: 'Đơn hàng đã thanh toán' });
+
+    // Handle removing voucher
+    if (!voucher_code) {
+      if (booking.voucher_code) {
+        const oldVoucher = await Voucher.findOne({ code: booking.voucher_code });
+        if (oldVoucher) {
+          oldVoucher.used_count = Math.max(0, oldVoucher.used_count - 1);
+          await oldVoucher.save();
+        }
+        booking.voucher_code = null;
+        booking.discount_amount = 0;
+        booking.total_price = booking.subtotal;
+        booking.platform_fee = Math.round(booking.total_price * 0.05);
+        await booking.save();
+      }
+      return res.status(200).json({ message: 'Đã gỡ mã giảm giá', booking });
+    }
+
+    // If changing to a new voucher, decrease used count of old one first
+    if (booking.voucher_code && booking.voucher_code.toUpperCase() !== voucher_code.toUpperCase()) {
+       const oldVoucher = await Voucher.findOne({ code: booking.voucher_code });
+       if (oldVoucher) {
+         oldVoucher.used_count = Math.max(0, oldVoucher.used_count - 1);
+         await oldVoucher.save();
+       }
+    }
+
+    const now = new Date();
+    const voucher = await Voucher.findOne({
+      code: voucher_code.toUpperCase(),
+      is_active: true,
+      start_date: { $lte: now },
+      end_date: { $gte: now }
+    });
+
+    if (!voucher) return res.status(404).json({ message: 'Mã giảm giá không tồn tại hoặc đã hết hạn' });
+    if (voucher.used_count >= voucher.usage_limit && booking.voucher_code?.toUpperCase() !== voucher_code.toUpperCase()) {
+      return res.status(400).json({ message: 'Mã giảm giá đã hết lượt sử dụng' });
+    }
+    
+    const subtotal = booking.subtotal; 
+    if (subtotal < voucher.min_booking_amount) {
+      return res.status(400).json({ message: `Đơn tối thiểu ${voucher.min_booking_amount.toLocaleString()}₫` });
+    }
+
+    let discount_amount = 0;
+    if (voucher.discount_type === 'PERCENT') {
+      discount_amount = Math.round(subtotal * (voucher.discount_value / 100));
+      if (voucher.max_discount_amount && discount_amount > voucher.max_discount_amount) {
+        discount_amount = voucher.max_discount_amount;
+      }
+    } else {
+      discount_amount = voucher.discount_value;
+    }
+
+    if (!booking.voucher_code || booking.voucher_code.toUpperCase() !== voucher.code.toUpperCase()) {
+        voucher.used_count += 1;
+        await voucher.save();
+    }
+
+    booking.voucher_code = voucher.code;
+    booking.discount_amount = discount_amount;
+    booking.total_price = Math.max(0, subtotal - discount_amount);
+    booking.platform_fee = Math.round(booking.total_price * 0.05);
+    
+    await booking.save();
+    
+    res.status(200).json({ message: 'Áp dụng mã thành công', booking });
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
 module.exports = {
   getMe, updateMe, createBooking, getMyBookings, getBookingById,
   cancelBooking, createReview, getFavorites, addFavorite, removeFavorite,
-  processPayment
+  processPayment, getVenueVouchers, validateVoucher,
+  claimVoucher, getMyVouchers, applyVoucherToBooking
 };

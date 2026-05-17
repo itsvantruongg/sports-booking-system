@@ -20,6 +20,9 @@ const userSchema = new mongoose.Schema({
   // refresh_token lưu trực tiếp để có thể revoke
   refresh_token: { type: String, select: false },
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'VenueCluster' }],
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
+  commission_debt: { type: Number, default: 0 }
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
 // Tự động hash password trước khi lưu

@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
+const sendEmail = require('../utils/sendEmail');
 
 // Tạo access token ngắn hạn (15 phút)
 const generateAccessToken = (id) =>
@@ -91,4 +93,93 @@ const forceChangePassword = async (req, res) => {
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
-module.exports = { register, login, refresh, forceChangePassword };
+// ─── QUÊN MẬT KHẨU ───────────────────────────────────────────
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Không tìm thấy người dùng với email này' });
+    }
+
+    // Tạo mã token ngẫu nhiên
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    // Hash token và lưu vào DB (bảo mật hơn lưu text thuần)
+    user.resetPasswordToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+
+    // Token hết hạn sau 15 phút
+    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
+
+    await user.save({ validateBeforeSave: false });
+
+    // Tạo URL reset password
+    const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+
+    const message = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px;">
+        <h2 style="color: #003ec7; text-align: center;">Đặt lại mật khẩu của bạn</h2>
+        <p>Chào bạn,</p>
+        <p>Bạn nhận được email này vì chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
+        <p>Vui lòng nhấn vào nút bên dưới để tiến hành đặt lại mật khẩu. <b>Đường dẫn này chỉ có hiệu lực trong 15 phút.</b></p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${resetUrl}" style="background-color: #003ec7; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">ĐẶT LẠI MẬT KHẨU</a>
+        </div>
+        <p>Nếu bạn không yêu cầu đổi mật khẩu, vui lòng bỏ qua email này.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="font-size: 12px; color: #888;">Trân trọng,<br>Đội ngũ Kinetic</p>
+      </div>
+    `;
+
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: 'KINETIC - Yêu cầu đặt lại mật khẩu',
+        html: message,
+      });
+
+      res.status(200).json({ message: 'Email đặt lại mật khẩu đã được gửi' });
+    } catch (err) {
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save({ validateBeforeSave: false });
+      return res.status(500).json({ message: 'Không thể gửi email. Vui lòng thử lại sau.' });
+    }
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+// ─── ĐẶT LẠI MẬT KHẨU ────────────────────────────────────────
+const resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    // Hash token từ URL để so sánh với bản lưu trong DB
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(token)
+      .digest('hex');
+
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Mã xác thực không hợp lệ hoặc đã hết hạn' });
+    }
+
+    // Thiết lập mật khẩu mới
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ message: 'Mật khẩu đã được đặt lại thành công' });
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+module.exports = { register, login, refresh, forceChangePassword, forgotPassword, resetPassword };

@@ -8,8 +8,11 @@ const bookingSchema = new mongoose.Schema({
   end_time: { type: String, required: true },
   slot_count: { type: Number, required: true },
   subtotal: { type: Number, required: true },
-  platform_fee: { type: Number, required: true },
-  total_price: { type: Number, required: true },
+  platform_fee: { type: Number, required: true }, // Đây là phí sàn (commission)
+  discount_amount: { type: Number, default: 0 },
+  voucher_code: { type: String },
+  total_price: { type: Number, required: true }, // Số tiền User thực trả
+  commission_status: { type: String, enum: ['UNPAID', 'PAID'], default: 'UNPAID' },
   payment_method: { type: String, enum: ['TRANSFER', 'CASH', 'VNPAY', 'MOMO', 'BANKING', 'PAYOS'], required: true },
   payment_status: { type: String, enum: ['PENDING', 'PAID', 'REFUNDED'], default: 'PENDING' },
   status: { type: String, enum: ['CONFIRMED', 'CANCELLED', 'COMPLETED', 'PENDING'], default: 'PENDING' },

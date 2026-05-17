@@ -8,7 +8,7 @@ const sendEmail = require('../utils/sendEmail');
 // GET /api/admin/dashboard
 const getAdminDashboard = async (req, res) => {
   try {
-    const [userCount, ownerCount, venueCount, bookingCount, stats] = await Promise.all([
+    const [userCount, ownerCount, venueCount, bookingCount, stats, totalDebt] = await Promise.all([
       User.countDocuments({ role: 'USER' }),
       User.countDocuments({ role: 'OWNER' }),
       VenueCluster.countDocuments({ status: 'ACTIVE' }),
@@ -16,6 +16,10 @@ const getAdminDashboard = async (req, res) => {
       Booking.aggregate([
         { $match: { payment_status: 'PAID', status: { $ne: 'CANCELLED' } } },
         { $group: { _id: null, total_revenue: { $sum: '$total_price' }, platform_fee: { $sum: '$platform_fee' } } }
+      ]),
+      User.aggregate([
+        { $match: { role: 'OWNER' } },
+        { $group: { _id: null, total: { $sum: '$commission_debt' } } }
       ])
     ]);
 
@@ -26,6 +30,7 @@ const getAdminDashboard = async (req, res) => {
       totalBookings: bookingCount,
       totalRevenue: stats[0]?.total_revenue || 0,
       totalPlatformFee: stats[0]?.platform_fee || 0,
+      uncollectedCommission: totalDebt[0]?.total || 0,
     });
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
@@ -140,5 +145,18 @@ const updateVenueStatus = async (req, res) => {
     res.status(200).json({ message: `Đã cập nhật trạng thái cụm sân thành ${status}`, venue });
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
+const clearOwnerDebt = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user || user.role !== 'OWNER') {
+      return res.status(404).json({ message: 'Không tìm thấy chủ sân' });
+    }
 
-module.exports = { getAdminDashboard, createOwner, getAllUsers, updateUserStatus, getAllVenues, createSportType, updateVenueStatus };
+    user.commission_debt = 0;
+    await user.save();
+
+    res.status(200).json({ message: 'Đã thanh toán công nợ thành công', user });
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+module.exports = { getAdminDashboard, createOwner, getAllUsers, updateUserStatus, getAllVenues, createSportType, updateVenueStatus, clearOwnerDebt };

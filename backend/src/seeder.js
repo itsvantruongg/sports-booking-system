@@ -14,16 +14,21 @@ const importUsers = async () => {
     // Xóa tất cả user cũ để test (tuỳ chọn, nhưng tiện để làm mới)
     await User.deleteMany({});
 
+    if (!process.env.SEED_ADMIN_EMAIL || !process.env.SEED_OWNER_EMAIL || !process.env.SEED_USER_EMAIL) {
+      console.error('❌ Lỗi: Thiếu cấu hình SEED trong file .env');
+      process.exit(1);
+    }
+
     // 1. Kiểm tra Admin
     const adminExists = await User.findOne({ role: 'ADMIN' });
     if (!adminExists) {
       await User.create({
         name: 'Admin Test',
-        email: 'admin@test.com',
-        password: 'password123',
+        email: process.env.SEED_ADMIN_EMAIL,
+        password: process.env.SEED_ADMIN_PASSWORD,
         role: 'ADMIN',
       });
-      console.log('✅ Đã tạo Admin: admin@test.com / password123');
+      console.log(`✅ Đã tạo Admin: ${process.env.SEED_ADMIN_EMAIL}`);
     } else {
       console.log('⚠️ Admin đã tồn tại.');
     }
@@ -34,13 +39,13 @@ const importUsers = async () => {
     if (!ownerExists) {
       const owner = await User.create({
         name: 'Owner Test',
-        email: 'owner@test.com',
-        password: 'password123',
+        email: process.env.SEED_OWNER_EMAIL,
+        password: process.env.SEED_OWNER_PASSWORD,
         role: 'OWNER',
-        must_change_password: false // Để test cho dễ
+        must_change_password: false
       });
       ownerId = owner._id;
-      console.log('✅ Đã tạo Owner: owner@test.com / password123');
+      console.log(`✅ Đã tạo Owner: ${process.env.SEED_OWNER_EMAIL}`);
     } else {
       ownerId = ownerExists._id;
       console.log('⚠️ Owner đã tồn tại.');
@@ -51,11 +56,11 @@ const importUsers = async () => {
     if (!userExists) {
       await User.create({
         name: 'User Test',
-        email: 'user@test.com',
-        password: 'password123',
+        email: process.env.SEED_USER_EMAIL,
+        password: process.env.SEED_USER_PASSWORD,
         role: 'USER',
       });
-      console.log('✅ Đã tạo User: user@test.com / password123');
+      console.log(`✅ Đã tạo User: ${process.env.SEED_USER_EMAIL}`);
     } else {
       console.log('⚠️ User đã tồn tại.');
     }

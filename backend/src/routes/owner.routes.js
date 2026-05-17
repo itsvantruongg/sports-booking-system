@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {
-  getOwnerDashboard, getOwnerVenues, updateVenue, getOwnerCourts,
+  getOwnerDashboard, getOwnerVenues, updateVenue, getOwnerCourts, createCourt, updateCourt,
   createPricingRule, getOwnerTimeSlots, blockSlots,
   getOwnerBookings, updateBookingStatus, getOwnerReport, getOwnerCustomers,
   generateSlots, getPricingRules, deletePricingRule, confirmBookingPayment,
   updatePricingRule, bulkCreatePricingRules, unblockSlots,
-  getPaymentConfig, updatePaymentConfig
+  getPaymentConfig, updatePaymentConfig,
+  createVoucher, getVouchers, deleteVoucher
 } = require('../controllers/owner.controller');
 const { protect, checkMustChangePassword } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
@@ -99,6 +100,8 @@ router.put('/venues/:id', updateVenue);
  *         description: Danh sách sân con
  */
 router.get('/courts', getOwnerCourts);
+router.post('/courts', createCourt);
+router.put('/courts/:id', updateCourt);
 
 /**
  * @swagger
@@ -255,5 +258,10 @@ router.get('/payment-config', getPaymentConfig);
  *     tags: [Owner]
  */
 router.put('/payment-config', updatePaymentConfig);
+
+// Voucher Management
+router.post('/vouchers', createVoucher);
+router.get('/vouchers', getVouchers);
+router.delete('/vouchers/:id', deleteVoucher);
 
 module.exports = router;
