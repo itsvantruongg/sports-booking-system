@@ -53,9 +53,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <nav className={`lg:hidden fixed inset-y-0 left-0 w-72 bg-[#f3f2ff] flex flex-col p-6 z-[100] transform transition-transform duration-300 ease-out shadow-2xl ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}>
         <div className="flex justify-between items-center mb-8">
-          <div>
-            <p className="text-xl font-black text-[#003ec7] tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>Kinetic HQ</p>
-            <p className="text-sm text-[#434656]">Quản trị hệ thống</p>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#003ec7] text-white rounded-full flex items-center justify-center font-black text-lg shadow-[0_4px_12px_rgba(0,62,199,0.2)] shrink-0">K</div>
+            <div>
+              <p className="text-xl font-black text-[#003ec7] tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>Kinetic HQ</p>
+              <p className="text-xs text-[#434656] leading-none mt-0.5">Cổng Quản trị</p>
+            </div>
           </div>
           <button
             onClick={() => setMobileMenuOpen(false)}
@@ -106,11 +109,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Desktop Persistent Sidebar */}
       <nav className="hidden lg:flex h-screen w-72 bg-[#f3f2ff] shadow-[20px_0_60px_rgba(25,27,37,0.04)] flex-col p-6 fixed left-0 top-0 z-40">
         <div className="mb-6 flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#003ec7] text-white rounded-full flex items-center justify-center font-black text-lg">K</div>
+          <div className="w-10 h-10 bg-[#003ec7] text-white rounded-full flex items-center justify-center font-black text-lg shadow-[0_4px_12px_rgba(0,62,199,0.2)] shrink-0">K</div>
           <div>
             <Link href="/admin">
-              <p className="text-xl font-black text-[#191b25] tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>Kinetic HQ</p>
-              <p className="text-xs text-[#434656]">Cổng Quản trị</p>
+              <p className="text-xl font-black text-[#003ec7] tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>Kinetic HQ</p>
+              <p className="text-xs text-[#434656] leading-none mt-0.5">Cổng Quản trị</p>
             </Link>
           </div>
         </div>

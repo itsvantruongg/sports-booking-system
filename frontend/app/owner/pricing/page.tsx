@@ -39,6 +39,8 @@ export default function OwnerPricingPage() {
   const [showForm, setShowForm] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
   const [filterCourtId, setFilterCourtId] = useState("all");
+  const [courtSearch, setCourtSearch] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [form, setForm] = useState({ ...emptyForm });
   const [wizardForm, setWizardForm] = useState({
     start: "06:00",
@@ -251,24 +253,125 @@ export default function OwnerPricingPage() {
         </div>
       </header>
 
-      {/* Court Filter Chips */}
-      <div className="flex items-center gap-3 mb-8 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
-        <button
-          onClick={() => setFilterCourtId("all")}
-          className={`px-5 py-2.5 rounded-full text-xs font-black transition-all whitespace-nowrap border-2 ${filterCourtId === "all" ? "bg-primary text-on-primary border-primary shadow-md" : "bg-surface-container border-transparent text-on-surface-variant hover:bg-surface-container-high"}`}
-        >
-          Tất cả sân
-        </button>
-        {courts.map(c => (
-          <button
-            key={c._id}
-            onClick={() => setFilterCourtId(c._id)}
-            className={`px-5 py-2.5 rounded-full text-xs font-black transition-all whitespace-nowrap border-2 ${filterCourtId === c._id ? "bg-primary text-on-primary border-primary shadow-md" : "bg-surface-container border-transparent text-on-surface-variant hover:bg-surface-container-high"}`}
-          >
-            {c.name}
-          </button>
-        ))}
-      </div>
+      {/* Court Filter Searchable Dropdown */}
+      {(() => {
+        const selectedCourt = courts.find(c => c._id === filterCourtId);
+        const displayValue = isDropdownOpen 
+          ? courtSearch 
+          : (selectedCourt ? selectedCourt.name : "Tất cả sân");
+        
+        const filteredCourtsList = courts.filter(c => 
+          c.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(
+            courtSearch.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+          )
+        );
+
+        return (
+          <div className="relative mb-8 max-w-md" style={{ zIndex: 45 }}>
+            <label className="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-2">Lọc theo sân</label>
+            
+            <div className="relative">
+              {/* Input Box */}
+              <div 
+                className={`flex items-center gap-3 bg-surface-container-low rounded-full px-5 py-3 border border-outline-variant/15 transition-all shadow-sm ${
+                  isDropdownOpen ? "border-primary/45 bg-surface-bright ring-2 ring-primary/10 shadow-md" : "hover:border-outline-variant/30"
+                }`}
+              >
+                <span className="material-symbols-outlined text-primary text-[20px]">sports_tennis</span>
+                <input 
+                  type="text"
+                  value={displayValue}
+                  onFocus={() => {
+                    setIsDropdownOpen(true);
+                    setCourtSearch(""); // Clear typing search on focus to see all options initially
+                  }}
+                  onChange={(e) => {
+                    setCourtSearch(e.target.value);
+                  }}
+                  placeholder="Nhập tên sân để tìm kiếm..."
+                  className="bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-on-surface-variant/50 flex-grow font-body outline-none text-sm font-bold"
+                />
+                {/* Action Buttons inside Input */}
+                <div className="flex items-center gap-1">
+                  {filterCourtId !== "all" && !isDropdownOpen && (
+                    <button 
+                      onClick={() => {
+                        setFilterCourtId("all");
+                        setCourtSearch("");
+                      }} 
+                      className="text-on-surface-variant/60 hover:text-on-surface p-1 rounded-full hover:bg-surface-container transition-colors flex items-center"
+                      title="Xóa bộ lọc"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">close</span>
+                    </button>
+                  )}
+                  <span className={`material-symbols-outlined text-on-surface-variant transition-transform duration-200 ${isDropdownOpen ? "rotate-180 text-primary" : ""}`}>
+                    keyboard_arrow_down
+                  </span>
+                </div>
+              </div>
+
+              {/* Transparent click-away layer */}
+              {isDropdownOpen && (
+                <div className="fixed inset-0 z-30" onClick={() => setIsDropdownOpen(false)} />
+              )}
+
+              {/* Autocomplete Dropdown List */}
+              {isDropdownOpen && (
+                <div className="absolute left-0 right-0 mt-2 z-40 bg-surface-container-lowest border border-outline-variant/20 rounded-3xl shadow-[0_16px_48px_rgba(0,0,0,0.12)] max-h-72 overflow-y-auto custom-scrollbar p-2 transition-all duration-200">
+                  {/* Option: "Tất cả sân" */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFilterCourtId("all");
+                      setIsDropdownOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left text-sm font-bold transition-all ${
+                      filterCourtId === "all" 
+                        ? "bg-primary/10 text-primary" 
+                        : "text-on-surface hover:bg-surface-container-low"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[20px]">grid_view</span>
+                    <span className="flex-grow">Tất cả sân</span>
+                    {filterCourtId === "all" && <span className="material-symbols-outlined text-primary text-[18px]">check</span>}
+                  </button>
+
+                  <div className="h-px bg-outline-variant/20 my-1 mx-2" />
+
+                  {/* Court List Options */}
+                  {filteredCourtsList.length === 0 ? (
+                    <div className="py-6 px-4 text-center text-on-surface-variant/60 text-xs italic">
+                      <span className="material-symbols-outlined text-xl mb-1 block">search_off</span>
+                      Không tìm thấy sân nào khớp với "{courtSearch}"
+                    </div>
+                  ) : (
+                    filteredCourtsList.map(c => (
+                      <button
+                        key={c._id}
+                        type="button"
+                        onClick={() => {
+                          setFilterCourtId(c._id);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left text-sm font-bold transition-all ${
+                          filterCourtId === c._id 
+                            ? "bg-primary/10 text-primary" 
+                            : "text-on-surface hover:bg-surface-container-low"
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[20px] text-on-surface-variant/60">stadium</span>
+                        <span className="flex-grow truncate">{c.name}</span>
+                        {filterCourtId === c._id && <span className="material-symbols-outlined text-primary text-[18px]">check</span>}
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Info banner */}
       <div className="bg-primary/5 border border-primary/20 rounded-2xl p-5 mb-8 flex gap-3">

@@ -73,9 +73,12 @@ export default function OwnerLayout({ children }: { children: React.ReactNode })
         mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       }`}>
         <div className="flex justify-between items-center mb-8">
-          <div>
-            <p className="text-xl font-black text-[#003ec7] tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>Kinetic HQ</p>
-            <p className="text-sm text-[#434656]">Dành cho Đối tác</p>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#003ec7] text-white rounded-full flex items-center justify-center font-black text-lg shadow-[0_4px_12px_rgba(0,62,199,0.2)] shrink-0">K</div>
+            <div>
+              <p className="text-xl font-black text-[#003ec7] tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>Kinetic HQ</p>
+              <p className="text-xs text-[#434656] leading-none mt-0.5">Dành cho Đối tác</p>
+            </div>
           </div>
           <button 
             onClick={() => setMobileMenuOpen(false)}
@@ -122,11 +125,14 @@ export default function OwnerLayout({ children }: { children: React.ReactNode })
 
       {/* Desktop Persistent Sidebar */}
       <nav className="hidden lg:flex h-screen w-72 bg-[#f3f2ff] shadow-[20px_0_60px_rgba(25,27,37,0.04)] flex-col p-6 fixed left-0 top-0 z-40">
-        <div className="mb-8">
-          <Link href="/owner">
-            <p className="text-xl font-black text-[#003ec7] tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>Kinetic HQ</p>
-            <p className="text-sm text-[#434656]">Dành cho Đối tác</p>
-          </Link>
+        <div className="mb-8 flex items-center gap-3">
+          <div className="w-10 h-10 bg-[#003ec7] text-white rounded-full flex items-center justify-center font-black text-lg shadow-[0_4px_12px_rgba(0,62,199,0.2)] shrink-0">K</div>
+          <div>
+            <Link href="/owner">
+              <p className="text-xl font-black text-[#003ec7] tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>Kinetic HQ</p>
+              <p className="text-xs text-[#434656] leading-none mt-0.5">Dành cho Đối tác</p>
+            </Link>
+          </div>
         </div>
         <ul className="flex flex-col gap-1.5 flex-grow overflow-y-auto no-scrollbar pr-2">
           {navItems.map(({ href, label, icon }) => {
