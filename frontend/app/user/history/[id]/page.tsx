@@ -21,7 +21,7 @@ export default function BookingDetailPage() {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [rating, setRating] = useState(5);
+  const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
@@ -78,6 +78,10 @@ export default function BookingDetailPage() {
   const handleReview = async () => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
+    if (rating === 0) {
+      alert("Vui lòng đánh giá sân bằng cách chọn số sao.");
+      return;
+    }
     setSubmittingReview(true);
     try {
       const clusterId = booking?.court_id?.venue_cluster_id || booking?.court_id?.cluster_id;
@@ -215,7 +219,11 @@ export default function BookingDetailPage() {
             </div>
             <div className="flex gap-3">
               <button
-                onClick={() => setShowReviewForm(false)}
+                onClick={() => {
+                  setRating(0);
+                  setComment("");
+                  setShowReviewForm(false);
+                }}
                 className="flex-1 py-3 rounded-full border border-outline-variant text-on-surface font-bold hover:bg-surface-container-low transition-colors"
               >
                 Bỏ qua

@@ -302,8 +302,8 @@ export default function PublicVenueDetailPage() {
           </div>
 
           {/* Right: Booking CTA Sidebar */}
-          <div className="flex flex-col gap-6">
-            <div className="bg-surface-container-low rounded-3xl p-8 shadow-md border border-primary/10 sticky top-32">
+          <div className="flex flex-col gap-6 sticky top-32 self-start">
+            <div className="bg-surface-container-low rounded-3xl p-8 shadow-md border border-primary/10">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-on-primary shadow-lg shadow-primary/20">
                   <span className="material-symbols-outlined">payments</span>

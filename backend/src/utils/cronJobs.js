@@ -166,6 +166,17 @@ const autoCompleteBookings = async () => {
           console.log(`[Cron] Đã giải phóng ${slotIds.length} slots cho đơn ${booking._id}`);
         }
 
+        // Hoàn trả voucher nếu có sử dụng
+        if (booking.voucher_code) {
+          const Voucher = require('../models/Voucher');
+          const voucher = await Voucher.findOne({ code: booking.voucher_code.toUpperCase() });
+          if (voucher) {
+            voucher.used_count = Math.max(0, voucher.used_count - 1);
+            await voucher.save();
+            console.log(`[Cron] Đã hoàn trả voucher ${booking.voucher_code} cho đơn ${booking._id}`);
+          }
+        }
+
         expiredCount++;
       }
     }

@@ -13,6 +13,12 @@ export default function UserHistoryPage() {
   const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [now, setNow] = useState(Date.now());
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [selectedBookingForReview, setSelectedBookingForReview] = useState<any>(null);
+  const [reviewedBookingIds, setReviewedBookingIds] = useState<string[]>([]);
 
   useEffect(() => {
     const interval = setInterval(() => setNow(Date.now()), 1000);
@@ -121,6 +127,39 @@ export default function UserHistoryPage() {
       setCancellingId(null);
     }
   };
+  
+  const handleReview = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    if (rating === 0) {
+      setToast({ message: "Vui lòng đánh giá sân bằng cách chọn số sao.", type: "error" });
+      return;
+    }
+    setSubmittingReview(true);
+    try {
+      const booking = selectedBookingForReview;
+      const clusterId = booking?.court_id?.venue_cluster_id || booking?.court_id?.cluster_id;
+      const res = await fetch("http://localhost:5000/api/users/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ cluster_id: clusterId, rating, comment }),
+      });
+      if (res.ok) {
+        setReviewedBookingIds(prev => [...prev, booking._id]);
+        setShowReviewForm(false);
+        setRating(0);
+        setComment("");
+        setToast({ message: "Gửi đánh giá thành công!", type: "success" });
+      } else {
+        const err = await res.json();
+        setToast({ message: err.message || "Gửi đánh giá thất bại.", type: "error" });
+      }
+    } catch {
+      setToast({ message: "Lỗi kết nối máy chủ", type: "error" });
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -169,6 +208,73 @@ export default function UserHistoryPage() {
             </div>
             <div className="grid grid-cols-1 gap-4">
               <button onClick={() => setConfirmCancelId(null)} className="w-full py-4 rounded-2xl font-black text-sm bg-surface-container-highest text-on-surface hover:bg-primary/10 hover:text-primary transition-all">Đã hiểu</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Review Dialog */}
+      {showReviewForm && selectedBookingForReview && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-surface-container-lowest/80 backdrop-blur-xl animate-in fade-in">
+          <div className="bg-surface-container-low rounded-[2rem] p-10 max-w-md w-full mx-4 shadow-2xl border border-outline-variant/20">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
+                <span className="material-symbols-outlined text-yellow-500" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-display font-black text-on-surface">Đánh giá sân</h3>
+                <p className="text-sm text-on-surface-variant">{selectedBookingForReview.court_id?.name}</p>
+              </div>
+            </div>
+            {/* Star Rating */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-on-surface-variant mb-3">Đánh giá của bạn</label>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => setRating(star)}
+                    className="transition-transform hover:scale-110"
+                  >
+                    <span
+                      className={`material-symbols-outlined text-4xl ${star <= rating ? "text-yellow-400" : "text-outline"}`}
+                      style={{ fontVariationSettings: star <= rating ? "'FILL' 1" : "'FILL' 0" }}
+                    >
+                      star
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-on-surface-variant mb-2">Nhận xét (tùy chọn)</label>
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="w-full bg-surface-container-low border border-outline-variant rounded-xl p-4 text-on-surface resize-none focus:outline-none focus:ring-2 focus:ring-primary transition"
+                rows={3}
+                placeholder="Chia sẻ trải nghiệm của bạn..."
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setRating(0);
+                  setComment("");
+                  setShowReviewForm(false);
+                  setSelectedBookingForReview(null);
+                }}
+                className="flex-grow py-3 rounded-full border border-outline-variant text-on-surface font-bold hover:bg-surface-container-low transition-colors"
+              >
+                Bỏ qua
+              </button>
+              <button
+                onClick={handleReview}
+                disabled={submittingReview}
+                className="flex-grow py-3 rounded-full bg-primary text-on-primary font-bold hover:shadow-lg transition-all disabled:opacity-60"
+              >
+                {submittingReview ? "Đang gửi..." : "Gửi đánh giá"}
+              </button>
             </div>
           </div>
         </div>
@@ -269,6 +375,18 @@ export default function UserHistoryPage() {
                       
                       {['PENDING', 'CONFIRMED'].includes(booking.status) && activeTab !== 'UNPAID' && (
                         <button onClick={() => setConfirmCancelId(booking._id)} className="px-6 py-2.5 rounded-xl font-black text-xs text-red-500 hover:bg-red-500/5 transition-all">Hủy đặt sân</button>
+                      )}
+                      
+                      {booking.status === 'COMPLETED' && !reviewedBookingIds.includes(booking._id) && (
+                        <button 
+                          onClick={() => {
+                            setSelectedBookingForReview(booking);
+                            setShowReviewForm(true);
+                          }}
+                          className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-black text-xs hover:shadow-lg transition-all"
+                        >
+                          Đánh giá sân
+                        </button>
                       )}
                       
                       {activeTab !== 'UNPAID' && (

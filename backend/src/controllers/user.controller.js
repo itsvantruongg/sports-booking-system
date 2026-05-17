@@ -217,6 +217,16 @@ const cancelBooking = async (req, res) => {
     const slotIds = booking.booked_slots.map(s => s.time_slot_id);
     await TimeSlot.updateMany({ _id: { $in: slotIds } }, { status: 'AVAILABLE' });
 
+    // Hoàn trả voucher nếu có sử dụng
+    if (booking.voucher_code) {
+      const Voucher = require('../models/Voucher');
+      const voucher = await Voucher.findOne({ code: booking.voucher_code.toUpperCase() });
+      if (voucher) {
+        voucher.used_count = Math.max(0, voucher.used_count - 1);
+        await voucher.save();
+      }
+    }
+
     booking.status = 'CANCELLED';
     booking.cancel_reason = cancel_reason;
     booking.cancelled_at = new Date();
