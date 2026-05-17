@@ -395,8 +395,11 @@ const processPayment = async (req, res) => {
 
     // Cập nhật công nợ hoa hồng nếu thanh toán thành công
     if (booking.payment_status === 'PAID' && ownerId) {
+      const isOnline = ['VNPAY', 'MOMO', 'PAYOS'].includes(booking.payment_method);
       await User.findByIdAndUpdate(ownerId, {
-        $inc: { commission_debt: booking.platform_fee }
+        $inc: isOnline 
+          ? { commission_paid: booking.platform_fee } 
+          : { commission_debt: booking.platform_fee }
       });
     }
 

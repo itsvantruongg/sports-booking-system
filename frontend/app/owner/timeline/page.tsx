@@ -206,7 +206,7 @@ export default function OwnerTimelinePage() {
       {/* Header */}
       <header className="flex-shrink-0 px-6 py-6 lg:px-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface z-10 shadow-sm relative rounded-xl mb-4">
         <div>
-          <h1 className="text-5xl font-display font-bold tracking-tight text-on-surface">Timeline Lịch Đặt Sân</h1>
+          <h1 className="text-3xl sm:text-5xl font-display font-bold tracking-tight text-on-surface">Timeline Lịch Đặt Sân</h1>
           <p className="text-on-surface-variant font-body mt-1">
             {new Date(date).toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
@@ -258,7 +258,7 @@ export default function OwnerTimelinePage() {
         {loading ? (
           <div className="flex justify-center items-center h-32 text-on-surface-variant">Đang tải lịch đặt sân...</div>
         ) : (
-          <div className="w-full bg-surface rounded-xl overflow-hidden flex flex-col">
+          <div className="min-w-[960px] lg:w-full bg-surface rounded-xl overflow-hidden flex flex-col">
             {/* Time Header */}
             <div className="flex border-b border-surface-variant bg-surface sticky top-0 z-20">
               <div className="w-44 flex-shrink-0 p-4 border-r border-surface-variant flex items-center justify-center bg-surface">

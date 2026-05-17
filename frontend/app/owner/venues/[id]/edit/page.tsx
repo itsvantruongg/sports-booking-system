@@ -267,14 +267,14 @@ export default function EditVenuePage() {
         </div>
 
         {/* Save Button */}
-        <div className="flex gap-4 pb-8">
-          <Link href="/owner/courts" className="flex-1 py-4 rounded-2xl border-2 border-outline-variant text-on-surface font-black text-center hover:bg-surface-container-low transition-colors">
+        <div className="flex flex-col sm:flex-row gap-3 pb-8">
+          <Link href="/owner/courts" className="w-full sm:flex-1 py-4 rounded-2xl border-2 border-outline-variant text-on-surface font-black text-center hover:bg-surface-container-low transition-colors">
             Hủy bỏ
           </Link>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex-1 py-4 rounded-2xl bg-primary text-on-primary font-black hover:shadow-xl transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+            className="w-full sm:flex-1 py-4 rounded-2xl bg-primary text-on-primary font-black hover:shadow-xl transition-all disabled:opacity-60 flex items-center justify-center gap-2"
           >
             {saving
               ? <><span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Đang lưu...</>

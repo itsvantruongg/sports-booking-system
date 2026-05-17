@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const {
   getAdminDashboard, createOwner, getAllUsers,
-  updateUserStatus, getAllVenues, createSportType, updateVenueStatus, clearOwnerDebt
+  updateUserStatus, getAllVenues, createSportType, updateVenueStatus, clearOwnerDebt, seedCommission,
+  cleanCommission
 } = require('../controllers/admin.controller');
 const { protect } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
@@ -186,5 +187,8 @@ router.post('/sport-types', createSportType);
  *         description: Cập nhật thành công
  */
 router.put('/venues/:id/status', updateVenueStatus);
+
+router.post('/seed-commission', seedCommission);
+router.post('/clean-commission', cleanCommission);
 
 module.exports = router;

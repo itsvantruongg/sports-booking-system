@@ -252,7 +252,7 @@ export default function UserProfilePage() {
         <div className="flex flex-col lg:flex-row gap-12 items-start">
           {/* Left Side: Profile Card */}
           <div className="w-full lg:w-1/3 flex flex-col gap-8">
-            <div className="bg-white rounded-xl p-8 shadow-[0_12px_40px_rgba(25,27,37,0.06)] relative overflow-hidden group">
+            <div className="bg-surface-container-low rounded-3xl p-6 sm:p-8 shadow-sm border border-outline-variant/10 relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110 duration-500"></div>
               <div className="flex flex-col items-center text-center relative z-10">
                 <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center text-on-primary text-5xl font-bold mb-6 border-4 border-surface-container-low shadow-sm">
@@ -311,19 +311,19 @@ export default function UserProfilePage() {
           <div className="w-full lg:w-2/3 flex flex-col gap-8 animate-in slide-in-from-right-4 duration-500">
             {activeTab === 'overview' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white p-8 rounded-xl shadow-sm border border-surface-container-low">
+                <div className="bg-surface-container-low p-6 sm:p-8 rounded-3xl shadow-sm border border-outline-variant/10">
                   <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Họ và tên</p>
                   <p className="text-xl font-bold text-on-surface">{profile.name}</p>
                 </div>
-                <div className="bg-white p-8 rounded-xl shadow-sm border border-surface-container-low">
+                <div className="bg-surface-container-low p-6 sm:p-8 rounded-3xl shadow-sm border border-outline-variant/10">
                   <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Email</p>
                   <p className="text-xl font-bold text-on-surface">{profile.email}</p>
                 </div>
-                <div className="bg-white p-8 rounded-xl shadow-sm border border-surface-container-low">
+                <div className="bg-surface-container-low p-6 sm:p-8 rounded-3xl shadow-sm border border-outline-variant/10">
                   <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Số điện thoại</p>
                   <p className="text-xl font-bold text-on-surface">{profile.phone || 'Chưa cập nhật'}</p>
                 </div>
-                <div className="bg-primary/5 p-8 rounded-xl shadow-sm border border-primary/10">
+                <div className="bg-primary/5 p-6 sm:p-8 rounded-3xl shadow-sm border border-primary/10">
                   <p className="text-xs font-bold text-primary uppercase tracking-wider mb-2">Vai trò tài khoản</p>
                   <p className="text-xl font-bold text-primary">{profile.role}</p>
                 </div>
@@ -331,23 +331,23 @@ export default function UserProfilePage() {
             ) : (
               <div className="space-y-8">
                 {/* Claim Input */}
-                <div className="bg-white p-8 rounded-3xl shadow-sm border border-outline-variant/10">
+                <div className="bg-surface-container-low p-5 sm:p-8 rounded-3xl shadow-sm border border-outline-variant/10">
                   <h3 className="text-lg font-black mb-4 flex items-center gap-2">
                     <span className="material-symbols-outlined text-primary">add_circle</span>
                     Nhập mã Voucher mới
                   </h3>
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <input
                       type="text"
                       placeholder="VD: GIAM50K, CHAOSAN..."
-                      className="flex-1 bg-surface-container-low px-6 py-4 rounded-2xl border-none font-bold text-on-surface focus:ring-2 focus:ring-primary outline-none uppercase"
+                      className="flex-1 bg-surface-container-highest px-6 py-4 rounded-2xl border-none font-bold text-on-surface focus:ring-2 focus:ring-primary outline-none uppercase text-sm sm:text-base"
                       value={claimCode}
                       onChange={(e) => setClaimCode(e.target.value)}
                     />
                     <button
                       onClick={handleClaimVoucher}
                       disabled={claiming || !claimCode}
-                      className="bg-primary text-on-primary px-8 py-4 rounded-2xl font-black hover:shadow-lg disabled:opacity-50 transition-all"
+                      className="bg-primary text-on-primary px-8 py-4 rounded-2xl font-black hover:shadow-lg disabled:opacity-50 transition-all text-sm sm:text-base whitespace-nowrap"
                     >
                       {claiming ? "Đang lưu..." : "Lưu vào ví"}
                     </button>
@@ -357,25 +357,25 @@ export default function UserProfilePage() {
                 {/* Voucher List */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {myVouchers.length === 0 ? (
-                    <div className="col-span-full flex flex-col items-center justify-center min-h-[300px] bg-white rounded-xl border-2 border-dashed border-outline-variant p-12 text-center">
+                    <div className="col-span-full flex flex-col items-center justify-center min-h-[300px] bg-surface-container-low rounded-3xl border-2 border-dashed border-outline-variant/30 p-8 sm:p-12 text-center">
                       <span className="material-symbols-outlined text-6xl text-outline-variant mb-4">confirmation_number</span>
                       <h3 className="text-xl font-bold text-on-surface mb-2">Ví trống</h3>
-                      <p className="text-on-surface-variant">Bạn chưa có voucher nào. Hãy nhập mã ở trên hoặc săn thêm nhé!</p>
+                      <p className="text-on-surface-variant text-sm">Bạn chưa có voucher nào. Hãy nhập mã ở trên hoặc săn thêm nhé!</p>
                     </div>
                   ) : (
                     myVouchers.map((v) => (
-                      <div key={v._id} className="bg-white p-6 rounded-3xl shadow-sm border border-outline-variant/10 flex gap-4 items-center group hover:border-primary/30 transition-all">
+                      <div key={v._id} className="bg-surface-container-low p-5 sm:p-6 rounded-3xl shadow-sm border border-outline-variant/10 flex gap-4 items-center group hover:border-primary/30 transition-all">
                         <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
                           <span className="material-symbols-outlined text-primary text-3xl">confirmation_number</span>
                         </div>
-                        <div className="flex-1">
-                          <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">{v.code}</p>
-                          <h4 className="font-black text-lg text-on-surface mb-1">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1 truncate">{v.code}</p>
+                          <h4 className="font-black text-lg text-on-surface mb-1 truncate">
                             {v.discount_type === 'PERCENT' ? `Giảm ${v.discount_value}%` : `Giảm ${v.discount_value.toLocaleString()}₫`}
                           </h4>
-                          <p className="text-xs text-on-surface-variant font-medium">Đơn tối thiểu: {v.min_booking_amount?.toLocaleString()}₫</p>
+                          <p className="text-xs text-on-surface-variant font-medium truncate">Đơn tối thiểu: {v.min_booking_amount?.toLocaleString()}₫</p>
                         </div>
-                        <div className="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward_ios</div>
+                        <div className="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity shrink-0">arrow_forward_ios</div>
                       </div>
                     ))
                   )}

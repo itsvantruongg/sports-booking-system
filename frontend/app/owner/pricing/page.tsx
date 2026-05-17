@@ -415,17 +415,17 @@ export default function OwnerPricingPage() {
               </div>
 
               {/* Action Buttons Row */}
-              <div className="px-6 pb-6 mt-4 flex gap-4">
+              <div className="px-6 pb-6 mt-4 flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={() => setShowWizard(false)}
-                  className="flex-1 py-3 rounded-full border-2 border-outline-variant font-black text-xs text-on-surface hover:bg-surface-container-low transition-all uppercase tracking-wider"
+                  className="w-full sm:flex-1 py-3 rounded-full border-2 border-outline-variant font-black text-xs text-on-surface hover:bg-surface-container-low transition-all uppercase tracking-wider"
                 >
                   Hủy bỏ
                 </button>
                 <button
                   onClick={handleWizardSubmit}
                   disabled={saving}
-                  className="flex-[2] py-3 rounded-full bg-primary text-on-primary font-black text-xs flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl hover:-translate-y-1 active:translate-y-0 transition-all disabled:opacity-50 uppercase tracking-wider"
+                  className="w-full sm:flex-[2] py-3 rounded-full bg-primary text-on-primary font-black text-xs flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl hover:-translate-y-1 active:translate-y-0 transition-all disabled:opacity-50 uppercase tracking-wider"
                 >
                   {saving ? (
                     <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

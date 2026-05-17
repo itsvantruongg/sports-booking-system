@@ -132,16 +132,16 @@ export default function PublicVenueDetailPage() {
     <div className="min-h-screen bg-surface-container-lowest text-on-surface">
       <Navbar />
 
-      <main className="max-w-[1440px] mx-auto px-4 md:px-8 py-8 md:py-12">
+      <main className="max-w-[1440px] mx-auto px-4 md:px-8 pt-8 pb-24 md:pb-12">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-on-surface-variant mb-8 font-medium">
+        <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-on-surface-variant mb-8 font-medium">
           <Link href="/" className="hover:text-primary transition-colors opacity-70">Trang chủ</Link>
           <span className="opacity-30">/</span>
           <Link href="/fields" className="hover:text-primary transition-colors opacity-70">Tất cả sân</Link>
           <span className="opacity-30">/</span>
-          <span className="text-on-surface font-bold">{venue.name}</span>
+          <span className="text-on-surface font-bold truncate max-w-[200px] sm:max-w-none">{venue.name}</span>
         </nav>
-
+ 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
           {/* Left: Images + Info */}
           <div className="lg:col-span-2 flex flex-col gap-8">
@@ -176,9 +176,9 @@ export default function PublicVenueDetailPage() {
                 </div>
               )}
             </div>
-
+ 
             {/* Venue Info Header */}
-            <div className="bg-surface-container-low rounded-3xl p-8 shadow-sm border border-outline-variant/5">
+            <div className="bg-surface-container-low rounded-3xl p-5 sm:p-8 shadow-sm border border-outline-variant/5">
               <div className="flex items-start justify-between gap-6 mb-6">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-4">
@@ -187,12 +187,12 @@ export default function PublicVenueDetailPage() {
                     </span>
                     <StarRating rating={venue.avg_rating ?? 0} count={reviews.length} />
                   </div>
-                  <h1 className="text-4xl md:text-5xl font-black tracking-tight text-on-surface mb-4 leading-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+                  <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-on-surface mb-4 leading-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
                     {venue.name}
                   </h1>
                   <div className="flex items-start gap-2 text-on-surface-variant font-medium opacity-80">
                     <span className="material-symbols-outlined text-[20px] text-primary shrink-0 mt-0.5">location_on</span>
-                    <span>{venue.address || `${venue.district}, ${venue.city}`}</span>
+                    <span className="text-sm sm:text-base">{venue.address || `${venue.district}, ${venue.city}`}</span>
                   </div>
                 </div>
                 <div className="hidden sm:flex w-20 h-20 rounded-2xl bg-primary/10 items-center justify-center shrink-0 border border-primary/20">
@@ -281,9 +281,9 @@ export default function PublicVenueDetailPage() {
                           <span className="material-symbols-outlined text-primary">person</span>
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <p className="font-black text-on-surface">{review.user_id?.name ?? "Người dùng ẩn danh"}</p>
-                            <div className="flex gap-0.5">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                            <p className="font-black text-on-surface text-sm sm:text-base">{review.user_id?.name ?? "Người dùng ẩn danh"}</p>
+                            <div className="flex gap-0.5 shrink-0">
                               {[1, 2, 3, 4, 5].map(s => (
                                 <span key={s} className={`material-symbols-outlined text-sm ${s <= review.rating ? "text-yellow-500" : "text-outline opacity-30"}`}
                                   style={{ fontVariationSettings: s <= review.rating ? "'FILL' 1" : "'FILL' 0" }}>star</span>
@@ -302,8 +302,8 @@ export default function PublicVenueDetailPage() {
           </div>
 
           {/* Right: Booking CTA Sidebar */}
-          <div className="flex flex-col gap-6 sticky top-32 self-start">
-            <div className="bg-surface-container-low rounded-3xl p-8 shadow-md border border-primary/10">
+          <div className="flex flex-col gap-6 lg:sticky lg:top-32 self-start w-full lg:w-auto">
+            <div className="bg-surface-container-low rounded-3xl p-8 shadow-md border border-primary/10 w-full">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-on-primary shadow-lg shadow-primary/20">
                   <span className="material-symbols-outlined">payments</span>
@@ -342,7 +342,7 @@ export default function PublicVenueDetailPage() {
 
               <Link
                 href={`/user/book/${id}`}
-                className="block w-full text-center bg-primary text-on-primary font-black py-5 rounded-2xl hover:shadow-2xl hover:-translate-y-1 transition-all text-lg shadow-xl shadow-primary/20 mb-6"
+                className="hidden lg:block w-full text-center bg-primary text-on-primary font-black py-5 rounded-2xl hover:shadow-2xl hover:-translate-y-1 transition-all text-lg shadow-xl shadow-primary/20 mb-6"
                 style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
               >
                 Tiến hành đặt sân
@@ -364,7 +364,7 @@ export default function PublicVenueDetailPage() {
                   }
                   {isFavorite ? "Đã lưu yêu thích" : "Thêm vào yêu thích"}
                 </button>
-                <p className="text-center text-[10px] font-bold text-on-surface-variant opacity-40 px-6">Bằng cách nhấn "Đặt sân", bạn đồng ý với các điều khoản dịch vụ của Kinetic.</p>
+                <p className="text-center text-[10px] font-bold text-on-surface-variant opacity-40 px-6 hidden lg:block">Bằng cách nhấn "Đặt sân", bạn đồng ý với các điều khoản dịch vụ của Kinetic.</p>
               </div>
             </div>
 
@@ -387,6 +387,19 @@ export default function PublicVenueDetailPage() {
           </div>
         </div>
       </main>
+      {/* Mobile Sticky Booking Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/90 backdrop-blur-md border-t border-outline-variant/10 px-6 py-4 flex items-center justify-between shadow-2xl safe-area-pb">
+        <div>
+          <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none mb-1">Giá tham khảo</p>
+          <p className="text-lg font-black text-on-surface leading-none">100k - 300k<span className="text-xs font-normal opacity-50 ml-0.5">/h</span></p>
+        </div>
+        <Link
+          href={`/user/book/${id}`}
+          className="bg-primary text-on-primary font-black px-8 py-3.5 rounded-2xl shadow-lg shadow-primary/20 hover:shadow-xl active:scale-95 transition-all text-sm"
+        >
+          Đặt sân ngay
+        </Link>
+      </div>
 
       <Footer />
     </div>

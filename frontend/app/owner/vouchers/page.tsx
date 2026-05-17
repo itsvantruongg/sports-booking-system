@@ -96,14 +96,14 @@ export default function VouchersPage() {
 
   return (
     <div className="p-8 lg:p-12">
-      <div className="flex justify-between items-center mb-10">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-6">
         <div>
-          <h2 className="text-4xl font-black text-on-surface tracking-tight mb-2">Quản lý Voucher</h2>
+          <h2 className="text-3xl sm:text-4xl font-black text-on-surface tracking-tight mb-2">Quản lý Voucher</h2>
           <p className="text-on-surface-variant font-medium">Tạo mã giảm giá để kích cầu khách hàng đặt sân.</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-primary/90 transition-all"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-primary/90 transition-all shrink-0"
         >
           <span className="material-symbols-outlined">add</span> Tạo mã mới
         </button>
@@ -167,8 +167,8 @@ export default function VouchersPage() {
                 </button>
              </div>
              <form onSubmit={handleCreate} className="p-8 space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="col-span-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="sm:col-span-2">
                     <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Mã Voucher (Ví dụ: GIAM50K)</label>
                     <input 
                       type="text" 

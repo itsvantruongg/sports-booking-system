@@ -92,13 +92,13 @@ export default function PaymentSettingsPage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-8 py-4 bg-[#003ec7] text-white font-black rounded-2xl shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2"
+          className="w-full md:w-auto justify-center px-8 py-4 bg-[#003ec7] text-white font-black rounded-2xl shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2"
         >
           {saving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <span className="material-symbols-outlined">save</span>}
           Lưu tất cả thay đổi
         </button>
       </header>
-
+ 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Manual Banking */}
         <div className={`bg-white p-8 rounded-[32px] shadow-sm border-2 transition-all ${config.banking.is_active ? "border-teal-500/20 ring-4 ring-teal-500/5" : "border-transparent"}`}>
@@ -143,7 +143,7 @@ export default function PaymentSettingsPage() {
                 <option value="vccb">VietCapitalBank</option>
               </select>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-black text-gray-500 uppercase tracking-widest block mb-1">Số tài khoản</label>
                 <input autoComplete="off" type="text" value={config.banking.account_number} onChange={(e) => setConfig({ ...config, banking: { ...config.banking, account_number: e.target.value } })} className="w-full px-5 py-4 rounded-2xl bg-[#f8f9ff] border border-gray-100 text-sm font-bold text-gray-900 focus:border-teal-500 outline-none transition-all" />

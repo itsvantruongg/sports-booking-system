@@ -2,13 +2,64 @@ const User = require('../models/User');
 const VenueCluster = require('../models/VenueCluster');
 const Booking = require('../models/Booking');
 const SportType = require('../models/SportType');
+const Court = require('../models/Court');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
+
+// Helper to dynamically calculate owner commission debt and paid balances from bookings
+const syncCommissions = async () => {
+  try {
+    const owners = await User.find({ role: 'OWNER' });
+    for (const owner of owners) {
+      const clusters = await VenueCluster.find({ owner_id: owner._id });
+      const clusterIds = clusters.map(c => c._id);
+      const courts = await Court.find({ cluster_id: { $in: clusterIds } });
+      const courtIds = courts.map(c => c._id);
+
+      const bookings = await Booking.find({
+        court_id: { $in: courtIds },
+        payment_status: 'PAID',
+        status: { $ne: 'CANCELLED' }
+      });
+
+      let calculatedDebt = 0;
+      let calculatedPaid = 0;
+
+      for (const b of bookings) {
+        const isOnline = ['VNPAY', 'MOMO', 'PAYOS'].includes(b.payment_method);
+        const fee = b.platform_fee || 0;
+        
+        if (isOnline) {
+          calculatedPaid += fee;
+        } else {
+          if (b.commission_status === 'PAID') {
+            calculatedPaid += fee;
+          } else {
+            calculatedDebt += fee;
+          }
+        }
+      }
+
+      owner.commission_debt = calculatedDebt;
+      owner.commission_paid = calculatedPaid;
+      await owner.save();
+    }
+  } catch (error) {
+    console.error('Error syncing commissions:', error);
+  }
+};
 
 // GET /api/admin/dashboard
 const getAdminDashboard = async (req, res) => {
   try {
-    const [userCount, ownerCount, venueCount, bookingCount, stats, totalDebt] = await Promise.all([
+    await syncCommissions();
+
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+    sixMonthsAgo.setDate(1);
+    sixMonthsAgo.setHours(0, 0, 0, 0);
+
+    const [userCount, ownerCount, venueCount, bookingCount, stats, totalDebt, dbMonthly] = await Promise.all([
       User.countDocuments({ role: 'USER' }),
       User.countDocuments({ role: 'OWNER' }),
       VenueCluster.countDocuments({ status: 'ACTIVE' }),
@@ -20,8 +71,52 @@ const getAdminDashboard = async (req, res) => {
       User.aggregate([
         { $match: { role: 'OWNER' } },
         { $group: { _id: null, total: { $sum: '$commission_debt' } } }
+      ]),
+      Booking.aggregate([
+        { 
+          $match: { 
+            payment_status: 'PAID', 
+            status: { $ne: 'CANCELLED' },
+            booking_date: { $gte: sixMonthsAgo }
+          } 
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: '$booking_date' },
+              month: { $month: '$booking_date' }
+            },
+            revenue: { $sum: '$total_price' },
+            fee: { $sum: '$platform_fee' }
+          }
+        }
       ])
     ]);
+
+    // Build exactly the past 6 months chronologically
+    const monthlyBreakdown = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const year = d.getFullYear();
+      const month = d.getMonth() + 1; // 1-indexed
+      monthlyBreakdown.push({
+        year,
+        month,
+        monthLabel: `Tháng ${month}`,
+        revenue: 0,
+        fee: 0
+      });
+    }
+
+    // Merge DB results into breakdown
+    dbMonthly.forEach(item => {
+      const match = monthlyBreakdown.find(m => m.year === item._id.year && m.month === item._id.month);
+      if (match) {
+        match.revenue = item.revenue;
+        match.fee = item.fee;
+      }
+    });
 
     res.status(200).json({
       totalUsers: userCount,
@@ -31,6 +126,7 @@ const getAdminDashboard = async (req, res) => {
       totalRevenue: stats[0]?.total_revenue || 0,
       totalPlatformFee: stats[0]?.platform_fee || 0,
       uncollectedCommission: totalDebt[0]?.total || 0,
+      monthlyBreakdown,
     });
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
@@ -81,6 +177,9 @@ const createOwner = async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     const { role, search, page = 1, limit = 20 } = req.query;
+    if (role === 'OWNER') {
+      await syncCommissions();
+    }
     const query = {};
     if (role) query.role = role;
     if (search) query.$or = [
@@ -152,11 +251,165 @@ const clearOwnerDebt = async (req, res) => {
       return res.status(404).json({ message: 'Không tìm thấy chủ sân' });
     }
 
-    user.commission_debt = 0;
-    await user.save();
+    // Update all offline bookings to mark their commission as PAID in DB
+    const clusters = await VenueCluster.find({ owner_id: user._id });
+    const clusterIds = clusters.map(c => c._id);
+    const courts = await Court.find({ cluster_id: { $in: clusterIds } });
+    const courtIds = courts.map(c => c._id);
 
-    res.status(200).json({ message: 'Đã thanh toán công nợ thành công', user });
+    await Booking.updateMany(
+      {
+        court_id: { $in: courtIds },
+        payment_status: 'PAID',
+        payment_method: { $nin: ['VNPAY', 'MOMO', 'PAYOS'] },
+        commission_status: 'UNPAID'
+      },
+      { commission_status: 'PAID' }
+    );
+
+    // Sync to cleanly recalculate everything
+    await syncCommissions();
+
+    const updatedUser = await User.findById(req.params.id);
+
+    res.status(200).json({ message: 'Đã thanh toán công nợ thành công', user: updatedUser });
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
-module.exports = { getAdminDashboard, createOwner, getAllUsers, updateUserStatus, getAllVenues, createSportType, updateVenueStatus, clearOwnerDebt };
+const seedCommission = async (req, res) => {
+  try {
+    // 1. Delete all existing mock bookings to avoid duplicates
+    await Booking.deleteMany({ voucher_code: 'MOCKDATA' });
+
+    const owners = await User.find({ role: 'OWNER' });
+    
+    // For each owner, find or create cluster and court, then seed matching bookings
+    for (const owner of owners) {
+      let cluster = await VenueCluster.findOne({ owner_id: owner._id });
+      if (!cluster) {
+        cluster = await VenueCluster.create({
+          owner_id: owner._id,
+          name: `Sân bóng của ${owner.name}`,
+          slug: `san-bong-cua-${owner._id}`,
+          address: '123 Đường Láng',
+          city: 'Hà Nội',
+          status: 'ACTIVE'
+        });
+      }
+      
+      let court = await Court.findOne({ cluster_id: cluster._id });
+      if (!court) {
+        let sport = await SportType.findOne({});
+        if (!sport) {
+          sport = await SportType.create({ name: 'Pickleball', slug: 'pickleball' });
+        }
+        court = await Court.create({
+          cluster_id: cluster._id,
+          sport_type_id: sport._id,
+          name: 'Sân 1',
+          status: 'ACTIVE'
+        });
+      }
+
+      // Configure targets
+      let debtTarget = 450000;
+      let paidTarget = 1000000;
+      if (owner.email === 'owner@test.com') {
+        debtTarget = 750000;
+        paidTarget = 2500000;
+      } else if (owner.email === 'test01@gmail.com') {
+        debtTarget = 350000;
+        paidTarget = 1200000;
+      } else if (owner.email === 'test02@gmail.com') {
+        debtTarget = 500000;
+        paidTarget = 1800000;
+      }
+
+      for (let i = 0; i < 6; i++) {
+        const date = new Date();
+        date.setMonth(date.getMonth() - (5 - i));
+        // Seed in the middle of each month
+        date.setDate(15);
+        date.setHours(12, 0, 0, 0);
+
+        const trendMultiplier = [0.5, 0.6, 0.8, 0.7, 0.9, 1.0][i];
+        const monthlyDebtTarget = Math.round(debtTarget * trendMultiplier);
+        const monthlyPaidTarget = Math.round(paidTarget * trendMultiplier);
+
+        // Create CASH booking that is UNPAID (represents debt)
+        await Booking.create({
+          user_id: owner._id,
+          court_id: court._id,
+          booking_date: date,
+          start_time: '08:00',
+          end_time: '09:00',
+          slot_count: 1,
+          subtotal: monthlyDebtTarget * 20,
+          platform_fee: monthlyDebtTarget,
+          total_price: monthlyDebtTarget * 20,
+          payment_method: 'CASH',
+          payment_status: 'PAID',
+          commission_status: 'UNPAID',
+          status: 'CONFIRMED',
+          voucher_code: 'MOCKDATA'
+        });
+
+        // Create VNPAY booking that is PAID (represents paid commission)
+        await Booking.create({
+          user_id: owner._id,
+          court_id: court._id,
+          booking_date: date,
+          start_time: '10:00',
+          end_time: '11:00',
+          slot_count: 1,
+          subtotal: monthlyPaidTarget * 20,
+          platform_fee: monthlyPaidTarget,
+          total_price: monthlyPaidTarget * 20,
+          payment_method: 'VNPAY',
+          payment_status: 'PAID',
+          commission_status: 'PAID',
+          status: 'CONFIRMED',
+          voucher_code: 'MOCKDATA'
+        });
+      }
+    }
+
+    // Now run syncCommissions to cleanly compute and cache everything in the DB
+    await syncCommissions();
+
+    res.status(200).json({ 
+      message: 'Đã tạo dữ liệu công nợ, số tiền đã nộp và biểu đồ thực tế thành công!', 
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const cleanCommission = async (req, res) => {
+  try {
+    // 1. Delete all existing mock bookings
+    await Booking.deleteMany({ voucher_code: 'MOCKDATA' });
+
+    // 2. Sync to cleanly recalculate everything based on remaining real bookings
+    await syncCommissions();
+
+    res.status(200).json({ 
+      message: 'Đã xóa toàn bộ dữ liệu mẫu thành công!', 
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { 
+  getAdminDashboard, 
+  createOwner, 
+  getAllUsers, 
+  updateUserStatus, 
+  getAllVenues, 
+  createSportType, 
+  updateVenueStatus, 
+  clearOwnerDebt, 
+  seedCommission,
+  cleanCommission
+};

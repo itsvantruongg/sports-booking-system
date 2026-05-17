@@ -118,7 +118,7 @@ export default function AdminCourtsPage() {
       </header>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         {[
           { label: "Tổng cụm sân", value: stats.total, icon: "stadium", color: "text-primary" },
           { label: "Đang hoạt động", value: stats.active, icon: "check_circle", color: "text-green-600" },

@@ -22,7 +22,8 @@ const userSchema = new mongoose.Schema({
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'VenueCluster' }],
   resetPasswordToken: { type: String },
   resetPasswordExpires: { type: Date },
-  commission_debt: { type: Number, default: 0 }
+  commission_debt: { type: Number, default: 0 },
+  commission_paid: { type: Number, default: 0 }
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
 // Tự động hash password trước khi lưu

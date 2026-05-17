@@ -108,7 +108,7 @@ export default function AdminSettingsPage() {
   };
 
   return (
-    <div className="p-8 lg:p-12 xl:p-16">
+    <div className="p-6 md:p-12 max-w-[1600px] mx-auto">
       {/* Toast */}
       {toast && (
         <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-2xl shadow-2xl font-bold text-sm transition-all ${toast.type === "success" ? "bg-green-50 text-green-800 border border-green-200" : "bg-red-50 text-red-800 border border-red-200"}`}>
@@ -186,7 +186,7 @@ export default function AdminSettingsPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="w-8 h-8 rounded-full bg-surface-container-low text-on-surface-variant flex items-center justify-center text-xs font-black" title={`ID: ${st._id}`}>
                       <span className="material-symbols-outlined text-[14px]">info</span>
                     </div>

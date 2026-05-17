@@ -129,11 +129,12 @@ export default function OwnerCustomersPage() {
                   </div>
                 </div>
                 {/* Status / Spent */}
-                <div className="col-span-2 flex justify-end items-center w-full mt-4 md:mt-0 text-right">
-                  <div className="flex flex-col items-end">
-                    <span className="font-headline font-extrabold text-lg text-on-surface">{c.total_spent.toLocaleString('vi-VN')} ₫</span>
+                <div className="col-span-2 flex justify-between md:justify-end items-center w-full mt-4 md:mt-0 text-left md:text-right border-t md:border-t-0 border-surface-variant/20 pt-4 md:pt-0">
+                  <div className="flex flex-col items-start md:items-end">
+                    <span className="text-[10px] md:hidden uppercase tracking-wider text-on-surface-variant font-black mb-0.5">Tổng chi tiêu</span>
+                    <span className="font-headline font-extrabold text-lg text-on-surface">{(c.total_spent ?? 0).toLocaleString('vi-VN')} ₫</span>
                   </div>
-                  <button className="ml-4 text-outline hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button className="text-outline hover:text-primary opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity md:ml-4">
                     <span className="material-symbols-outlined">more_vert</span>
                   </button>
                 </div>

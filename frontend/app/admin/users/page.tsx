@@ -99,16 +99,16 @@ export default function AdminUsersPage() {
         </div>
         
         {/* Search & Filter */}
-        <form onSubmit={handleSearch} className="flex items-center gap-3 bg-surface-container-low rounded-full p-2 pl-6 shadow-sm border border-transparent focus-within:border-outline-variant/30 focus-within:bg-surface-bright transition-all">
+        <form onSubmit={handleSearch} className="w-full md:w-auto flex items-center gap-3 bg-surface-container-low rounded-full p-2 pl-6 shadow-sm border border-transparent focus-within:border-outline-variant/30 focus-within:bg-surface-bright transition-all">
           <span className="material-symbols-outlined text-on-surface-variant">search</span>
           <input 
-            className="bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-on-surface-variant/60 w-64 md:w-80 font-body" 
+            className="bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-on-surface-variant/60 flex-1 w-full md:w-80 font-body outline-none" 
             placeholder="Tìm theo tên hoặc email..." 
             type="text" 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <button type="submit" className="bg-surface-container-highest p-3 rounded-full hover:bg-primary hover:text-on-primary transition-colors text-on-surface">
+          <button type="submit" className="bg-surface-container-highest p-3 rounded-full hover:bg-primary hover:text-on-primary transition-colors text-on-surface shrink-0">
             <span className="material-symbols-outlined">tune</span>
           </button>
         </form>
@@ -246,8 +246,8 @@ export default function AdminUsersPage() {
         </div>
 
         {/* Pagination */}
-        <div className="p-6 border-t border-surface-container-low flex justify-between items-center bg-surface-container-lowest">
-          <div className="text-sm text-on-surface-variant font-medium">
+        <div className="p-6 border-t border-surface-container-low flex flex-col sm:flex-row justify-between items-center gap-4 bg-surface-container-lowest">
+          <div className="text-sm text-on-surface-variant font-medium text-center sm:text-left">
             Đang hiển thị {Math.min((page - 1) * 10 + 1, total)} đến {Math.min(page * 10, total)} của {total} mục
           </div>
           <div className="flex gap-2">

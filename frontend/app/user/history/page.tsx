@@ -321,8 +321,8 @@ export default function UserHistoryPage() {
                   </div>
                 </div>
                 
-                <div className="p-8 flex flex-col flex-1">
-                  <div className="flex justify-between items-start mb-6">
+                <div className="p-6 sm:p-8 flex flex-col flex-1">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
                     <div>
                       <h3 className="text-2xl font-black text-on-surface mb-2">{booking.court_id?.name || 'Sân thể thao'}</h3>
                       <p className="text-xs font-black text-on-surface-variant opacity-60 uppercase tracking-widest flex items-center gap-1.5">
@@ -330,7 +330,7 @@ export default function UserHistoryPage() {
                         {booking.court_id?.cluster_id?.address || booking.court_id?.cluster_id?.name || 'Địa điểm chưa xác định'}
                       </p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-left sm:text-right shrink-0">
                       <p className="text-2xl font-black text-primary">{booking.total_price?.toLocaleString('vi-VN')} ₫</p>
                       <p className={`text-[10px] font-black uppercase tracking-widest ${booking.payment_status === 'PAID' ? 'text-green-500' : 'text-amber-500'}`}>
                         {booking.payment_status === 'PAID' ? 'Đã thanh toán' : 'Chờ thanh toán'}
@@ -353,28 +353,28 @@ export default function UserHistoryPage() {
                     </div>
                   </div>
 
-                  <div className="flex justify-between items-center mt-auto pt-6 border-t border-outline-variant/10">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto pt-6 border-t border-outline-variant/10 w-full">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                       <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">
                         {activeTab === 'UNPAID' ? 'Đang chờ thanh toán' : 'Sân đã sẵn sàng'}
                       </span>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                       {activeTab === 'UNPAID' && (() => {
                         const diff = Math.max(0, Math.floor((new Date(booking.expires_at).getTime() - now) / 1000));
                         const m = Math.floor(diff / 60);
                         const s = diff % 60;
                         const timeString = `${m}:${s.toString().padStart(2, '0')}`;
                         return (
-                          <button onClick={() => router.push(`/user/payment?bookingId=${booking._id}&amount=${booking.total_price}`)} className="px-6 py-2.5 rounded-xl bg-primary text-white font-black text-xs shadow-lg shadow-primary/20 flex items-center gap-2 hover:bg-primary/90 transition-all">
+                          <button onClick={() => router.push(`/user/payment?bookingId=${booking._id}&amount=${booking.total_price}`)} className="px-6 py-3 rounded-xl bg-primary text-white font-black text-xs shadow-lg shadow-primary/20 flex items-center justify-center gap-2 hover:bg-primary/90 transition-all w-full sm:w-auto">
                             Thanh toán ngay <span className="bg-white/20 px-2 py-0.5 rounded-md text-[10px]">{timeString}</span>
                           </button>
                         );
                       })()}
                       
                       {['PENDING', 'CONFIRMED'].includes(booking.status) && activeTab !== 'UNPAID' && (
-                        <button onClick={() => setConfirmCancelId(booking._id)} className="px-6 py-2.5 rounded-xl font-black text-xs text-red-500 hover:bg-red-500/5 transition-all">Hủy đặt sân</button>
+                        <button onClick={() => setConfirmCancelId(booking._id)} className="px-6 py-3 rounded-xl font-black text-xs text-red-500 hover:bg-red-500/5 transition-all w-full sm:w-auto text-center border border-red-500/20">Hủy đặt sân</button>
                       )}
                       
                       {booking.status === 'COMPLETED' && !reviewedBookingIds.includes(booking._id) && (
@@ -383,14 +383,14 @@ export default function UserHistoryPage() {
                             setSelectedBookingForReview(booking);
                             setShowReviewForm(true);
                           }}
-                          className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-black text-xs hover:shadow-lg transition-all"
+                          className="px-6 py-3 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-black text-xs hover:shadow-lg transition-all w-full sm:w-auto text-center"
                         >
                           Đánh giá sân
                         </button>
                       )}
                       
                       {activeTab !== 'UNPAID' && (
-                        <Link href={`/user/history/${booking._id}`} className="px-6 py-2.5 rounded-xl bg-surface-container-highest text-on-surface font-black text-xs hover:bg-primary/10 hover:text-primary transition-all">Chi tiết hóa đơn</Link>
+                        <Link href={`/user/history/${booking._id}`} className="px-6 py-3 rounded-xl bg-surface-container-highest text-on-surface font-black text-xs hover:bg-primary/10 hover:text-primary transition-all w-full sm:w-auto text-center">Chi tiết hóa đơn</Link>
                       )}
                     </div>
                   </div>

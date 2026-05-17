@@ -147,7 +147,7 @@ export default function OwnerPage() {
 
               {/* Notification Panel - Giữ nguyên logic cũ nhưng có thể cần chỉnh lại right-0 */}
               {showNotifPanel && (
-                <div className="absolute right-0 mt-4 w-[400px] bg-white border border-outline-variant/30 rounded-3xl shadow-[0_24px_80px_rgba(0,0,0,0.15)] overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2">
+                <div className="absolute right-[-48px] sm:right-0 mt-4 w-[calc(100vw-32px)] sm:w-[400px] bg-white border border-outline-variant/30 rounded-3xl shadow-[0_24px_80px_rgba(0,0,0,0.15)] overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2">
                   <div className="p-6 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container-lowest">
                     <h3 className="font-black text-on-surface text-base">Thông báo mới</h3>
                     {unreadCount > 0 && (
@@ -190,7 +190,7 @@ export default function OwnerPage() {
             <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-black text-xl shadow-lg border-2 border-white">A</div>
           </div>
         </div>
-        <h2 className="text-5xl md:text-6xl font-bold font-display tracking-tight text-on-surface max-w-2xl leading-[1.1]">
+        <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold font-display tracking-tight text-on-surface max-w-2xl leading-[1.1]">
           {getGreeting()}, <br />
           <span className="text-primary">Quản trị viên</span>
         </h2>

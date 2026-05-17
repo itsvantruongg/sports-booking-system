@@ -127,7 +127,7 @@ export default function OwnerRevenuePage() {
           <h1 className="font-display text-4xl md:text-5xl font-bold text-on-surface mb-2 tracking-tight">Báo Cáo Doanh Thu</h1>
           <p className="font-body text-lg text-on-surface-variant">Tổng quan tài chính trong tháng</p>
         </div>
-        <div className="flex items-center gap-4 w-full md:w-auto">
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           {/* View Mode Switcher */}
           <div className="flex bg-surface-container-low rounded-full p-1 shadow-sm border border-outline-variant/10">
             <button
