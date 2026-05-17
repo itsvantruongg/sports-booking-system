@@ -313,8 +313,11 @@ export default function BookingDetailPage() {
                   </div>
                   <div>
                     <p className="text-xs text-on-surface-variant font-medium uppercase tracking-wider">Mã đặt sân</p>
-                    <p className="text-base font-bold font-headline text-on-surface font-mono text-xs">
-                      {booking._id}
+                    <p className="text-base font-bold font-headline text-primary font-mono">
+                      #{booking._id.slice(-6).toUpperCase()}
+                    </p>
+                    <p className="text-[10px] text-on-surface-variant/50 font-mono mt-0.5">
+                      ID: {booking._id}
                     </p>
                   </div>
                 </div>
